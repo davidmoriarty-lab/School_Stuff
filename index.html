@@ -163,20 +163,20 @@
         /* Salt Scale - Left side */
         .salt-scale {
             left: 30px;
-            bottom: 80px;
+            bottom: 60px;
         }
 
         /* Water Scale - Right side */
         .water-scale {
             right: 30px;
-            bottom: 80px;
+            bottom: 60px;
         }
 
-        /* Weigh Boat */
+        /* Weigh Boat - sits on top of salt scale platform */
         .weigh-boat {
             position: absolute;
-            bottom: 127px;
-            left: 50px;
+            bottom: 107px; /* 60px (scale bottom) + 35px (base) + 12px (platform) = 107px */
+            left: 40px;
             width: 100px;
             height: 25px;
             cursor: pointer;
@@ -213,11 +213,11 @@
             transition: height 0.3s ease;
         }
 
-        /* Beaker */
+        /* Beaker - sits on top of water scale platform */
         .beaker {
             position: absolute;
-            bottom: 127px;
-            right: 50px;
+            bottom: 107px; /* 60px (scale bottom) + 35px (base) + 12px (platform) = 107px */
+            right: 40px;
             width: 100px;
             height: 120px;
             cursor: pointer;
@@ -285,19 +285,22 @@
                 rgba(255, 87, 34, 0.9) 100%);
         }
 
-        /* Dissolving animation */
+        /* Dissolving animation - particles inside water */
         .dissolving-particles {
             position: absolute;
             width: 100%;
             height: 100%;
+            top: 0;
+            left: 0;
             pointer-events: none;
+            overflow: hidden;
         }
 
         .particle {
             position: absolute;
-            width: 3px;
-            height: 3px;
-            background: #fff;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 50%;
             opacity: 0;
         }
@@ -307,9 +310,12 @@
                 opacity: 1;
                 transform: translateY(0) scale(1);
             }
+            50% {
+                opacity: 0.8;
+            }
             100% {
                 opacity: 0;
-                transform: translateY(30px) scale(0);
+                transform: translateY(50px) scale(0.3);
             }
         }
 
@@ -336,8 +342,8 @@
 
         .thermometer.in-beaker {
             top: auto;
-            bottom: 160px;
-            right: 70px;
+            bottom: 115px; /* Position so bulb is inside water */
+            right: 60px;
             left: auto;
             transform: none;
         }
@@ -836,8 +842,9 @@
                     <div class="beaker" id="beaker" onclick="handleBeakerClick()">
                         <div class="beaker-spout"></div>
                         <div class="beaker-glass">
-                            <div class="water" id="water" style="height: 0%;"></div>
-                            <div class="dissolving-particles" id="particles"></div>
+                            <div class="water" id="water" style="height: 0%;">
+                                <div class="dissolving-particles" id="particles"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1264,18 +1271,19 @@
             const container = document.getElementById('particles');
             container.innerHTML = '';
 
-            for (let i = 0; i < 25; i++) {
+            // Create multiple waves of particles dissolving inside the water
+            for (let i = 0; i < 30; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
-                particle.style.left = (20 + Math.random() * 60) + '%';
-                particle.style.top = '5%';
-                particle.style.animation = `dissolve ${1.5 + Math.random() * 1}s ease-out ${Math.random() * 0.8}s forwards`;
+                particle.style.left = (15 + Math.random() * 70) + '%';
+                particle.style.top = '0%'; // Start from top of water
+                particle.style.animation = `dissolve ${2 + Math.random() * 2}s ease-out ${Math.random() * 1.5}s forwards`;
                 container.appendChild(particle);
             }
 
             setTimeout(() => {
                 container.innerHTML = '';
-            }, 4000);
+            }, 6000);
         }
 
         function startGraphAnimation() {
@@ -1292,24 +1300,23 @@
 
             state.graphData = [];
             let time = 0;
-            const totalTime = 30; // 30 seconds of data
-            const peakTime = 4; // Peak temperature reached at 4 seconds
-            const decayConstant = 0.08; // Rate of return to ambient
+            const totalTime = 15; // 15 seconds total on graph
+            const changeTime = 10; // Temperature change occurs over 10 seconds
 
             // Temperature model:
-            // Before peak: rapid change toward peak temp
-            // After peak: exponential decay back toward initial temp
+            // Gradual change over 10 seconds, then stays at final temp
             function getTemperature(t) {
-                if (t < peakTime) {
-                    // Rapid change to peak
-                    const progress = t / peakTime;
-                    const easeProgress = 1 - Math.pow(1 - progress, 3);
+                if (t < changeTime) {
+                    // Gradual change over 10 seconds using smooth easing
+                    const progress = t / changeTime;
+                    // Use smooth ease-in-out curve
+                    const easeProgress = progress < 0.5
+                        ? 2 * progress * progress
+                        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
                     return state.initialTemp + (state.peakTemp - state.initialTemp) * easeProgress;
                 } else {
-                    // Exponential decay back toward initial
-                    const timeSincePeak = t - peakTime;
-                    const decayFactor = Math.exp(-decayConstant * timeSincePeak);
-                    return state.initialTemp + (state.peakTemp - state.initialTemp) * decayFactor;
+                    // Stay at final temperature
+                    return state.peakTemp;
                 }
             }
 
@@ -1351,9 +1358,9 @@
                     ctx.fillText(temp + '°', marginLeft - 5, y + 3);
                 }
 
-                // X-axis (time)
+                // X-axis (time) - intervals of 3 seconds for 15 second total
                 ctx.textAlign = 'center';
-                for (let t = 0; t <= totalTime; t += 5) {
+                for (let t = 0; t <= totalTime; t += 3) {
                     const x = marginLeft + (t / totalTime) * graphWidth;
 
                     ctx.beginPath();
@@ -1416,7 +1423,13 @@
                 ctx.restore();
             }
 
-            function animate() {
+            const startTime = performance.now();
+
+            function animate(currentTime) {
+                // Calculate actual elapsed time in seconds
+                const elapsedTime = (currentTime - startTime) / 1000;
+                time = Math.min(elapsedTime, totalTime);
+
                 const currentTemp = getTemperature(time);
                 state.graphData.push({ time: time, temp: currentTemp });
 
@@ -1425,13 +1438,11 @@
 
                 drawGraph();
 
-                time += 0.1;
-
-                if (time <= totalTime) {
+                if (time < totalTime) {
                     state.graphAnimationId = requestAnimationFrame(animate);
                 } else {
                     // Animation complete
-                    state.finalTemp = getTemperature(totalTime);
+                    state.finalTemp = state.peakTemp;
                     document.getElementById('dataFinalTemp').textContent = state.peakTemp.toFixed(1) + ' °C';
                     document.getElementById('dataDeltaT').textContent = (state.peakTemp - state.initialTemp).toFixed(1) + ' °C';
 
@@ -1442,7 +1453,7 @@
                 }
             }
 
-            animate();
+            requestAnimationFrame(animate);
         }
 
         function checkAnswer() {

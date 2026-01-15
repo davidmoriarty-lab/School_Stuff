@@ -163,19 +163,19 @@
         /* Salt Scale - Left side */
         .salt-scale {
             left: 30px;
-            bottom: 60px;
+            bottom: 80px;
         }
 
         /* Water Scale - Right side */
         .water-scale {
             right: 30px;
-            bottom: 60px;
+            bottom: 80px;
         }
 
         /* Weigh Boat - sits on top of salt scale platform */
         .weigh-boat {
             position: absolute;
-            bottom: 107px; /* 60px (scale bottom) + 35px (base) + 12px (platform) = 107px */
+            bottom: 127px; /* 80px (scale bottom) + 35px (base) + 12px (platform) = 127px */
             left: 40px;
             width: 100px;
             height: 25px;
@@ -216,7 +216,7 @@
         /* Beaker - sits on top of water scale platform */
         .beaker {
             position: absolute;
-            bottom: 107px; /* 60px (scale bottom) + 35px (base) + 12px (platform) = 107px */
+            bottom: 127px; /* 80px (scale bottom) + 35px (base) + 12px (platform) = 127px */
             right: 40px;
             width: 100px;
             height: 120px;
@@ -342,8 +342,8 @@
 
         .thermometer.in-beaker {
             top: auto;
-            bottom: 115px; /* Position so bulb is inside water */
-            right: 60px;
+            bottom: 135px; /* Position so bulb is inside water */
+            right: 55px;
             left: auto;
             transform: none;
         }
@@ -920,9 +920,9 @@
             <h3>Measure Salt</h3>
             <div class="modal-input-group">
                 <label>Enter mass of <span id="modalSaltName">salt</span> to measure:</label>
-                <input type="number" id="saltAmountInput" step="0.01" min="5" max="20" placeholder="10.00">
-                <div class="range-hint">Range: 5.00 - 20.00 grams</div>
-                <div class="error-text" id="saltError">Please enter a value between 5.00 and 20.00 grams</div>
+                <input type="number" id="saltAmountInput" step="0.01" min="1" max="5" placeholder="3.00">
+                <div class="range-hint">Range: 1.00 - 5.00 grams</div>
+                <div class="error-text" id="saltError">Please enter a value between 1.00 and 5.00 grams</div>
             </div>
             <div class="modal-buttons">
                 <button class="btn btn-secondary" onclick="closeModal('saltModal')">Cancel</button>
@@ -937,9 +937,9 @@
             <h3>Add Distilled Water</h3>
             <div class="modal-input-group">
                 <label>Enter mass of water to add:</label>
-                <input type="number" id="waterAmountInput" step="0.01" min="25" max="50" placeholder="35.00">
-                <div class="range-hint">Range: 25.00 - 50.00 grams</div>
-                <div class="error-text" id="waterError">Please enter a value between 25.00 and 50.00 grams</div>
+                <input type="number" id="waterAmountInput" step="0.01" min="50" max="100" placeholder="75.00">
+                <div class="range-hint">Range: 50.00 - 100.00 grams</div>
+                <div class="error-text" id="waterError">Please enter a value between 50.00 and 100.00 grams</div>
             </div>
             <div class="modal-buttons">
                 <button class="btn btn-secondary" onclick="closeModal('waterModal')">Cancel</button>
@@ -1142,7 +1142,7 @@
 
         function confirmSaltAmount() {
             const input = document.getElementById('saltAmountInput').value;
-            const amount = validateAndRound(input, 5, 20);
+            const amount = validateAndRound(input, 1, 5);
 
             if (amount === null) {
                 document.getElementById('saltError').style.display = 'block';
@@ -1157,8 +1157,8 @@
             document.getElementById('dataSaltMass').textContent = amount.toFixed(2) + ' g';
             document.getElementById('dataSelectedSalt').textContent = saltData[state.selectedSalt].formula;
 
-            // Update visual
-            const boatFill = ((amount - 5) / 15) * 80 + 10;
+            // Update visual (1-5g maps to 10-90% fill)
+            const boatFill = ((amount - 1) / 4) * 80 + 10;
             document.getElementById('saltInBoat').style.height = boatFill + '%';
 
             // Mark salt jar as used
@@ -1175,7 +1175,7 @@
 
         function confirmWaterAmount() {
             const input = document.getElementById('waterAmountInput').value;
-            const amount = validateAndRound(input, 25, 50);
+            const amount = validateAndRound(input, 50, 100);
 
             if (amount === null) {
                 document.getElementById('waterError').style.display = 'block';
@@ -1189,8 +1189,8 @@
             document.getElementById('waterScaleDisplay').textContent = amount.toFixed(2) + ' g';
             document.getElementById('dataWaterMass').textContent = amount.toFixed(2) + ' g';
 
-            // Update water visual (25-50g maps to 30-75% height)
-            const waterHeight = 30 + ((amount - 25) / 25) * 45;
+            // Update water visual (50-100g maps to 35-75% height)
+            const waterHeight = 35 + ((amount - 50) / 50) * 40;
             document.getElementById('water').style.height = waterHeight + '%';
 
             closeModal('waterModal');

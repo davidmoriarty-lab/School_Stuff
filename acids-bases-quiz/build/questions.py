@@ -371,13 +371,12 @@ def build():
 
     add(topic="Equilibrium", level="Two-factor",
         stem="Which side of the equilibrium is favored?",
-        stem_img=rxn("q29", [S("[H:5][O-:1]"), S("CC(=O)CC(=O)OCC")],
-                     [Text("H₂O", 22), S("CC(=O)[CH-:2]C(=O)OCC")]),
-        choices=["The products, because the anion is delocalized over two carbonyl groups",
-                 "The reactants, because hydroxide has the charge on O and the product has the charge on C",
-                 "The reactants, because the product anion is carbon-based",
-                 "Neither side, because the product has a charge on only one atom"],
-        why="Draw the resonance structures of the product anion. The negative charge is shared by the carbon and by both carbonyl oxygens, so it is not simply a carbon anion. That delocalization (factor 2) makes it more stable than hydroxide, which has no resonance, so the products are favored. This matches the chapter's 1,3-dicarbonyl example.")
+        stem_img=rxn("q29", [S("CCC#[C-:1]"), S("CCC=C")], [S("CCC#C[H]"), S("CCC=[CH-:2]")]),
+        choices=["The reactants, because the alkynide (charge in an sp orbital) is more stable than the vinyl anion (charge in an sp² orbital)",
+                 "The products, because the vinyl anion is resonance stabilized",
+                 "The products, because an sp² orbital is closer to the nucleus than an sp orbital",
+                 "Neither side, because both anions have the charge on carbon"],
+        why="Both ions have the charge on carbon, with no resonance and no inductive effects, so only the orbital differs (factor 4). An sp orbital (50% s character) holds the lone pair closer to the nucleus than an sp² orbital (33% s), so the alkynide is more stable. The more stable ion is on the reactant side, so the reactants are favored.")
 
     add(topic="Equilibrium", level="Challenge",
         stem="Which anion is a strong enough base to deprotonate ethanol so that the equilibrium favors the products?",

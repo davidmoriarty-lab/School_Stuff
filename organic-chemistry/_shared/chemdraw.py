@@ -27,7 +27,7 @@ def _ang_dist(a, b):
 
 class Struct:
     def __init__(self, smiles, hlabels=None, lone=(), rotate=0, atomlabels=None,
-                 flip=False, redh=True, charge_pref=315):
+                 flip=False, redh=True, charge_pref=315, cip=False):
         """hlabels: {map: 'a'} puts a subscript letter on a labeled H.
         lone: map numbers of uncharged atoms that should also show lone pairs.
         Charged atoms always get a circled charge and their lone pairs.
@@ -90,6 +90,9 @@ class Struct:
         if redh:
             o.updateAtomPalette({1: H_RED})
         o.multipleBondOffset = 0.14
+        if cip:
+            o.addStereoAnnotation = True
+            o.annotationFontScale = 0.7
         d.DrawMolecule(dm)
         d.FinishDrawing()
         svg = d.GetDrawingText()
@@ -429,3 +432,26 @@ def compose_with_arrows(items, cross, gap=16, pad=10, path=None, scale=3):
     if path:
         cairosvg.svg2png(bytestring=svg.encode(), write_to=path, scale=scale, background_color='white')
     return svg, (W, H)
+
+
+class Arrow:
+    """Reaction arrow with text lines above and/or below (list of strings)."""
+    def __init__(self, top=(), bottom=(), length=90, size=15):
+        self.top, self.bottom, self.length, self.size = list(top), list(bottom), length, size
+
+    def layout(self):
+        lines = max(len(self.top), len(self.bottom), 1)
+        w = max([self.length] + [len(t) * self.size * 0.58 + 8 for t in self.top + self.bottom])
+        h = 2 * lines * (self.size + 4) + 6
+
+        def render(x, y):
+            cy, out = y + h / 2, []
+            x0, x1 = x + (w - self.length) / 2, x + (w + self.length) / 2
+            out.append(f'<line x1="{x0:.1f}" y1="{cy:.1f}" x2="{x1 - 2:.1f}" y2="{cy:.1f}" stroke="black" stroke-width="1.8"/>')
+            out.append(f'<polygon points="{x1:.1f},{cy:.1f} {x1 - 10:.1f},{cy - 4.5:.1f} {x1 - 10:.1f},{cy + 4.5:.1f}" fill="black"/>')
+            for k, t in enumerate(reversed(self.top)):
+                out.append(f'<text x="{x + w / 2:.1f}" y="{cy - 6 - k * (self.size + 4):.1f}" text-anchor="middle" font-family="{FONT}" font-size="{self.size}">{t}</text>')
+            for k, t in enumerate(self.bottom):
+                out.append(f'<text x="{x + w / 2:.1f}" y="{cy + 5 + self.size + k * (self.size + 4):.1f}" text-anchor="middle" font-family="{FONT}" font-size="{self.size}">{t}</text>')
+            return ''.join(out)
+        return (w, h, render)

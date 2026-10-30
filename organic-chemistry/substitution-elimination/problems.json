@@ -1,0 +1,1552 @@
+[
+ {
+  "id": "P001",
+  "type": "Choose the reagents",
+  "mechanism": "SN2",
+  "difficulty": 1,
+  "question": "What reagent(s) and solvent would convert iodomethane into ethanenitrile? Name the mechanism and justify your choice with the four factors (substrate, nucleophile, leaving group, solvent).",
+  "answer": "NaCN in DMSO (SN2).",
+  "explanation": "Substrate: methyl alkyl halide; Leaving group: excellent leaving group (I); Nucleophile/base: cyanide is a strong nucleophile and a weak base; Solvent: DMSO is aprotic. These favor SN2.",
+  "question_image": "images/P001_q.png",
+  "answer_image": "images/P001_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CI",
+   "product": "CC#N"
+  }
+ },
+ {
+  "id": "P002",
+  "type": "Choose the reagents",
+  "mechanism": "SN2",
+  "difficulty": 1,
+  "question": "What reagent(s) and solvent would convert bromoethane into azidoethane? Name the mechanism and justify your choice with the four factors (substrate, nucleophile, leaving group, solvent).",
+  "answer": "NaN₃ in DMF (SN2).",
+  "explanation": "Substrate: primary (1°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: azide is a strong nucleophile and a weak base; Solvent: DMF is aprotic. These favor SN2.",
+  "question_image": "images/P002_q.png",
+  "answer_image": "images/P002_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCBr",
+   "product": "CCN=[N+]=[N-]"
+  }
+ },
+ {
+  "id": "P003",
+  "type": "Choose the reagents",
+  "mechanism": "SN2",
+  "difficulty": 1,
+  "question": "What reagent(s) and solvent would convert 1-bromopropane into propane-1-thiol? Name the mechanism and justify your choice with the four factors (substrate, nucleophile, leaving group, solvent).",
+  "answer": "NaSH in DMSO (SN2).",
+  "explanation": "Substrate: primary (1°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: hydrosulfide is a strong nucleophile and a weak base; Solvent: DMSO is aprotic. These favor SN2.",
+  "question_image": "images/P003_q.png",
+  "answer_image": "images/P003_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCCBr",
+   "product": "CCCS"
+  }
+ },
+ {
+  "id": "P004",
+  "type": "Choose the reagents",
+  "mechanism": "SN2",
+  "difficulty": 1,
+  "question": "What reagent(s) and solvent would convert 2-bromopropane into 2-methylpropanenitrile? Name the mechanism and justify your choice with the four factors (substrate, nucleophile, leaving group, solvent).",
+  "answer": "NaCN in DMSO (SN2).",
+  "explanation": "Substrate: secondary (2°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: cyanide is a strong nucleophile and a weak base; Solvent: DMSO is aprotic. These favor SN2.",
+  "question_image": "images/P004_q.png",
+  "answer_image": "images/P004_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CC(C)Br",
+   "product": "CC(C)C#N"
+  }
+ },
+ {
+  "id": "P005",
+  "type": "Choose the reagents",
+  "mechanism": "SN2",
+  "difficulty": 1,
+  "question": "What reagent(s) and solvent would convert 2-bromobutane into butane-2-thiol? Name the mechanism and justify your choice with the four factors (substrate, nucleophile, leaving group, solvent).",
+  "answer": "NaSH in DMSO (SN2).",
+  "explanation": "Substrate: secondary (2°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: hydrosulfide is a strong nucleophile and a weak base; Solvent: DMSO is aprotic. These favor SN2.",
+  "question_image": "images/P005_q.png",
+  "answer_image": "images/P005_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCC(C)Br",
+   "product": "CCC(C)S"
+  }
+ },
+ {
+  "id": "P006",
+  "type": "Choose the reagents",
+  "mechanism": "SN1",
+  "difficulty": 2,
+  "question": "What reagent(s) and solvent would convert 2-bromo-2-methylpropane into 2-methylpropan-2-ol? Name the mechanism and justify your choice with the four factors (substrate, nucleophile, leaving group, solvent).",
+  "answer": "H₂o as the solvent (SN1).",
+  "explanation": "Substrate: tertiary (3°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: water is a weak nucleophile and a weak base; Solvent: H2O is protic. These favor SN1. Competing pathway: E1 (minor; favored by heat).",
+  "question_image": "images/P006_q.png",
+  "answer_image": "images/P006_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CC(C)(C)Br",
+   "product": "CC(C)(C)O"
+  }
+ },
+ {
+  "id": "P007",
+  "type": "Choose the reagents",
+  "mechanism": "E2",
+  "difficulty": 2,
+  "question": "What reagent(s) and solvent would convert 2-bromopropane into prop-1-ene? Name the mechanism and justify your choice with the four factors (substrate, nucleophile, leaving group, solvent).",
+  "answer": "NaOEt in EtOH with heat (E2).",
+  "explanation": "Substrate: secondary (2°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: ethoxide is a strong nucleophile and a strong base; Solvent: EtOH is protic. These favor E2. Competing pathway: SN1/E1 do not compete under strongly basic conditions.",
+  "question_image": "images/P007_q.png",
+  "answer_image": "images/P007_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CC(C)Br",
+   "product": "C=CC"
+  }
+ },
+ {
+  "id": "P008",
+  "type": "Choose the reagents",
+  "mechanism": "E2",
+  "difficulty": 2,
+  "question": "What reagent(s) and solvent would convert 2-bromobutane into (E)-but-2-ene? Name the mechanism and justify your choice with the four factors (substrate, nucleophile, leaving group, solvent).",
+  "answer": "NaOEt in EtOH with heat (E2).",
+  "explanation": "Substrate: secondary (2°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: ethoxide is a strong nucleophile and a strong base; Solvent: EtOH is protic. These favor E2. Competing pathway: SN1/E1 do not compete under strongly basic conditions.",
+  "question_image": "images/P008_q.png",
+  "answer_image": "images/P008_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CCC(C)Br",
+   "product": "C/C=C/C"
+  }
+ },
+ {
+  "id": "P009",
+  "type": "Choose the reagents",
+  "mechanism": "E2",
+  "difficulty": 2,
+  "question": "What reagent(s) and solvent would convert 2-bromo-2-methylbutane into 2-methylbut-1-ene? Name the mechanism and justify your choice with the four factors (substrate, nucleophile, leaving group, solvent).",
+  "answer": "KOtBu in tBuOH with heat (E2).",
+  "explanation": "Substrate: tertiary (3°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: tert-butoxide is a strong nucleophile and a strong base (bulky); Solvent: tBuOH is protic. These favor E2. Competing pathway: SN1/E1 do not compete under strongly basic conditions.",
+  "question_image": "images/P009_q.png",
+  "answer_image": "images/P009_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CCC(C)(C)Br",
+   "product": "C=C(C)CC"
+  }
+ },
+ {
+  "id": "P010",
+  "type": "Choose the reagents",
+  "mechanism": "E2",
+  "difficulty": 2,
+  "question": "What reagent(s) and solvent would convert 2-iodobutane into but-1-ene? Name the mechanism and justify your choice with the four factors (substrate, nucleophile, leaving group, solvent).",
+  "answer": "KOtBu in tBuOH with heat (E2).",
+  "explanation": "Substrate: secondary (2°) alkyl halide; Leaving group: excellent leaving group (I); Nucleophile/base: tert-butoxide is a strong nucleophile and a strong base (bulky); Solvent: tBuOH is protic. These favor E2. Competing pathway: SN1/E1 do not compete under strongly basic conditions.",
+  "question_image": "images/P010_q.png",
+  "answer_image": "images/P010_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CCC(C)I",
+   "product": "C=CCC"
+  }
+ },
+ {
+  "id": "P011",
+  "type": "Predict the product",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "Predict the major organic product of 1-iodobutane with NaCN in CH3CN. State the mechanism and any minor pathway.",
+  "answer": "pentanenitrile via SN2.",
+  "explanation": "Substrate: primary (1°) alkyl halide; Leaving group: excellent leaving group (I); Nucleophile/base: cyanide is a strong nucleophile and a weak base; Solvent: CH3CN is aprotic. These favor SN2.",
+  "question_image": "images/P011_q.png",
+  "answer_image": "images/P011_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCCCI",
+   "product": "CCCCC#N"
+  }
+ },
+ {
+  "id": "P012",
+  "type": "Predict the product",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "Predict the major organic product of 1-chlorobutane with NaI in acetone. State the mechanism and any minor pathway.",
+  "answer": "1-iodobutane via SN2.",
+  "explanation": "Substrate: primary (1°) alkyl halide; Leaving group: good leaving group (Cl); Nucleophile/base: iodide is a strong nucleophile and a weak base; Solvent: acetone is aprotic. These favor SN2.",
+  "question_image": "images/P012_q.png",
+  "answer_image": "images/P012_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCCCCl",
+   "product": "CCCCI"
+  }
+ },
+ {
+  "id": "P013",
+  "type": "Predict the product",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "Predict the major organic product of 1-bromopropane with NaOMe in MeOH. State the mechanism and any minor pathway.",
+  "answer": "1-methoxypropane via SN2. Minor: E2 (minor).",
+  "explanation": "Substrate: primary (1°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: methoxide is a strong nucleophile and a strong base; Solvent: MeOH is protic. These favor SN2. Competing pathway: E2 (minor).",
+  "question_image": "images/P013_q.png",
+  "answer_image": "images/P013_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCCBr",
+   "product": "CCCOC"
+  }
+ },
+ {
+  "id": "P014",
+  "type": "Predict the product",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "Predict the major organic product of 2-iodobutane with NaN₃ in DMF. State the mechanism and any minor pathway.",
+  "answer": "2-azidobutane via SN2.",
+  "explanation": "Substrate: secondary (2°) alkyl halide; Leaving group: excellent leaving group (I); Nucleophile/base: azide is a strong nucleophile and a weak base; Solvent: DMF is aprotic. These favor SN2.",
+  "question_image": "images/P014_q.png",
+  "answer_image": "images/P014_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCC(C)I",
+   "product": "CCC(C)N=[N+]=[N-]"
+  }
+ },
+ {
+  "id": "P015",
+  "type": "Predict the product",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "Predict the major organic product of bromocyclohexane with NaN₃ in DMF. State the mechanism and any minor pathway.",
+  "answer": "azidocyclohexane via SN2.",
+  "explanation": "Substrate: secondary (2°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: azide is a strong nucleophile and a weak base; Solvent: DMF is aprotic. These favor SN2.",
+  "question_image": "images/P015_q.png",
+  "answer_image": "images/P015_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "C1CCCCC1Br",
+   "product": "[N-]=[N+]=NC1CCCCC1"
+  }
+ },
+ {
+  "id": "P016",
+  "type": "Predict the product",
+  "mechanism": "SN1",
+  "difficulty": 2,
+  "question": "Predict the major organic product of 2-chloro-2-methylbutane with EtOH as the solvent. State the mechanism and any minor pathway.",
+  "answer": "2-ethoxy-2-methylbutane via SN1. Minor: E1 (minor; favored by heat).",
+  "explanation": "Substrate: tertiary (3°) alkyl halide; Leaving group: good leaving group (Cl); Nucleophile/base: ethanol is a weak nucleophile and a weak base; Solvent: EtOH is protic. These favor SN1. Competing pathway: E1 (minor; favored by heat).",
+  "question_image": "images/P016_q.png",
+  "answer_image": "images/P016_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCC(C)(C)Cl",
+   "product": "CCOC(C)(C)CC"
+  }
+ },
+ {
+  "id": "P017",
+  "type": "Predict the product",
+  "mechanism": "SN1",
+  "difficulty": 2,
+  "question": "Predict the major organic product of 1-bromo-1-methylcyclohexane with MeOH as the solvent. State the mechanism and any minor pathway.",
+  "answer": "1-methoxy-1-methylcyclohexane via SN1. Minor: E1 (minor; favored by heat).",
+  "explanation": "Substrate: tertiary (3°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: methanol is a weak nucleophile and a weak base; Solvent: MeOH is protic. These favor SN1. Competing pathway: E1 (minor; favored by heat).",
+  "question_image": "images/P017_q.png",
+  "answer_image": "images/P017_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CC1(Br)CCCCC1",
+   "product": "COC1(C)CCCCC1"
+  }
+ },
+ {
+  "id": "P018",
+  "type": "Predict the product",
+  "mechanism": "E2",
+  "difficulty": 2,
+  "question": "Predict the major organic product of 2-bromopentane with NaOH in EtOH. State the mechanism and any minor pathway.",
+  "answer": "(E)-pent-2-ene via E2. Minor: SN1/E1 do not compete under strongly basic conditions.",
+  "explanation": "Substrate: secondary (2°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: hydroxide is a strong nucleophile and a strong base; Solvent: EtOH is protic. These favor E2. Competing pathway: SN1/E1 do not compete under strongly basic conditions.",
+  "question_image": "images/P018_q.png",
+  "answer_image": "images/P018_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CCCC(C)Br",
+   "product": "C/C=C/CC"
+  }
+ },
+ {
+  "id": "P019",
+  "type": "Predict the product",
+  "mechanism": "E2",
+  "difficulty": 2,
+  "question": "Predict the major organic product of bromocyclohexane with NaOEt in EtOH. State the mechanism and any minor pathway.",
+  "answer": "cyclohexene via E2. Minor: SN1/E1 do not compete under strongly basic conditions.",
+  "explanation": "Substrate: secondary (2°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: ethoxide is a strong nucleophile and a strong base; Solvent: EtOH is protic. These favor E2. Competing pathway: SN1/E1 do not compete under strongly basic conditions.",
+  "question_image": "images/P019_q.png",
+  "answer_image": "images/P019_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "C1CCCCC1Br",
+   "product": "C1=CCCCC1"
+  }
+ },
+ {
+  "id": "P020",
+  "type": "Predict the product",
+  "mechanism": "E2",
+  "difficulty": 2,
+  "question": "Predict the major organic product of 1-bromo-1-methylcyclohexane with KOtBu in tBuOH. State the mechanism and any minor pathway.",
+  "answer": "methylenecyclohexane via E2. Minor: SN1/E1 do not compete under strongly basic conditions.",
+  "explanation": "Substrate: tertiary (3°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: tert-butoxide is a strong nucleophile and a strong base (bulky); Solvent: tBuOH is protic. These favor E2. Competing pathway: SN1/E1 do not compete under strongly basic conditions.",
+  "question_image": "images/P020_q.png",
+  "answer_image": "images/P020_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CC1(Br)CCCCC1",
+   "product": "C=C1CCCCC1"
+  }
+ },
+ {
+  "id": "P021",
+  "type": "Identify the mechanism",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "Which mechanism (SN1, SN2, E1 or E2) predominates when bromoethane reacts with NaN₃ in DMF? List the factors that support your answer and give the major product.",
+  "answer": "SN2. Major product: azidoethane.",
+  "explanation": "Substrate: primary (1°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: azide is a strong nucleophile and a weak base; Solvent: DMF is aprotic. These favor SN2.",
+  "question_image": "images/P021_q.png",
+  "answer_image": "images/P021_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCBr",
+   "product": "CCN=[N+]=[N-]"
+  }
+ },
+ {
+  "id": "P022",
+  "type": "Identify the mechanism",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "Which mechanism (SN1, SN2, E1 or E2) predominates when 1-bromobutane reacts with NaOAc in DMF? List the factors that support your answer and give the major product.",
+  "answer": "SN2. Major product: butyl ethanoate.",
+  "explanation": "Substrate: primary (1°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: acetate is a weak nucleophile and a weak base; Solvent: DMF is aprotic. These favor SN2.",
+  "question_image": "images/P022_q.png",
+  "answer_image": "images/P022_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCCCBr",
+   "product": "CCCCOC(C)=O"
+  }
+ },
+ {
+  "id": "P023",
+  "type": "Identify the mechanism",
+  "mechanism": "SN1",
+  "difficulty": 2,
+  "question": "Which mechanism (SN1, SN2, E1 or E2) predominates when 3-bromo-3-methylpentane reacts with EtOH as the solvent? List the factors that support your answer and give the major product.",
+  "answer": "SN1. Major product: 3-ethoxy-3-methylpentane.",
+  "explanation": "Substrate: tertiary (3°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: ethanol is a weak nucleophile and a weak base; Solvent: EtOH is protic. These favor SN1. Competing pathway: E1 (minor; favored by heat).",
+  "question_image": "images/P023_q.png",
+  "answer_image": "images/P023_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCC(C)(CC)Br",
+   "product": "CCOC(C)(CC)CC"
+  }
+ },
+ {
+  "id": "P024",
+  "type": "Identify the mechanism",
+  "mechanism": "SN1",
+  "difficulty": 2,
+  "question": "Which mechanism (SN1, SN2, E1 or E2) predominates when 2-iodo-2-methylpropane reacts with CH₃CO₂H as the solvent? List the factors that support your answer and give the major product.",
+  "answer": "SN1. Major product: tert-butyl ethanoate.",
+  "explanation": "Substrate: tertiary (3°) alkyl halide; Leaving group: excellent leaving group (I); Nucleophile/base: acetic acid is a weak nucleophile and a weak base; Solvent: AcOH is protic. These favor SN1. Competing pathway: E1 (minor; favored by heat).",
+  "question_image": "images/P024_q.png",
+  "answer_image": "images/P024_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CC(C)(C)I",
+   "product": "CC(=O)OC(C)(C)C"
+  }
+ },
+ {
+  "id": "P025",
+  "type": "Identify the mechanism",
+  "mechanism": "E2",
+  "difficulty": 2,
+  "question": "Which mechanism (SN1, SN2, E1 or E2) predominates when 2-bromopentane reacts with NaOH in EtOH? List the factors that support your answer and give the major product.",
+  "answer": "E2. Major product: (E)-pent-2-ene.",
+  "explanation": "Substrate: secondary (2°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: hydroxide is a strong nucleophile and a strong base; Solvent: EtOH is protic. These favor E2. Competing pathway: SN1/E1 do not compete under strongly basic conditions.",
+  "question_image": "images/P025_q.png",
+  "answer_image": "images/P025_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CCCC(C)Br",
+   "product": "C/C=C/CC"
+  }
+ },
+ {
+  "id": "P026",
+  "type": "Identify the mechanism",
+  "mechanism": "E2",
+  "difficulty": 2,
+  "question": "Which mechanism (SN1, SN2, E1 or E2) predominates when 1-bromopropane reacts with KOtBu in tBuOH? List the factors that support your answer and give the major product.",
+  "answer": "E2. Major product: prop-1-ene.",
+  "explanation": "Substrate: primary (1°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: tert-butoxide is a strong nucleophile and a strong base (bulky); Solvent: tBuOH is protic. These favor E2. Competing pathway: SN2 (minor).",
+  "question_image": "images/P026_q.png",
+  "answer_image": "images/P026_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CCCBr",
+   "product": "C=CC"
+  }
+ },
+ {
+  "id": "P027",
+  "type": "Identify the mechanism",
+  "mechanism": "E2",
+  "difficulty": 2,
+  "question": "Which mechanism (SN1, SN2, E1 or E2) predominates when 3-bromo-3-methylpentane reacts with NaOMe in MeOH? List the factors that support your answer and give the major product.",
+  "answer": "E2. Major product: 3-methylpent-2-ene.",
+  "explanation": "Substrate: tertiary (3°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: methoxide is a strong nucleophile and a strong base; Solvent: MeOH is protic. These favor E2. Competing pathway: SN1/E1 do not compete under strongly basic conditions.",
+  "question_image": "images/P027_q.png",
+  "answer_image": "images/P027_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CCC(CC)(C)Br",
+   "product": "CC=C(C)CC"
+  }
+ },
+ {
+  "id": "P028",
+  "type": "Identify the mechanism",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "Which mechanism (SN1, SN2, E1 or E2) predominates when 1-chlorobutane reacts with NaI in acetone? List the factors that support your answer and give the major product.",
+  "answer": "SN2. Major product: 1-iodobutane.",
+  "explanation": "Substrate: primary (1°) alkyl halide; Leaving group: good leaving group (Cl); Nucleophile/base: iodide is a strong nucleophile and a weak base; Solvent: acetone is aprotic. These favor SN2.",
+  "question_image": "images/P028_q.png",
+  "answer_image": "images/P028_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCCCCl",
+   "product": "CCCCI"
+  }
+ },
+ {
+  "id": "P029",
+  "type": "Identify the mechanism",
+  "mechanism": "E2",
+  "difficulty": 2,
+  "question": "Which mechanism (SN1, SN2, E1 or E2) predominates when 2-bromo-2-methylbutane reacts with NaOEt in EtOH? List the factors that support your answer and give the major product.",
+  "answer": "E2. Major product: 2-methylbut-2-ene.",
+  "explanation": "Substrate: tertiary (3°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: ethoxide is a strong nucleophile and a strong base; Solvent: EtOH is protic. These favor E2. Competing pathway: SN1/E1 do not compete under strongly basic conditions.",
+  "question_image": "images/P029_q.png",
+  "answer_image": "images/P029_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CCC(C)(C)Br",
+   "product": "CC=C(C)C"
+  }
+ },
+ {
+  "id": "P030",
+  "type": "Stereochemistry",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "Draw the product of (S)-2-bromobutane with NaSH in DMSO. Give the configuration (R or S) of the substrate and the product and explain the stereochemical outcome.",
+  "answer": "(R)-butane-2-thiol: inversion of configuration (S → R).",
+  "explanation": "SN2 proceeds by back-side attack, so the α carbon inverts like an umbrella in the wind. Note that the R/S label changes only if the CIP priorities keep the same order; the geometry always inverts. Substrate: secondary (2°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: hydrosulfide is a strong nucleophile and a weak base; Solvent: DMSO is aprotic. These favor SN2.",
+  "question_image": "images/P030_q.png",
+  "answer_image": "images/P030_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "C[C@H](Br)CC",
+   "product": "CC[C@@H](C)S"
+  }
+ },
+ {
+  "id": "P031",
+  "type": "Stereochemistry",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "Draw the product of (S)-2-chloropentane with NaCN in DMSO. Give the configuration (R or S) of the substrate and the product and explain the stereochemical outcome.",
+  "answer": "(R)-2-methylpentanenitrile: inversion of configuration (S → R).",
+  "explanation": "SN2 proceeds by back-side attack, so the α carbon inverts like an umbrella in the wind. Note that the R/S label changes only if the CIP priorities keep the same order; the geometry always inverts. Substrate: secondary (2°) alkyl halide; Leaving group: good leaving group (Cl); Nucleophile/base: cyanide is a strong nucleophile and a weak base; Solvent: DMSO is aprotic. These favor SN2.",
+  "question_image": "images/P031_q.png",
+  "answer_image": "images/P031_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCC[C@H](C)Cl",
+   "product": "CCC[C@@H](C)C#N"
+  }
+ },
+ {
+  "id": "P032",
+  "type": "Stereochemistry",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "Draw the product of (R)-3-iodohexane with NaN₃ in DMF. Give the configuration (R or S) of the substrate and the product and explain the stereochemical outcome.",
+  "answer": "(S)-3-azidohexane: inversion of configuration (R → S).",
+  "explanation": "SN2 proceeds by back-side attack, so the α carbon inverts like an umbrella in the wind. Note that the R/S label changes only if the CIP priorities keep the same order; the geometry always inverts. Substrate: secondary (2°) alkyl halide; Leaving group: excellent leaving group (I); Nucleophile/base: azide is a strong nucleophile and a weak base; Solvent: DMF is aprotic. These favor SN2.",
+  "question_image": "images/P032_q.png",
+  "answer_image": "images/P032_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CC[C@@H](I)CCC",
+   "product": "CCC[C@H](CC)N=[N+]=[N-]"
+  }
+ },
+ {
+  "id": "P033",
+  "type": "Stereochemistry",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "Draw the product of (R)-2-bromohexane with NaI in acetone. Give the configuration (R or S) of the substrate and the product and explain the stereochemical outcome.",
+  "answer": "(S)-2-iodohexane: inversion of configuration (R → S).",
+  "explanation": "SN2 proceeds by back-side attack, so the α carbon inverts like an umbrella in the wind. Note that the R/S label changes only if the CIP priorities keep the same order; the geometry always inverts. Substrate: secondary (2°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: iodide is a strong nucleophile and a weak base; Solvent: acetone is aprotic. These favor SN2.",
+  "question_image": "images/P033_q.png",
+  "answer_image": "images/P033_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCCC[C@@H](C)Br",
+   "product": "CCCC[C@H](C)I"
+  }
+ },
+ {
+  "id": "P034",
+  "type": "Stereochemistry",
+  "mechanism": "SN1",
+  "difficulty": 3,
+  "question": "(R)-3-bromo-3-methylhexane reacts with MeOH as the solvent. Draw the product(s), including stereochemistry, and explain why the result differs from an SN2 reaction.",
+  "answer": "Both enantiomers form: (S)-3-methoxy-3-methylhexane (inversion, slightly in excess because of ion pairing) and (R)-3-methoxy-3-methylhexane (retention).",
+  "explanation": "The leaving group departs first to give a planar carbocation, which the solvent attacks from either face, so the stereocenter racemizes. Substrate: tertiary (3°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: methanol is a weak nucleophile and a weak base; Solvent: MeOH is protic. These favor SN1. Competing pathway: E1 (minor; favored by heat).",
+  "question_image": "images/P034_q.png",
+  "answer_image": "images/P034_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCC[C@](C)(Br)CC",
+   "product_inversion": "CCC[C@](C)(CC)OC",
+   "product_retention": "CCC[C@@](C)(CC)OC"
+  }
+ },
+ {
+  "id": "P035",
+  "type": "Stereochemistry",
+  "mechanism": "SN1",
+  "difficulty": 3,
+  "question": "(S)-3-chloro-3-methylhexane reacts with EtOH as the solvent. Draw the product(s), including stereochemistry, and explain why the result differs from an SN2 reaction.",
+  "answer": "Both enantiomers form: (R)-3-ethoxy-3-methylhexane (inversion, slightly in excess because of ion pairing) and (S)-3-ethoxy-3-methylhexane (retention).",
+  "explanation": "The leaving group departs first to give a planar carbocation, which the solvent attacks from either face, so the stereocenter racemizes. Substrate: tertiary (3°) alkyl halide; Leaving group: good leaving group (Cl); Nucleophile/base: ethanol is a weak nucleophile and a weak base; Solvent: EtOH is protic. These favor SN1. Competing pathway: E1 (minor; favored by heat).",
+  "question_image": "images/P035_q.png",
+  "answer_image": "images/P035_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CC[C@](C)(Cl)CCC",
+   "product_inversion": "CCC[C@@](C)(CC)OCC",
+   "product_retention": "CCC[C@](C)(CC)OCC"
+  }
+ },
+ {
+  "id": "P036",
+  "type": "Stereochemistry",
+  "mechanism": "SN1",
+  "difficulty": 3,
+  "question": "(S)-3-bromo-3-methylhexane reacts with H₂O as the solvent. Draw the product(s), including stereochemistry, and explain why the result differs from an SN2 reaction.",
+  "answer": "Both enantiomers form: (R)-3-methylhexan-3-ol (inversion, slightly in excess because of ion pairing) and (S)-3-methylhexan-3-ol (retention).",
+  "explanation": "The leaving group departs first to give a planar carbocation, which the solvent attacks from either face, so the stereocenter racemizes. Substrate: tertiary (3°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: water is a weak nucleophile and a weak base; Solvent: H2O is protic. These favor SN1. Competing pathway: E1 (minor; favored by heat).",
+  "question_image": "images/P036_q.png",
+  "answer_image": "images/P036_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCC[C@@](C)(Br)CC",
+   "product_inversion": "CCC[C@](C)(O)CC",
+   "product_retention": "CCC[C@@](C)(O)CC"
+  }
+ },
+ {
+  "id": "P037",
+  "type": "Stereochemistry",
+  "mechanism": "E2",
+  "difficulty": 3,
+  "question": "(S)-2-bromobutane is treated with NaOEt in EtOH. What is the major product? Does the stereocenter of the starting material appear in the product?",
+  "answer": "(E)-but-2-ene (Zaitsev, trans); the product has no stereocenter, so the configuration of the substrate is lost.",
+  "explanation": "Substrate: secondary (2°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: ethoxide is a strong nucleophile and a strong base; Solvent: EtOH is protic. These favor E2. Competing pathway: SN1/E1 do not compete under strongly basic conditions. Anti-periplanar elimination; the more stable trans (E) alkene predominates.",
+  "question_image": "images/P037_q.png",
+  "answer_image": "images/P037_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {}
+ },
+ {
+  "id": "P038",
+  "type": "Draw the mechanism",
+  "mechanism": "SN2",
+  "difficulty": 3,
+  "question": "Describe the complete mechanism (list each step and the curved arrows) for the reaction of bromoethane with NaN₃ in DMF. How many steps are there?",
+  "answer": "(1) One concerted step: the nucleophile attacks the α carbon from the back side while the leaving group departs (inversion).",
+  "explanation": "Each ionic mechanism is built from nucleophilic attack, loss of a leaving group, proton transfer and rearrangement. Substrate: primary (1°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: azide is a strong nucleophile and a weak base; Solvent: DMF is aprotic. These favor SN2.",
+  "question_image": "images/P038_q.png",
+  "answer_image": "images/P038_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCBr",
+   "product": "CCN=[N+]=[N-]"
+  }
+ },
+ {
+  "id": "P039",
+  "type": "Draw the mechanism",
+  "mechanism": "SN2",
+  "difficulty": 3,
+  "question": "Describe the complete mechanism (list each step and the curved arrows) for the reaction of 1-bromopropane with NaOMe in MeOH. How many steps are there?",
+  "answer": "(1) One concerted step: the nucleophile attacks the α carbon from the back side while the leaving group departs (inversion).",
+  "explanation": "Each ionic mechanism is built from nucleophilic attack, loss of a leaving group, proton transfer and rearrangement. Substrate: primary (1°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: methoxide is a strong nucleophile and a strong base; Solvent: MeOH is protic. These favor SN2. Competing pathway: E2 (minor).",
+  "question_image": "images/P039_q.png",
+  "answer_image": "images/P039_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCCBr",
+   "product": "CCCOC"
+  }
+ },
+ {
+  "id": "P040",
+  "type": "Draw the mechanism",
+  "mechanism": "SN1",
+  "difficulty": 3,
+  "question": "Describe the complete mechanism (list each step and the curved arrows) for the reaction of 2-bromo-2-methylpropane with H₂O as the solvent. How many steps are there?",
+  "answer": "(1) Loss of the leaving group gives a planar carbocation (rate-determining step). (2) Nucleophilic attack on the carbocation (either face). (3) Proton transfer removes the positive charge from the oxonium ion.",
+  "explanation": "Each ionic mechanism is built from nucleophilic attack, loss of a leaving group, proton transfer and rearrangement. Substrate: tertiary (3°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: water is a weak nucleophile and a weak base; Solvent: H2O is protic. These favor SN1. Competing pathway: E1 (minor; favored by heat).",
+  "question_image": "images/P040_q.png",
+  "answer_image": "images/P040_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CC(C)(C)Br",
+   "product": "CC(C)(C)O"
+  }
+ },
+ {
+  "id": "P041",
+  "type": "Draw the mechanism",
+  "mechanism": "SN1",
+  "difficulty": 3,
+  "question": "Describe the complete mechanism (list each step and the curved arrows) for the reaction of 2-chloro-2-methylbutane with EtOH as the solvent. How many steps are there?",
+  "answer": "(1) Loss of the leaving group gives a planar carbocation (rate-determining step). (2) Nucleophilic attack on the carbocation (either face). (3) Proton transfer removes the positive charge from the oxonium ion.",
+  "explanation": "Each ionic mechanism is built from nucleophilic attack, loss of a leaving group, proton transfer and rearrangement. Substrate: tertiary (3°) alkyl halide; Leaving group: good leaving group (Cl); Nucleophile/base: ethanol is a weak nucleophile and a weak base; Solvent: EtOH is protic. These favor SN1. Competing pathway: E1 (minor; favored by heat).",
+  "question_image": "images/P041_q.png",
+  "answer_image": "images/P041_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCC(C)(C)Cl",
+   "product": "CCOC(C)(C)CC"
+  }
+ },
+ {
+  "id": "P042",
+  "type": "Draw the mechanism",
+  "mechanism": "E2",
+  "difficulty": 3,
+  "question": "Describe the complete mechanism (list each step and the curved arrows) for the reaction of 2-bromobutane with NaOEt in EtOH. How many steps are there?",
+  "answer": "(1) One concerted step: the base removes a β hydrogen (anti to the leaving group) as the π bond forms and the leaving group departs.",
+  "explanation": "Each ionic mechanism is built from nucleophilic attack, loss of a leaving group, proton transfer and rearrangement. Substrate: secondary (2°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: ethoxide is a strong nucleophile and a strong base; Solvent: EtOH is protic. These favor E2. Competing pathway: SN1/E1 do not compete under strongly basic conditions.",
+  "question_image": "images/P042_q.png",
+  "answer_image": "images/P042_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CCC(C)Br",
+   "product": "C/C=C/C"
+  }
+ },
+ {
+  "id": "P043",
+  "type": "Draw the mechanism",
+  "mechanism": "SN2",
+  "difficulty": 3,
+  "question": "Describe the complete mechanism (list each step and the curved arrows) for the reaction of 2-bromobutane with NaSH in DMSO. How many steps are there?",
+  "answer": "(1) One concerted step: the nucleophile attacks the α carbon from the back side while the leaving group departs (inversion).",
+  "explanation": "Each ionic mechanism is built from nucleophilic attack, loss of a leaving group, proton transfer and rearrangement. Substrate: secondary (2°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: hydrosulfide is a strong nucleophile and a weak base; Solvent: DMSO is aprotic. These favor SN2.",
+  "question_image": "images/P043_q.png",
+  "answer_image": "images/P043_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCC(C)Br",
+   "product": "CCC(C)S"
+  }
+ },
+ {
+  "id": "P044",
+  "type": "Draw the mechanism",
+  "mechanism": "SN2",
+  "difficulty": 3,
+  "question": "Describe the complete mechanism (list each step and the curved arrows) for the reaction of 1-bromo-2,2-dimethylpropane with EtOH as the solvent. How many steps are there?",
+  "answer": "(1) One concerted step: the nucleophile attacks the α carbon from the back side while the leaving group departs (inversion). (2) Proton transfer: a base removes the proton from the positively charged nucleophile atom.",
+  "explanation": "Each ionic mechanism is built from nucleophilic attack, loss of a leaving group, proton transfer and rearrangement. Substrate: primary (1°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: ethanol is a weak nucleophile and a weak base; Solvent: EtOH is protic. These favor SN2. Competing pathway: none significant (slow solvolysis).",
+  "question_image": "images/P044_q.png",
+  "answer_image": "images/P044_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CC(C)(C)CBr",
+   "product": "CCOCC(C)(C)C"
+  }
+ },
+ {
+  "id": "P045",
+  "type": "Draw the mechanism",
+  "mechanism": "SN1",
+  "difficulty": 3,
+  "question": "Describe the complete mechanism (list each step and the curved arrows) for the reaction of 2-bromo-2-methylbutane with MeOH as the solvent. How many steps are there?",
+  "answer": "(1) Loss of the leaving group gives a planar carbocation (rate-determining step). (2) Nucleophilic attack on the carbocation (either face). (3) Proton transfer removes the positive charge from the oxonium ion.",
+  "explanation": "Each ionic mechanism is built from nucleophilic attack, loss of a leaving group, proton transfer and rearrangement. Substrate: tertiary (3°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: methanol is a weak nucleophile and a weak base; Solvent: MeOH is protic. These favor SN1. Competing pathway: E1 (minor; favored by heat).",
+  "question_image": "images/P045_q.png",
+  "answer_image": "images/P045_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCC(C)(C)Br",
+   "product": "CCC(C)(C)OC"
+  }
+ },
+ {
+  "id": "P046",
+  "type": "What went wrong",
+  "mechanism": "SN2/E2",
+  "difficulty": 2,
+  "question": "A student predicts an SN2 reaction to give a nitrile. Reaction: 2-bromo-2-methylpropane + NaCN in DMSO. Explain what is wrong and give the correct outcome.",
+  "answer": "No SN2: a tertiary carbon is too hindered for back-side attack. Cyanide is a weak base but the only feasible path is E2, giving 2-methylpropene (isobutylene).",
+  "explanation": "Apply the four factors in order: substrate, nucleophile/base, leaving group, solvent.",
+  "question_image": "images/P046_q.png",
+  "answer_image": "images/P046_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CC(C)(C)Br"
+  }
+ },
+ {
+  "id": "P047",
+  "type": "What went wrong",
+  "mechanism": "SN2/E2",
+  "difficulty": 2,
+  "question": "A student says a primary halide always reacts quickly by SN2. Reaction: 1-bromo-2,2-dimethylpropane + NaOH in DMSO. Explain what is wrong and give the correct outcome.",
+  "answer": "Neopentyl bromide is primary but the three β methyl groups block back-side attack; SN2 is extremely slow (like a tertiary substrate). The primary carbocation is also too unstable for SN1.",
+  "explanation": "Apply the four factors in order: substrate, nucleophile/base, leaving group, solvent.",
+  "question_image": "images/P047_q.png",
+  "answer_image": null,
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CC(C)(C)CBr"
+  }
+ },
+ {
+  "id": "P048",
+  "type": "What went wrong",
+  "mechanism": "SN2/E2",
+  "difficulty": 2,
+  "question": "A student predicts substitution to give vinyl alcohol. Reaction: bromoethene (vinyl bromide) + NaOH in DMSO. Explain what is wrong and give the correct outcome.",
+  "answer": "Vinyl halides do not react by SN2 (sp² carbon, back side blocked) or SN1 (unstable vinyl cation). No substitution occurs.",
+  "explanation": "Apply the four factors in order: substrate, nucleophile/base, leaving group, solvent.",
+  "question_image": "images/P048_q.png",
+  "answer_image": null,
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "C=CBr"
+  }
+ },
+ {
+  "id": "P049",
+  "type": "What went wrong",
+  "mechanism": "SN2/E2",
+  "difficulty": 2,
+  "question": "A student predicts benzonitrile. Reaction: bromobenzene + NaCN in DMSO. Explain what is wrong and give the correct outcome.",
+  "answer": "Aryl halides do not undergo SN2 or SN1: back-side attack is impossible and the phenyl cation is unstable. No reaction under these conditions.",
+  "explanation": "Apply the four factors in order: substrate, nucleophile/base, leaving group, solvent.",
+  "question_image": "images/P049_q.png",
+  "answer_image": null,
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "Brc1ccccc1"
+  }
+ },
+ {
+  "id": "P050",
+  "type": "What went wrong",
+  "mechanism": "SN2/E2",
+  "difficulty": 2,
+  "question": "A student predicts 1-bromobutane. Reaction: butan-1-ol + NaBr in DMF. Explain what is wrong and give the correct outcome.",
+  "answer": "Hydroxide is a poor leaving group (strong base), so bromide cannot displace it. The OH must first be protonated (HBr) or converted to a tosylate or bromide with PBr₃.",
+  "explanation": "Apply the four factors in order: substrate, nucleophile/base, leaving group, solvent.",
+  "question_image": "images/P050_q.png",
+  "answer_image": null,
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCCCO"
+  }
+ },
+ {
+  "id": "P051",
+  "type": "What went wrong",
+  "mechanism": "SN2/E2",
+  "difficulty": 2,
+  "question": "A student predicts the ether 2-ethoxybutane by SN2. Reaction: 2-bromobutane + NaOEt in EtOH. Explain what is wrong and give the correct outcome.",
+  "answer": "Ethoxide is a strong base and the substrate is secondary, so E2 predominates: (E)-but-2-ene is the major product with some but-1-ene.",
+  "explanation": "Apply the four factors in order: substrate, nucleophile/base, leaving group, solvent.",
+  "question_image": "images/P051_q.png",
+  "answer_image": "images/P051_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCC(C)Br"
+  }
+ },
+ {
+  "id": "P052",
+  "type": "What went wrong",
+  "mechanism": "SN2/E2",
+  "difficulty": 2,
+  "question": "A student predicts butanenitrile. Reaction: 1-fluoropropane + NaCN in DMSO. Explain what is wrong and give the correct outcome.",
+  "answer": "Fluoride is a poor leaving group (conjugate base of a weak acid, HF), so no SN2 reaction occurs at a useful rate.",
+  "explanation": "Apply the four factors in order: substrate, nucleophile/base, leaving group, solvent.",
+  "question_image": "images/P052_q.png",
+  "answer_image": null,
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCCF"
+  }
+ },
+ {
+  "id": "P053",
+  "type": "Compare two conditions",
+  "mechanism": "SN2 vs E2",
+  "difficulty": 3,
+  "question": "2-bromopropane is treated under two different conditions: (a) NaCN in DMSO; (b) NaOEt in EtOH with heat. For each, name the mechanism and the major product.",
+  "answer": "(a) SN2: 2-methylpropanenitrile. (b) E2: prop-1-ene.",
+  "explanation": "(a) Substrate: secondary (2°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: cyanide is a strong nucleophile and a weak base; Solvent: DMSO is aprotic. These favor SN2. (b) Substrate: secondary (2°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: ethoxide is a strong nucleophile and a strong base; Solvent: EtOH is protic. These favor E2.",
+  "question_image": "images/P053_q.png",
+  "answer_image": "images/P053_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CC(C)Br",
+   "product_a": "CC(C)C#N",
+   "product_b": "C=CC"
+  }
+ },
+ {
+  "id": "P054",
+  "type": "Compare two conditions",
+  "mechanism": "SN1 vs E2",
+  "difficulty": 3,
+  "question": "2-bromo-2-methylbutane is treated under two different conditions: (a) EtOH in EtOH; (b) NaOEt in EtOH with heat. For each, name the mechanism and the major product.",
+  "answer": "(a) SN1: 2-ethoxy-2-methylbutane. (b) E2: 2-methylbut-2-ene.",
+  "explanation": "(a) Substrate: tertiary (3°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: ethanol is a weak nucleophile and a weak base; Solvent: EtOH is protic. These favor SN1. (b) Substrate: tertiary (3°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: ethoxide is a strong nucleophile and a strong base; Solvent: EtOH is protic. These favor E2.",
+  "question_image": "images/P054_q.png",
+  "answer_image": "images/P054_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CCC(C)(C)Br",
+   "product_a": "CCOC(C)(C)CC",
+   "product_b": "CC=C(C)C"
+  }
+ },
+ {
+  "id": "P055",
+  "type": "Compare two conditions",
+  "mechanism": "SN2 vs E2",
+  "difficulty": 3,
+  "question": "1-bromopropane is treated under two different conditions: (a) NaOEt in EtOH; (b) KOtBu in tBuOH. For each, name the mechanism and the major product.",
+  "answer": "(a) SN2: 1-ethoxypropane. (b) E2: prop-1-ene.",
+  "explanation": "(a) Substrate: primary (1°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: ethoxide is a strong nucleophile and a strong base; Solvent: EtOH is protic. These favor SN2. (b) Substrate: primary (1°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: tert-butoxide is a strong nucleophile and a strong base (bulky); Solvent: tBuOH is protic. These favor E2.",
+  "question_image": "images/P055_q.png",
+  "answer_image": "images/P055_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CCCBr",
+   "product_a": "CCCOCC",
+   "product_b": "C=CC"
+  }
+ },
+ {
+  "id": "P056",
+  "type": "Compare two conditions",
+  "mechanism": "SN2 vs E2",
+  "difficulty": 3,
+  "question": "2-bromobutane is treated under two different conditions: (a) NaN₃ in DMF; (b) KOtBu in tBuOH. For each, name the mechanism and the major product.",
+  "answer": "(a) SN2: 2-azidobutane. (b) E2: but-1-ene.",
+  "explanation": "(a) Substrate: secondary (2°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: azide is a strong nucleophile and a weak base; Solvent: DMF is aprotic. These favor SN2. (b) Substrate: secondary (2°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: tert-butoxide is a strong nucleophile and a strong base (bulky); Solvent: tBuOH is protic. These favor E2.",
+  "question_image": "images/P056_q.png",
+  "answer_image": "images/P056_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CCC(C)Br",
+   "product_a": "CCC(C)N=[N+]=[N-]",
+   "product_b": "C=CCC"
+  }
+ },
+ {
+  "id": "P057",
+  "type": "Compare two conditions",
+  "mechanism": "SN1 vs E2",
+  "difficulty": 3,
+  "question": "2-bromo-2-methylpropane is treated under two different conditions: (a) H₂O in H2O; (b) NaOH in EtOH with heat. For each, name the mechanism and the major product.",
+  "answer": "(a) SN1: 2-methylpropan-2-ol. (b) E2: 2-methylprop-1-ene.",
+  "explanation": "(a) Substrate: tertiary (3°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: water is a weak nucleophile and a weak base; Solvent: H2O is protic. These favor SN1. (b) Substrate: tertiary (3°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: hydroxide is a strong nucleophile and a strong base; Solvent: EtOH is protic. These favor E2.",
+  "question_image": "images/P057_q.png",
+  "answer_image": "images/P057_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CC(C)(C)Br",
+   "product_a": "CC(C)(C)O",
+   "product_b": "C=C(C)C"
+  }
+ },
+ {
+  "id": "P058",
+  "type": "Compare two conditions",
+  "mechanism": "SN2 vs E2",
+  "difficulty": 3,
+  "question": "bromocyclohexane is treated under two different conditions: (a) NaSH in DMSO; (b) NaOMe in MeOH with heat. For each, name the mechanism and the major product.",
+  "answer": "(a) SN2: SC1CCCCC1. (b) E2: cyclohexene.",
+  "explanation": "(a) Substrate: secondary (2°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: hydrosulfide is a strong nucleophile and a weak base; Solvent: DMSO is aprotic. These favor SN2. (b) Substrate: secondary (2°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: methoxide is a strong nucleophile and a strong base; Solvent: MeOH is protic. These favor E2.",
+  "question_image": "images/P058_q.png",
+  "answer_image": "images/P058_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "C1CCCCC1Br",
+   "product_a": "SC1CCCCC1",
+   "product_b": "C1=CCCCC1"
+  }
+ },
+ {
+  "id": "P059",
+  "type": "Functional group conversion",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "Propose reagents to convert (S)-butan-2-ol into (R)-2-bromobutane. Explain why the OH group cannot simply be displaced, and state the stereochemical outcome if there is a stereocenter.",
+  "answer": "PBr3 (SN2). Inversion at the stereocenter.",
+  "explanation": "Hydroxide is a bad leaving group, so the OH must be activated first: protonated by HX (SN1 for tertiary, SN2 for primary), or converted to a tosylate (TsCl/pyridine) or halide (PBr₃, SOCl₂) for SN2. Tosylate formation does not touch the stereocenter, so one inversion occurs in the substitution step.",
+  "question_image": "images/P059_q.png",
+  "answer_image": "images/P059_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "C[C@H](O)CC",
+   "product": "CC[C@@H](C)Br"
+  }
+ },
+ {
+  "id": "P060",
+  "type": "Functional group conversion",
+  "mechanism": "SN1",
+  "difficulty": 2,
+  "question": "Propose reagents to convert 2-methylpropan-2-ol into 2-bromo-2-methylpropane. Explain why the OH group cannot simply be displaced, and state the stereochemical outcome if there is a stereocenter.",
+  "answer": "HBr (SN1).",
+  "explanation": "Hydroxide is a bad leaving group, so the OH must be activated first: protonated by HX (SN1 for tertiary, SN2 for primary), or converted to a tosylate (TsCl/pyridine) or halide (PBr₃, SOCl₂) for SN2. Tosylate formation does not touch the stereocenter, so one inversion occurs in the substitution step.",
+  "question_image": "images/P060_q.png",
+  "answer_image": "images/P060_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CC(C)(C)O",
+   "product": "CC(C)(C)Br"
+  }
+ },
+ {
+  "id": "P061",
+  "type": "Functional group conversion",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "Propose reagents to convert butan-1-ol into 1-bromobutane. Explain why the OH group cannot simply be displaced, and state the stereochemical outcome if there is a stereocenter.",
+  "answer": "HBr (SN2).",
+  "explanation": "Hydroxide is a bad leaving group, so the OH must be activated first: protonated by HX (SN1 for tertiary, SN2 for primary), or converted to a tosylate (TsCl/pyridine) or halide (PBr₃, SOCl₂) for SN2. Tosylate formation does not touch the stereocenter, so one inversion occurs in the substitution step.",
+  "question_image": "images/P061_q.png",
+  "answer_image": "images/P061_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCCCO",
+   "product": "CCCCBr"
+  }
+ },
+ {
+  "id": "P062",
+  "type": "Functional group conversion",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "Propose reagents to convert propan-2-ol into 2-chloropropane. Explain why the OH group cannot simply be displaced, and state the stereochemical outcome if there is a stereocenter.",
+  "answer": "SOCl2, pyridine (SN2).",
+  "explanation": "Hydroxide is a bad leaving group, so the OH must be activated first: protonated by HX (SN1 for tertiary, SN2 for primary), or converted to a tosylate (TsCl/pyridine) or halide (PBr₃, SOCl₂) for SN2. Tosylate formation does not touch the stereocenter, so one inversion occurs in the substitution step.",
+  "question_image": "images/P062_q.png",
+  "answer_image": "images/P062_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CC(C)O",
+   "product": "CC(C)Cl"
+  }
+ },
+ {
+  "id": "P063",
+  "type": "Functional group conversion",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "Propose reagents to convert (R)-pentan-2-ol into (S)-2-methylpentanenitrile. Explain why the OH group cannot simply be displaced, and state the stereochemical outcome if there is a stereocenter.",
+  "answer": "TsCl, pyridine; then NaCN, DMSO (SN2). Inversion at the stereocenter.",
+  "explanation": "Hydroxide is a bad leaving group, so the OH must be activated first: protonated by HX (SN1 for tertiary, SN2 for primary), or converted to a tosylate (TsCl/pyridine) or halide (PBr₃, SOCl₂) for SN2. Tosylate formation does not touch the stereocenter, so one inversion occurs in the substitution step.",
+  "question_image": "images/P063_q.png",
+  "answer_image": "images/P063_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "C[C@@H](O)CCC",
+   "product": "CCC[C@H](C)C#N"
+  }
+ },
+ {
+  "id": "P064",
+  "type": "Functional group conversion",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "Propose reagents to convert butan-1-ol into 1-azidobutane. Explain why the OH group cannot simply be displaced, and state the stereochemical outcome if there is a stereocenter.",
+  "answer": "TsCl, pyridine; then NaN3, DMF (SN2).",
+  "explanation": "Hydroxide is a bad leaving group, so the OH must be activated first: protonated by HX (SN1 for tertiary, SN2 for primary), or converted to a tosylate (TsCl/pyridine) or halide (PBr₃, SOCl₂) for SN2. Tosylate formation does not touch the stereocenter, so one inversion occurs in the substitution step.",
+  "question_image": "images/P064_q.png",
+  "answer_image": "images/P064_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCCCO",
+   "product": "CCCCN=[N+]=[N-]"
+  }
+ },
+ {
+  "id": "P065",
+  "type": "Carbocation rearrangement",
+  "mechanism": "SN1",
+  "difficulty": 3,
+  "question": "Will 2-bromo-3-methylbutane rearrange when heated in EtOH? Show the carbocation that forms, the shift involved, and the major substitution product.",
+  "answer": "Yes: hydride shift converts the initial cation into a more stable tertiary cation; major product 2-ethoxy-2-methylbutane.",
+  "explanation": "(1) Loss of the leaving group gives a planar carbocation (rate-determining step). (2) Carbocation rearrangement (hydride shift) gives a more stable carbocation. (3) Nucleophilic attack on the carbocation (either face). (4) Proton transfer removes the positive charge from the oxonium ion. Substrate: secondary (2°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: ethanol is a weak nucleophile and a weak base; Solvent: EtOH is protic. These favor SN1.",
+  "question_image": "images/P065_q.png",
+  "answer_image": "images/P065_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CC(C)C(C)Br",
+   "product": "CCOC(C)(C)CC"
+  }
+ },
+ {
+  "id": "P066",
+  "type": "Carbocation rearrangement",
+  "mechanism": "SN2",
+  "difficulty": 3,
+  "question": "Will 1-bromo-2,2-dimethylpropane rearrange when heated in EtOH? Show the carbocation that forms, the shift involved, and the major substitution product.",
+  "answer": "Yes: methyl shift converts the initial cation into a more stable tertiary cation; major product 1-ethoxy-2,2-dimethylpropane.",
+  "explanation": "(1) One concerted step: the nucleophile attacks the α carbon from the back side while the leaving group departs (inversion). (2) Proton transfer: a base removes the proton from the positively charged nucleophile atom. Substrate: primary (1°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: ethanol is a weak nucleophile and a weak base; Solvent: EtOH is protic. These favor SN2.",
+  "question_image": "images/P066_q.png",
+  "answer_image": "images/P066_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CC(C)(C)CBr",
+   "product": "CCOCC(C)(C)C"
+  }
+ },
+ {
+  "id": "P067",
+  "type": "Carbocation rearrangement",
+  "mechanism": "SN1",
+  "difficulty": 3,
+  "question": "Will 3-bromo-2,2-dimethylbutane rearrange when heated in MeOH? Show the carbocation that forms, the shift involved, and the major substitution product.",
+  "answer": "Yes: methyl shift converts the initial cation into a more stable tertiary cation; major product 2-methoxy-2,3-dimethylbutane.",
+  "explanation": "(1) Loss of the leaving group gives a planar carbocation (rate-determining step). (2) Carbocation rearrangement (methyl shift) gives a more stable carbocation. (3) Nucleophilic attack on the carbocation (either face). (4) Proton transfer removes the positive charge from the oxonium ion. Substrate: secondary (2°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: methanol is a weak nucleophile and a weak base; Solvent: MeOH is protic. These favor SN1.",
+  "question_image": "images/P067_q.png",
+  "answer_image": "images/P067_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CC(C)(C)C(C)Br",
+   "product": "COC(C)(C)C(C)C"
+  }
+ },
+ {
+  "id": "P068",
+  "type": "Carbocation rearrangement",
+  "mechanism": "SN1",
+  "difficulty": 3,
+  "question": "Will 2-bromo-3-methylpentane rearrange when heated in MeOH? Show the carbocation that forms, the shift involved, and the major substitution product.",
+  "answer": "Yes: hydride shift converts the initial cation into a more stable tertiary cation; major product 3-methoxy-3-methylpentane.",
+  "explanation": "(1) Loss of the leaving group gives a planar carbocation (rate-determining step). (2) Carbocation rearrangement (hydride shift) gives a more stable carbocation. (3) Nucleophilic attack on the carbocation (either face). (4) Proton transfer removes the positive charge from the oxonium ion. Substrate: secondary (2°) alkyl halide; Leaving group: good leaving group (Br); Nucleophile/base: methanol is a weak nucleophile and a weak base; Solvent: MeOH is protic. These favor SN1.",
+  "question_image": "images/P068_q.png",
+  "answer_image": "images/P068_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "CCC(C)C(C)Br",
+   "product": "CCC(C)(CC)OC"
+  }
+ },
+ {
+  "id": "P069",
+  "type": "Carbocation rearrangement",
+  "mechanism": "E1",
+  "difficulty": 3,
+  "question": "Predict the major alkene from heating 3-methylbutan-2-ol with H₂SO₄. Explain the rearrangement.",
+  "answer": "2-methylbut-2-ene via E1 after a hydride shift.",
+  "explanation": "(1) Proton transfer: the acid protonates the OH group. (2) Loss of water gives a carbocation (rate-determining step). (3) Carbocation rearrangement (hydride shift) gives a more stable carbocation. (4) A base (water or HSO₄⁻) removes a β hydrogen next to the cation, forming the alkene. Zaitsev elimination from the rearranged tertiary cation.",
+  "question_image": "images/P069_q.png",
+  "answer_image": "images/P069_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CC(C)C(C)O",
+   "product": "CC=C(C)C"
+  }
+ },
+ {
+  "id": "P070",
+  "type": "Elimination (E1)",
+  "mechanism": "E1",
+  "difficulty": 2,
+  "question": "What happens when 2-methylpropan-2-ol is heated with concentrated H₂SO₄? Give the major product, name the mechanism and explain why the OH must be protonated first.",
+  "answer": "2-methylprop-1-ene via E1.",
+  "explanation": "(1) Proton transfer: the acid protonates the OH group. (2) Loss of water gives a carbocation (rate-determining step). (3) A base (water or HSO₄⁻) removes a β hydrogen next to the cation, forming the alkene.",
+  "question_image": "images/P070_q.png",
+  "answer_image": "images/P070_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CC(C)(C)O",
+   "product": "C=C(C)C"
+  }
+ },
+ {
+  "id": "P071",
+  "type": "Elimination (E1)",
+  "mechanism": "E1",
+  "difficulty": 2,
+  "question": "What happens when 2-methylbutan-2-ol is heated with concentrated H₂SO₄? Give the major product, name the mechanism and explain why the OH must be protonated first.",
+  "answer": "2-methylbut-2-ene via E1 (Zaitsev).",
+  "explanation": "(1) Proton transfer: the acid protonates the OH group. (2) Loss of water gives a carbocation (rate-determining step). (3) A base (water or HSO₄⁻) removes a β hydrogen next to the cation, forming the alkene.",
+  "question_image": "images/P071_q.png",
+  "answer_image": "images/P071_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CCC(C)(C)O",
+   "product": "CC=C(C)C"
+  }
+ },
+ {
+  "id": "P072",
+  "type": "Elimination (E1)",
+  "mechanism": "E1",
+  "difficulty": 2,
+  "question": "What happens when 1-methylcyclohexan-1-ol is heated with concentrated H₂SO₄? Give the major product, name the mechanism and explain why the OH must be protonated first.",
+  "answer": "1-methylcyclohexene via E1 (Zaitsev).",
+  "explanation": "(1) Proton transfer: the acid protonates the OH group. (2) Loss of water gives a carbocation (rate-determining step). (3) A base (water or HSO₄⁻) removes a β hydrogen next to the cation, forming the alkene.",
+  "question_image": "images/P072_q.png",
+  "answer_image": "images/P072_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CC1(O)CCCCC1",
+   "product": "CC1=CCCCC1"
+  }
+ },
+ {
+  "id": "P073",
+  "type": "Elimination (E1)",
+  "mechanism": "E1",
+  "difficulty": 2,
+  "question": "What happens when butan-2-ol is heated with concentrated H₂SO₄? Give the major product, name the mechanism and explain why the OH must be protonated first.",
+  "answer": "(E)-but-2-ene via E1 (Zaitsev).",
+  "explanation": "(1) Proton transfer: the acid protonates the OH group. (2) Loss of water gives a carbocation (rate-determining step). (3) A base (water or HSO₄⁻) removes a β hydrogen next to the cation, forming the alkene.",
+  "question_image": "images/P073_q.png",
+  "answer_image": "images/P073_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CCC(C)O",
+   "product": "C/C=C/C"
+  }
+ },
+ {
+  "id": "P074",
+  "type": "Regiochemistry of elimination",
+  "mechanism": "E2",
+  "difficulty": 3,
+  "question": "Starting from 2-bromo-2-methylbutane, choose reagents to make (a) the more substituted alkene and (b) the less substituted alkene. Give both products.",
+  "answer": "(a) NaOEt/EtOH (small base, Zaitsev): 2-methylbut-2-ene. (b) KOtBu/tBuOH (bulky base, Hofmann): 2-methylbut-1-ene.",
+  "explanation": "A small base removes the β hydrogen that leads to the more stable, more substituted alkene (Zaitsev). A bulky base removes the more accessible, less hindered hydrogen (Hofmann).",
+  "question_image": "images/P074_q.png",
+  "answer_image": "images/P074_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CCC(C)(C)Br",
+   "zaitsev": "CC=C(C)C",
+   "hofmann": "C=C(C)CC"
+  }
+ },
+ {
+  "id": "P075",
+  "type": "Regiochemistry of elimination",
+  "mechanism": "E2",
+  "difficulty": 3,
+  "question": "Starting from 2-bromobutane, choose reagents to make (a) the more substituted alkene and (b) the less substituted alkene. Give both products.",
+  "answer": "(a) NaOEt/EtOH (small base, Zaitsev): (E)-but-2-ene. (b) KOtBu/tBuOH (bulky base, Hofmann): but-1-ene.",
+  "explanation": "A small base removes the β hydrogen that leads to the more stable, more substituted alkene (Zaitsev). A bulky base removes the more accessible, less hindered hydrogen (Hofmann).",
+  "question_image": "images/P075_q.png",
+  "answer_image": "images/P075_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CCC(C)Br",
+   "zaitsev": "C/C=C/C",
+   "hofmann": "C=CCC"
+  }
+ },
+ {
+  "id": "P076",
+  "type": "Regiochemistry of elimination",
+  "mechanism": "E2",
+  "difficulty": 3,
+  "question": "Starting from 2-bromopentane, choose reagents to make (a) the more substituted alkene and (b) the less substituted alkene. Give both products.",
+  "answer": "(a) NaOEt/EtOH (small base, Zaitsev): (E)-pent-2-ene. (b) KOtBu/tBuOH (bulky base, Hofmann): pent-1-ene.",
+  "explanation": "A small base removes the β hydrogen that leads to the more stable, more substituted alkene (Zaitsev). A bulky base removes the more accessible, less hindered hydrogen (Hofmann).",
+  "question_image": "images/P076_q.png",
+  "answer_image": "images/P076_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CCCC(C)Br",
+   "zaitsev": "C/C=C/CC",
+   "hofmann": "C=CCCC"
+  }
+ },
+ {
+  "id": "P077",
+  "type": "Regiochemistry of elimination",
+  "mechanism": "E2",
+  "difficulty": 3,
+  "question": "Starting from 1-bromo-1-methylcyclohexane, choose reagents to make (a) the more substituted alkene and (b) the less substituted alkene. Give both products.",
+  "answer": "(a) NaOEt/EtOH (small base, Zaitsev): 1-methylcyclohexene. (b) KOtBu/tBuOH (bulky base, Hofmann): methylenecyclohexane.",
+  "explanation": "A small base removes the β hydrogen that leads to the more stable, more substituted alkene (Zaitsev). A bulky base removes the more accessible, less hindered hydrogen (Hofmann).",
+  "question_image": "images/P077_q.png",
+  "answer_image": "images/P077_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CC1(Br)CCCCC1",
+   "zaitsev": "CC1=CCCCC1",
+   "hofmann": "C=C1CCCCC1"
+  }
+ },
+ {
+  "id": "P078",
+  "type": "Regiochemistry of elimination",
+  "mechanism": "E2",
+  "difficulty": 3,
+  "question": "Starting from 3-bromo-3-methylpentane, choose reagents to make (a) the more substituted alkene and (b) the less substituted alkene. Give both products.",
+  "answer": "(a) NaOEt/EtOH (small base, Zaitsev): 3-methylpent-2-ene. (b) KOtBu/tBuOH (bulky base, Hofmann): 2-ethylbut-1-ene.",
+  "explanation": "A small base removes the β hydrogen that leads to the more stable, more substituted alkene (Zaitsev). A bulky base removes the more accessible, less hindered hydrogen (Hofmann).",
+  "question_image": "images/P078_q.png",
+  "answer_image": "images/P078_a.png",
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {
+   "substrate": "CCC(CC)(C)Br",
+   "zaitsev": "CC=C(C)CC",
+   "hofmann": "C=C(CC)CC"
+  }
+ },
+ {
+  "id": "P079",
+  "type": "Synthesis design",
+  "mechanism": "SN2",
+  "difficulty": 3,
+  "question": "Design a synthesis of 2-methoxy-2-methylpropane from an alkyl halide and an alkoxide. Which combination works, and why does the other combination fail?",
+  "answer": "Use iodomethane with sodium tert-butoxide. The alternative, tert-butyl bromide with sodium methoxide, fails because it gives E2 elimination instead of substitution.",
+  "explanation": "The Williamson ether synthesis is an SN2 reaction, so the halide must be methyl or primary. A secondary or tertiary halide with a strongly basic alkoxide gives E2 elimination.",
+  "question_image": "images/P079_q.png",
+  "answer_image": "images/P079_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "target": "COC(C)(C)C"
+  }
+ },
+ {
+  "id": "P080",
+  "type": "Synthesis design",
+  "mechanism": "SN2",
+  "difficulty": 3,
+  "question": "Design a synthesis of 2-ethoxypropane from an alkyl halide and an alkoxide. Which combination works, and why does the other combination fail?",
+  "answer": "Use bromoethane with sodium isopropoxide. The alternative, 2-bromopropane with sodium ethoxide, fails because it gives E2 elimination instead of substitution.",
+  "explanation": "The Williamson ether synthesis is an SN2 reaction, so the halide must be methyl or primary. A secondary or tertiary halide with a strongly basic alkoxide gives E2 elimination.",
+  "question_image": "images/P080_q.png",
+  "answer_image": "images/P080_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "target": "CCOC(C)C"
+  }
+ },
+ {
+  "id": "P081",
+  "type": "Synthesis design",
+  "mechanism": "SN2",
+  "difficulty": 3,
+  "question": "Design a synthesis of 2-ethoxy-2-methylpropane from an alkyl halide and an alkoxide. Which combination works, and why does the other combination fail?",
+  "answer": "Use iodoethane with sodium tert-butoxide. The alternative, tert-butyl bromide with sodium ethoxide, fails because it gives E2 elimination instead of substitution.",
+  "explanation": "The Williamson ether synthesis is an SN2 reaction, so the halide must be methyl or primary. A secondary or tertiary halide with a strongly basic alkoxide gives E2 elimination.",
+  "question_image": "images/P081_q.png",
+  "answer_image": "images/P081_a.png",
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "target": "CC(C)(C)OCC"
+  }
+ },
+ {
+  "id": "P082",
+  "type": "Intramolecular substitution",
+  "mechanism": "SN2",
+  "difficulty": 3,
+  "question": "Treatment of 4-bromobutan-1-ol with NaOH gives a cyclic ether, tetrahydrofuran (oxolane). Explain the mechanism and why a ring forms.",
+  "answer": "NaOH deprotonates the OH to give an alkoxide, which attacks the carbon bearing bromine intramolecularly (SN2, 5- or 6-membered ring) displacing bromide.",
+  "explanation": "Intramolecular SN2 is favored because the nucleophile and electrophile are tethered together; 5- and 6-membered rings form fastest.",
+  "question_image": "images/P082_q.png",
+  "answer_image": null,
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "BrCCCCO",
+   "product": "C1CCCO1"
+  }
+ },
+ {
+  "id": "P083",
+  "type": "Intramolecular substitution",
+  "mechanism": "SN2",
+  "difficulty": 3,
+  "question": "Treatment of 5-bromopentan-1-ol with NaOH gives a cyclic ether, tetrahydropyran (oxane). Explain the mechanism and why a ring forms.",
+  "answer": "NaOH deprotonates the OH to give an alkoxide, which attacks the carbon bearing bromine intramolecularly (SN2, 5- or 6-membered ring) displacing bromide.",
+  "explanation": "Intramolecular SN2 is favored because the nucleophile and electrophile are tethered together; 5- and 6-membered rings form fastest.",
+  "question_image": "images/P083_q.png",
+  "answer_image": null,
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {
+   "substrate": "BrCCCCCO",
+   "product": "C1CCCCO1"
+  }
+ },
+ {
+  "id": "P084",
+  "type": "Nucleophile strength",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "Rank the halide ions F⁻, Cl⁻, Br⁻, I⁻ by nucleophilicity (a) in methanol (a protic solvent) and (b) in DMSO (a polar aprotic solvent). Explain the reversal.",
+  "answer": "(a) in methanol: I⁻ > Br⁻ > Cl⁻ > F⁻; (b) in DMSO: F⁻ > Cl⁻ > Br⁻ > I⁻.",
+  "explanation": "In protic solvents the small anions are strongly solvated by hydrogen bonding and are tied up; in polar aprotic solvents anions are not solvated, so basicity (F⁻ most basic) tracks nucleophilicity.",
+  "question_image": null,
+  "answer_image": null,
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {}
+ },
+ {
+  "id": "P085",
+  "type": "Nucleophile strength",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "Classify each as a strong or weak nucleophile and state whether it favors SN2 or SN1: (a) HS⁻ (b) H₂O (c) CH₃CH₂O⁻ (d) CH₃CH₂OH (e) I⁻ (f) CN⁻.",
+  "answer": "Strong (favor SN2): HS⁻, CH₃CH₂O⁻, I⁻, CN⁻. Weak (allow SN1 to compete): H₂O, CH₃CH₂OH.",
+  "explanation": "Strong nucleophiles speed up SN2; the rate of SN1 does not depend on the nucleophile, so weak nucleophiles disfavor SN2 and let SN1 compete.",
+  "question_image": null,
+  "answer_image": null,
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {}
+ },
+ {
+  "id": "P086",
+  "type": "Substrate reactivity",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "Rank bromomethane, 1-bromopropane, 2-bromopropane and 2-bromo-2-methylpropane from fastest to slowest toward SN2. Then give the order for SN1.",
+  "answer": "SN2: bromomethane > 1-bromopropane > 2-bromopropane >> 2-bromo-2-methylpropane (essentially unreactive). SN1 is the reverse: 2-bromo-2-methylpropane > 2-bromopropane > 1-bromopropane > bromomethane.",
+  "explanation": "SN2 is limited by steric hindrance in the transition state; SN1 is limited by carbocation stability.",
+  "question_image": "images/P086_q.png",
+  "answer_image": null,
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {}
+ },
+ {
+  "id": "P087",
+  "type": "Substrate reactivity",
+  "mechanism": "SN2",
+  "difficulty": 3,
+  "question": "Neopentyl bromide, (CH₃)₃CCH₂Br, is a primary alkyl halide. Predict whether it reacts well by SN2 or by SN1 and explain.",
+  "answer": "It reacts very poorly by SN2 because of the bulky β substituents, and a primary carbocation is too unstable for SN1 (a rearrangement concerted with ionization can occur in ionizing solvents).",
+  "explanation": "Steric hindrance at the β position slows SN2 almost as much as α branching.",
+  "question_image": "images/P087_q.png",
+  "answer_image": null,
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {}
+ },
+ {
+  "id": "P088",
+  "type": "Leaving groups",
+  "mechanism": "SN1/SN2",
+  "difficulty": 2,
+  "question": "Which is the better leaving group in each pair, and why? (a) Cl⁻ or I⁻ (b) HO⁻ or H₂O (c) CH₃O⁻ or TsO⁻.",
+  "answer": "(a) I⁻. (b) H₂O. (c) TsO⁻.",
+  "explanation": "Good leaving groups are weak bases, the conjugate bases of strong acids. Iodide is the conjugate base of HI; water is the conjugate base of H₃O⁺; tosylate is the conjugate base of a strong sulfonic acid.",
+  "question_image": null,
+  "answer_image": null,
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {}
+ },
+ {
+  "id": "P089",
+  "type": "Leaving groups",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "Rank 1-chlorobutane, 1-bromobutane and 1-iodobutane by their rate of reaction with NaCN in DMSO, and explain.",
+  "answer": "1-iodobutane > 1-bromobutane > 1-chlorobutane.",
+  "explanation": "The rate of SN2 depends on the leaving group: iodide is the weakest base and the best leaving group.",
+  "question_image": "images/P089_q.png",
+  "answer_image": null,
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {}
+ },
+ {
+  "id": "P090",
+  "type": "Solvent effects",
+  "mechanism": "SN2/SN1",
+  "difficulty": 2,
+  "question": "Classify each solvent as protic or polar aprotic and say which substitution mechanism it favors: DMSO, methanol, acetonitrile, water, DMF, acetic acid.",
+  "answer": "Polar aprotic (favor SN2): DMSO, acetonitrile, DMF. Protic (favor SN1): methanol, water, acetic acid.",
+  "explanation": "Protic solvents have an H on an electronegative atom; they stabilize ions and intermediates (SN1) but solvate and weaken anionic nucleophiles. Polar aprotic solvents leave the nucleophile unsolvated.",
+  "question_image": null,
+  "answer_image": null,
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {}
+ },
+ {
+  "id": "P091",
+  "type": "Solvent effects",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "The SN2 reaction of 1-bromobutane with azide is about 1300 times faster in DMSO than in methanol. Explain.",
+  "answer": "In methanol the azide ion is hydrogen-bonded to the solvent, which lowers its energy and raises the barrier. DMSO solvates the cation but not the anion, so the nucleophile is higher in energy and reacts faster.",
+  "explanation": "See the effect of polar aprotic solvents on nucleophile energy in the SN2 energy diagram.",
+  "question_image": null,
+  "answer_image": null,
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {}
+ },
+ {
+  "id": "P092",
+  "type": "Kinetics",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "The reaction of 2-bromobutane with NaSH in DMSO follows the mechanism predicted for these conditions. Write the rate law. What happens to the rate if (a) [substrate] is doubled and [hydrosulfide] is unchanged, and (b) [hydrosulfide] is tripled and [substrate] is unchanged?",
+  "answer": "SN2: rate = k[substrate][nucleophile]. (a) Rate doubles. (b) Rate triples.",
+  "explanation": "The rate law reflects the species in the rate-determining step.",
+  "question_image": null,
+  "answer_image": null,
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {}
+ },
+ {
+  "id": "P093",
+  "type": "Kinetics",
+  "mechanism": "SN1",
+  "difficulty": 2,
+  "question": "The reaction of 2-chloro-2-methylbutane with EtOH as the solvent follows the mechanism predicted for these conditions. Write the rate law. What happens to the rate if (a) [substrate] is doubled and [ethanol] is unchanged, and (b) [ethanol] is tripled and [substrate] is unchanged?",
+  "answer": "SN1: rate = k[substrate]. (a) Rate doubles. (b) No change.",
+  "explanation": "The rate law reflects the species in the rate-determining step.",
+  "question_image": null,
+  "answer_image": null,
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {}
+ },
+ {
+  "id": "P094",
+  "type": "Kinetics",
+  "mechanism": "E2",
+  "difficulty": 2,
+  "question": "The reaction of 2-bromobutane with NaOEt in EtOH follows the mechanism predicted for these conditions. Write the rate law. What happens to the rate if (a) [substrate] is doubled and [ethoxide] is unchanged, and (b) [ethoxide] is tripled and [substrate] is unchanged?",
+  "answer": "E2: rate = k[substrate][base]. (a) Rate doubles. (b) Rate triples.",
+  "explanation": "The rate law reflects the species in the rate-determining step.",
+  "question_image": null,
+  "answer_image": null,
+  "source": "Standard elimination conventions (Zaitsev/Hofmann); not from the provided PDF",
+  "smiles": {}
+ },
+ {
+  "id": "P095",
+  "type": "Kinetics",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "The reaction of 1-chlorobutane with NaI in acetone follows the mechanism predicted for these conditions. Write the rate law. What happens to the rate if (a) [substrate] is doubled and [iodide] is unchanged, and (b) [iodide] is tripled and [substrate] is unchanged?",
+  "answer": "SN2: rate = k[substrate][nucleophile]. (a) Rate doubles. (b) Rate triples.",
+  "explanation": "The rate law reflects the species in the rate-determining step.",
+  "question_image": null,
+  "answer_image": null,
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {}
+ },
+ {
+  "id": "P096",
+  "type": "Classify the substrate",
+  "mechanism": "SN1/SN2",
+  "difficulty": 2,
+  "question": "For each substrate, classify the α carbon (methyl, 1°, 2° or 3°), identify the leaving group, and state whether SN2, SN1, both or neither is feasible: (I) iodoethane (II) 2-bromo-2-methylbutane (III) 2-chlorobutane (IV) bromobenzene.",
+  "answer": "I: 1°, I⁻, SN2 only. II: 3°, Br⁻, SN1 (SN2 impossible). III: 2°, Cl⁻, either (conditions decide). IV: aryl halide, Br⁻, neither.",
+  "explanation": "Methyl/primary favor SN2, tertiary favors SN1, secondary can go either way, and aryl/vinyl halides do not react.",
+  "question_image": "images/P096_q.png",
+  "answer_image": null,
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {}
+ },
+ {
+  "id": "P097",
+  "type": "Classify the substrate",
+  "mechanism": "SN1/SN2",
+  "difficulty": 2,
+  "question": "Label each carbon bearing a leaving group as 1°, 2° or 3° and say which substitution mechanism is favored by the substrate alone: (I) 1-bromobutane (II) 3-bromo-3-methylpentane (III) iodocyclohexane.",
+  "answer": "I: 1°, SN2. II: 3°, SN1. III: 2°, either.",
+  "explanation": "This is the first of the four factors; secondary substrates need the nucleophile and solvent to decide.",
+  "question_image": "images/P097_q.png",
+  "answer_image": null,
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {}
+ },
+ {
+  "id": "P098",
+  "type": "Which reacts faster?",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "Which compound reacts faster with NaN₃ in DMF, 1-bromobutane or 2-bromobutane? Which reacts faster with ethanol (solvolysis), 2-bromo-2-methylpropane or 2-bromopropane?",
+  "answer": "1-bromobutane (less hindered SN2). 2-bromo-2-methylpropane (more stable tertiary carbocation, SN1).",
+  "explanation": "SN2 rate falls as steric hindrance increases; SN1 rate rises with carbocation stability.",
+  "question_image": null,
+  "answer_image": null,
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {}
+ },
+ {
+  "id": "P099",
+  "type": "Energy diagrams",
+  "mechanism": "SN1",
+  "difficulty": 3,
+  "question": "Sketch the reaction energy diagram for the SN1 solvolysis of 2-bromo-2-methylpropane in water. How many transition states and intermediates are there, and which step is rate-determining?",
+  "answer": "Two steps give two transition states and one carbocation intermediate (plus a proton transfer at the end because water is neutral, so three steps). The first step, loss of bromide, is rate-determining.",
+  "explanation": "The number of humps equals the number of steps; the highest hump is the rate-determining step.",
+  "question_image": null,
+  "answer_image": null,
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {}
+ },
+ {
+  "id": "P100",
+  "type": "Energy diagrams",
+  "mechanism": "SN2",
+  "difficulty": 2,
+  "question": "How does the energy diagram of an SN2 reaction differ from that of an SN1 reaction? Include the number of steps, transition states and intermediates.",
+  "answer": "SN2: one step, one transition state, no intermediate. SN1: two core steps, two transition states and a carbocation intermediate.",
+  "explanation": "SN2 is concerted; SN1 is stepwise.",
+  "question_image": null,
+  "answer_image": null,
+  "source": "Klein Ch. 7 framework (four factors)",
+  "smiles": {}
+ }
+]

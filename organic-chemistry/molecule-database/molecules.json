@@ -2962,7 +2962,7 @@
  {
   "id": "M186",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "methanol",
   "name_classic": "methanol",
   "common_name": "methyl alcohol",
@@ -2978,7 +2978,7 @@
  {
   "id": "M187",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "ethanol",
   "name_classic": "ethanol",
   "common_name": "ethyl alcohol",
@@ -2994,7 +2994,7 @@
  {
   "id": "M188",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "propan-1-ol",
   "name_classic": "1-propanol",
   "common_name": "propyl alcohol",
@@ -3010,7 +3010,7 @@
  {
   "id": "M189",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "propan-2-ol",
   "name_classic": "2-propanol",
   "common_name": "isopropyl alcohol",
@@ -3026,7 +3026,7 @@
  {
   "id": "M190",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "2-methylpropan-1-ol",
   "name_classic": "2-methyl-1-propanol",
   "common_name": "",
@@ -3042,7 +3042,7 @@
  {
   "id": "M191",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "tertiary",
   "name": "2-methylpropan-2-ol",
   "name_classic": "2-methyl-2-propanol",
   "common_name": "tert-butyl alcohol",
@@ -3058,7 +3058,7 @@
  {
   "id": "M192",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "butan-1-ol",
   "name_classic": "1-butanol",
   "common_name": "",
@@ -3074,7 +3074,7 @@
  {
   "id": "M193",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "butan-2-ol",
   "name_classic": "2-butanol",
   "common_name": "",
@@ -3090,7 +3090,7 @@
  {
   "id": "M194",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "2-methylbutan-1-ol",
   "name_classic": "2-methyl-1-butanol",
   "common_name": "",
@@ -3106,7 +3106,7 @@
  {
   "id": "M195",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "tertiary",
   "name": "2-methylbutan-2-ol",
   "name_classic": "2-methyl-2-butanol",
   "common_name": "",
@@ -3122,7 +3122,7 @@
  {
   "id": "M196",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "3-methylbutan-1-ol",
   "name_classic": "3-methyl-1-butanol",
   "common_name": "",
@@ -3138,7 +3138,7 @@
  {
   "id": "M197",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "3-methylbutan-2-ol",
   "name_classic": "3-methyl-2-butanol",
   "common_name": "",
@@ -3154,7 +3154,7 @@
  {
   "id": "M198",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "pentan-1-ol",
   "name_classic": "1-pentanol",
   "common_name": "",
@@ -3170,7 +3170,7 @@
  {
   "id": "M199",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "pentan-2-ol",
   "name_classic": "2-pentanol",
   "common_name": "",
@@ -3186,7 +3186,7 @@
  {
   "id": "M200",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "pentan-3-ol",
   "name_classic": "3-pentanol",
   "common_name": "",
@@ -3202,7 +3202,7 @@
  {
   "id": "M201",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "2,3-dimethylbutan-1-ol",
   "name_classic": "2,3-dimethyl-1-butanol",
   "common_name": "",
@@ -3218,7 +3218,7 @@
  {
   "id": "M202",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "tertiary",
   "name": "2,3-dimethylbutan-2-ol",
   "name_classic": "2,3-dimethyl-2-butanol",
   "common_name": "",
@@ -3234,7 +3234,7 @@
  {
   "id": "M203",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "2-methylpentan-1-ol",
   "name_classic": "2-methyl-1-pentanol",
   "common_name": "",
@@ -3250,7 +3250,7 @@
  {
   "id": "M204",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "tertiary",
   "name": "2-methylpentan-2-ol",
   "name_classic": "2-methyl-2-pentanol",
   "common_name": "",
@@ -3266,7 +3266,7 @@
  {
   "id": "M205",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "2-methylpentan-3-ol",
   "name_classic": "2-methyl-3-pentanol",
   "common_name": "",
@@ -3282,7 +3282,7 @@
  {
   "id": "M206",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "3-methylpentan-1-ol",
   "name_classic": "3-methyl-1-pentanol",
   "common_name": "",
@@ -3298,7 +3298,7 @@
  {
   "id": "M207",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "3-methylpentan-2-ol",
   "name_classic": "3-methyl-2-pentanol",
   "common_name": "",
@@ -3314,7 +3314,7 @@
  {
   "id": "M208",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "tertiary",
   "name": "3-methylpentan-3-ol",
   "name_classic": "3-methyl-3-pentanol",
   "common_name": "",
@@ -3330,7 +3330,7 @@
  {
   "id": "M209",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "4-methylpentan-1-ol",
   "name_classic": "4-methyl-1-pentanol",
   "common_name": "",
@@ -3346,7 +3346,7 @@
  {
   "id": "M210",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "4-methylpentan-2-ol",
   "name_classic": "4-methyl-2-pentanol",
   "common_name": "",
@@ -3362,7 +3362,7 @@
  {
   "id": "M211",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "hexan-1-ol",
   "name_classic": "1-hexanol",
   "common_name": "",
@@ -3378,7 +3378,7 @@
  {
   "id": "M212",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "hexan-2-ol",
   "name_classic": "2-hexanol",
   "common_name": "",
@@ -3394,7 +3394,7 @@
  {
   "id": "M213",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "hexan-3-ol",
   "name_classic": "3-hexanol",
   "common_name": "",
@@ -3410,7 +3410,7 @@
  {
   "id": "M214",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "2,3-dimethylpentan-1-ol",
   "name_classic": "2,3-dimethyl-1-pentanol",
   "common_name": "",
@@ -3426,7 +3426,7 @@
  {
   "id": "M215",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "tertiary",
   "name": "2,3-dimethylpentan-2-ol",
   "name_classic": "2,3-dimethyl-2-pentanol",
   "common_name": "",
@@ -3442,7 +3442,7 @@
  {
   "id": "M216",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "tertiary",
   "name": "2,3-dimethylpentan-3-ol",
   "name_classic": "2,3-dimethyl-3-pentanol",
   "common_name": "",
@@ -3458,7 +3458,7 @@
  {
   "id": "M217",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "2,4-dimethylpentan-1-ol",
   "name_classic": "2,4-dimethyl-1-pentanol",
   "common_name": "",
@@ -3474,7 +3474,7 @@
  {
   "id": "M218",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "2,4-dimethylpentan-3-ol",
   "name_classic": "2,4-dimethyl-3-pentanol",
   "common_name": "",
@@ -3490,7 +3490,7 @@
  {
   "id": "M219",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "2-ethylpentan-1-ol",
   "name_classic": "2-ethyl-1-pentanol",
   "common_name": "",
@@ -3506,7 +3506,7 @@
  {
   "id": "M220",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "2-methylhexan-1-ol",
   "name_classic": "2-methyl-1-hexanol",
   "common_name": "",
@@ -3522,7 +3522,7 @@
  {
   "id": "M221",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "tertiary",
   "name": "2-methylhexan-2-ol",
   "name_classic": "2-methyl-2-hexanol",
   "common_name": "",
@@ -3538,7 +3538,7 @@
  {
   "id": "M222",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "2-methylhexan-3-ol",
   "name_classic": "2-methyl-3-hexanol",
   "common_name": "",
@@ -3554,7 +3554,7 @@
  {
   "id": "M223",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "3-ethylpentan-2-ol",
   "name_classic": "3-ethyl-2-pentanol",
   "common_name": "",
@@ -3570,7 +3570,7 @@
  {
   "id": "M224",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "tertiary",
   "name": "3-ethylpentan-3-ol",
   "name_classic": "3-ethyl-3-pentanol",
   "common_name": "",
@@ -3586,7 +3586,7 @@
  {
   "id": "M225",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "3-methylhexan-2-ol",
   "name_classic": "3-methyl-2-hexanol",
   "common_name": "",
@@ -3602,7 +3602,7 @@
  {
   "id": "M226",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "tertiary",
   "name": "3-methylhexan-3-ol",
   "name_classic": "3-methyl-3-hexanol",
   "common_name": "",
@@ -3618,7 +3618,7 @@
  {
   "id": "M227",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "4-methylhexan-1-ol",
   "name_classic": "4-methyl-1-hexanol",
   "common_name": "",
@@ -3634,7 +3634,7 @@
  {
   "id": "M228",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "4-methylhexan-2-ol",
   "name_classic": "4-methyl-2-hexanol",
   "common_name": "",
@@ -3650,7 +3650,7 @@
  {
   "id": "M229",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "4-methylhexan-3-ol",
   "name_classic": "4-methyl-3-hexanol",
   "common_name": "",
@@ -3666,7 +3666,7 @@
  {
   "id": "M230",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "5-methylhexan-2-ol",
   "name_classic": "5-methyl-2-hexanol",
   "common_name": "",
@@ -3682,7 +3682,7 @@
  {
   "id": "M231",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "heptan-3-ol",
   "name_classic": "3-heptanol",
   "common_name": "",
@@ -3698,7 +3698,7 @@
  {
   "id": "M232",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "2,3,4-trimethylpentan-1-ol",
   "name_classic": "2,3,4-trimethyl-1-pentanol",
   "common_name": "",
@@ -3714,7 +3714,7 @@
  {
   "id": "M233",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "tertiary",
   "name": "2,3,4-trimethylpentan-3-ol",
   "name_classic": "2,3,4-trimethyl-3-pentanol",
   "common_name": "",
@@ -3730,7 +3730,7 @@
  {
   "id": "M234",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "tertiary",
   "name": "2,3-dimethylhexan-3-ol",
   "name_classic": "2,3-dimethyl-3-hexanol",
   "common_name": "",
@@ -3746,7 +3746,7 @@
  {
   "id": "M235",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "2,4-dimethylhexan-3-ol",
   "name_classic": "2,4-dimethyl-3-hexanol",
   "common_name": "",
@@ -3762,7 +3762,7 @@
  {
   "id": "M236",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "tertiary",
   "name": "3,4-dimethylhexan-3-ol",
   "name_classic": "3,4-dimethyl-3-hexanol",
   "common_name": "",
@@ -3778,7 +3778,7 @@
  {
   "id": "M237",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "3,5-dimethylhexan-2-ol",
   "name_classic": "3,5-dimethyl-2-hexanol",
   "common_name": "",
@@ -3794,7 +3794,7 @@
  {
   "id": "M238",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "3-ethylhexan-1-ol",
   "name_classic": "3-ethyl-1-hexanol",
   "common_name": "",
@@ -3810,7 +3810,7 @@
  {
   "id": "M239",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "tertiary",
   "name": "3-ethylhexan-3-ol",
   "name_classic": "3-ethyl-3-hexanol",
   "common_name": "",
@@ -3826,7 +3826,7 @@
  {
   "id": "M240",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "3-methylheptan-2-ol",
   "name_classic": "3-methyl-2-heptanol",
   "common_name": "",
@@ -3842,7 +3842,7 @@
  {
   "id": "M241",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "3-methylheptan-4-ol",
   "name_classic": "3-methyl-4-heptanol",
   "common_name": "",
@@ -3858,7 +3858,7 @@
  {
   "id": "M242",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "4,5-dimethylhexan-1-ol",
   "name_classic": "4,5-dimethyl-1-hexanol",
   "common_name": "",
@@ -3874,7 +3874,7 @@
  {
   "id": "M243",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "4-ethylhexan-3-ol",
   "name_classic": "4-ethyl-3-hexanol",
   "common_name": "",
@@ -3890,7 +3890,7 @@
  {
   "id": "M244",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "4-methylheptan-1-ol",
   "name_classic": "4-methyl-1-heptanol",
   "common_name": "",
@@ -3906,7 +3906,7 @@
  {
   "id": "M245",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "4-methylheptan-2-ol",
   "name_classic": "4-methyl-2-heptanol",
   "common_name": "",
@@ -3922,7 +3922,7 @@
  {
   "id": "M246",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "5-methylheptan-1-ol",
   "name_classic": "5-methyl-1-heptanol",
   "common_name": "",
@@ -3938,7 +3938,7 @@
  {
   "id": "M247",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "6-methylheptan-1-ol",
   "name_classic": "6-methyl-1-heptanol",
   "common_name": "",
@@ -3954,7 +3954,7 @@
  {
   "id": "M248",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "6-methylheptan-3-ol",
   "name_classic": "6-methyl-3-heptanol",
   "common_name": "",
@@ -3970,7 +3970,7 @@
  {
   "id": "M249",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "tertiary",
   "name": "2,3,4-trimethylhexan-2-ol",
   "name_classic": "2,3,4-trimethyl-2-hexanol",
   "common_name": "",
@@ -3986,7 +3986,7 @@
  {
   "id": "M250",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "tertiary",
   "name": "2,3-dimethylheptan-3-ol",
   "name_classic": "2,3-dimethyl-3-heptanol",
   "common_name": "",
@@ -4002,7 +4002,7 @@
  {
   "id": "M251",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "2,4,5-trimethylhexan-3-ol",
   "name_classic": "2,4,5-trimethyl-3-hexanol",
   "common_name": "",
@@ -4018,7 +4018,7 @@
  {
   "id": "M252",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "tertiary",
   "name": "2,4-dimethylheptan-2-ol",
   "name_classic": "2,4-dimethyl-2-heptanol",
   "common_name": "",
@@ -4034,7 +4034,7 @@
  {
   "id": "M253",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "2,6-dimethylheptan-4-ol",
   "name_classic": "2,6-dimethyl-4-heptanol",
   "common_name": "",
@@ -4050,7 +4050,7 @@
  {
   "id": "M254",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "2-methyloctan-1-ol",
   "name_classic": "2-methyl-1-octanol",
   "common_name": "",
@@ -4066,7 +4066,7 @@
  {
   "id": "M255",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "3,5-dimethylheptan-2-ol",
   "name_classic": "3,5-dimethyl-2-heptanol",
   "common_name": "",
@@ -4082,7 +4082,7 @@
  {
   "id": "M256",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "tertiary",
   "name": "3,5-dimethylheptan-3-ol",
   "name_classic": "3,5-dimethyl-3-heptanol",
   "common_name": "",
@@ -4098,7 +4098,7 @@
  {
   "id": "M257",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "3,5-dimethylheptan-4-ol",
   "name_classic": "3,5-dimethyl-4-heptanol",
   "common_name": "",
@@ -4114,7 +4114,7 @@
  {
   "id": "M258",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "tertiary",
   "name": "3,6-dimethylheptan-3-ol",
   "name_classic": "3,6-dimethyl-3-heptanol",
   "common_name": "",
@@ -4130,7 +4130,7 @@
  {
   "id": "M259",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "3-ethyl-2,4-dimethylpentan-1-ol",
   "name_classic": "3-ethyl-2,4-dimethyl-1-pentanol",
   "common_name": "",
@@ -4146,7 +4146,7 @@
  {
   "id": "M260",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "primary",
   "name": "3-ethyl-2-methylhexan-1-ol",
   "name_classic": "3-ethyl-2-methyl-1-hexanol",
   "common_name": "",
@@ -4162,7 +4162,7 @@
  {
   "id": "M261",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "3-ethyl-4-methylhexan-2-ol",
   "name_classic": "3-ethyl-4-methyl-2-hexanol",
   "common_name": "",
@@ -4178,7 +4178,7 @@
  {
   "id": "M262",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "4,5-dimethylheptan-2-ol",
   "name_classic": "4,5-dimethyl-2-heptanol",
   "common_name": "",
@@ -4194,7 +4194,7 @@
  {
   "id": "M263",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "4,6-dimethylheptan-3-ol",
   "name_classic": "4,6-dimethyl-3-heptanol",
   "common_name": "",
@@ -4210,7 +4210,7 @@
  {
   "id": "M264",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "5-methyloctan-3-ol",
   "name_classic": "5-methyl-3-octanol",
   "common_name": "",
@@ -4226,7 +4226,7 @@
  {
   "id": "M265",
   "class": "alcohol",
-  "subclass": "",
+  "subclass": "secondary",
   "name": "7-methyloctan-2-ol",
   "name_classic": "7-methyl-2-octanol",
   "common_name": "",

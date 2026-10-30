@@ -19,6 +19,10 @@ for i, (smi, mo, cl, cls, sub) in enumerate(recs, 1):
     mid = f'M{i:03d}'
     path = os.path.join(ROOT, 'images', mid + '.png')
     compose([Struct(smi, redh=False)], path=path, scale=2)
+    if cls == 'alcohol':
+        c = m.GetSubstructMatch(Chem.MolFromSmarts('[CX4][OX2H1]'))[0]
+        k = sum(1 for n in m.GetAtomWithIdx(c).GetNeighbors() if n.GetAtomicNum() == 6)
+        sub = {0: 'primary', 1: 'primary', 2: 'secondary', 3: 'tertiary'}[k]
     centers = Chem.FindMolChiralCenters(m, includeUnassigned=True, useLegacyImplementation=False)
     ez = ('E' in mo[:3] or 'Z' in mo[:3]) and mo.startswith('(')
     rows.append(dict(id=mid, **{'class': cls}, subclass=sub, name=mo, name_classic=cl,

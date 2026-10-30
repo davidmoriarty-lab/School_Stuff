@@ -180,17 +180,20 @@ class Struct:
             out.append(f'<line x1="{cx - 3:.1f}" y1="{cy:.1f}" x2="{cx + 3:.1f}" y2="{cy:.1f}" stroke="black" stroke-width="1.3"/>')
             if self.charge[i] > 0:
                 out.append(f'<line x1="{cx:.1f}" y1="{cy - 3:.1f}" x2="{cx:.1f}" y2="{cy + 3:.1f}" stroke="black" stroke-width="1.3"/>')
-        for m, letter in self.hlabels.items():
-            if letter:
+        for m, label in self.hlabels.items():
+            if label:
                 x, y = self.p(m)
                 nb = self.dm.GetAtomWithIdx(self.idx[m]).GetNeighbors()[0].GetIdx()
                 bx, by = self.pos[nb]
-                if bx > x + 4 and abs(by - y) < abs(bx - x) * 2:
-                    tx = x - 13.5
+                phi = math.degrees(math.atan2(by - y, bx - x)) % 360
+                # the number always sits to the right of the H; choose above or
+                # below so it stays clear of the bond leaving the H
+                if _ang_dist(45, phi) >= _ang_dist(315, phi):
+                    ty = y + 11.5      # lower right
                 else:
-                    tx = x + 6.5
-                out.append(f'<text x="{tx:.1f}" y="{y + 7:.1f}" font-family="{FONT}" font-size="11" '
-                           f'fill="rgb(214,0,0)">{letter}</text>')
+                    ty = y - 3.5       # upper right
+                out.append(f'<text x="{x + 8.5:.1f}" y="{ty:.1f}" font-family="{FONT}" font-size="12" '
+                           f'font-weight="bold" fill="rgb(214,0,0)">{label}</text>')
         self._extras = out
 
     # ---- curved arrows ----------------------------------------------------

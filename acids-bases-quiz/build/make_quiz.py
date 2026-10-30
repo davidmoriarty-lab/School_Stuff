@@ -139,10 +139,10 @@ def add_question_block(doc, q):
 
 def build_quiz(Q):
     doc = Document()
-    setup(doc, "Acids and Bases Quiz")
+    setup(doc, "Organic Chemistry Quiz")
     h = doc.add_paragraph()
     h.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = h.add_run("Organic Chemistry: Acids and Bases Quiz")
+    r = h.add_run("Organic Chemistry Quiz: Acids and Bases and Nomenclature")
     r.bold = True
     r.font.size = Pt(16)
     p = doc.add_paragraph("Name: ______________________________      Date: _______________      Section: ________")
@@ -152,23 +152,24 @@ def build_quiz(Q):
     r.bold = True
     p.add_run("Choose the single best answer for each question. Do not use pKa values. Use the stability of the "
               "conjugate base and the ARIO factors (Atom, Resonance, Induction, Orbital) to reason through each problem. "
-              "In structures, red H atoms are the hydrogens being compared, curved arrows show the movement of "
-              "electron pairs, and a circled minus sign is a formal negative charge.")
+              "In structures, the red numbered H atoms are the hydrogens being compared (for example, H\u2081 is the "
+              "hydrogen labeled 1), curved arrows show the movement of electron pairs, and a circled minus sign is a "
+              "formal negative charge. Questions 31\u201340 ask for the IUPAC names of branched alkanes.")
     p.paragraph_format.space_after = Pt(10)
 
     for q in Q:
         add_question_block(doc, q)
-    out = os.path.join(OUT, "Acids_Bases_Quiz.docx")
+    out = os.path.join(OUT, "Acids_Bases_Nomenclature_Quiz.docx")
     doc.save(out)
     return out
 
 
 def build_key(Q):
     doc = Document()
-    setup(doc, "Acids and Bases Quiz: Answer Key")
+    setup(doc, "Organic Chemistry Quiz: Answer Key")
     h = doc.add_paragraph()
     h.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = h.add_run("Acids and Bases Quiz: Answer Key")
+    r = h.add_run("Organic Chemistry Quiz: Acids, Bases and Nomenclature (Answer Key)")
     r.bold = True
     r.font.size = Pt(16)
 
@@ -220,7 +221,7 @@ def build_key(Q):
         wr.bold = True
         wr.font.color.rgb = RGBColor(0x1F, 0x4E, 0x79)
         wp.add_run(q["why"])
-    out = os.path.join(OUT, "Acids_Bases_Quiz_Answer_Key.docx")
+    out = os.path.join(OUT, "Acids_Bases_Nomenclature_Quiz_Answer_Key.docx")
     doc.save(out)
     return out
 

@@ -7,6 +7,7 @@ the correct answer is placed at the letter listed in LETTERS.
 """
 import os
 from chemdraw import Struct, Text, Plus, Equil, compose, compose_with_arrows
+from check_names import name_alkane
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 IMG = os.path.join(HERE, "..", "img")
@@ -96,7 +97,7 @@ def save_pt(name, variant, letter):
 
 
 # ---------------------------------------------------------------- questions
-LETTERS = "CBABDCABACDBADCCBDACDBADBCDCAB"  # answer letter for Q1..Q30
+LETTERS = "CBABDCABACDBADCCBDACDBADBCDCABADBCDACBAD"  # answer letter for Q1..Q30
 
 
 def build():
@@ -109,29 +110,29 @@ def build():
     # ===== Part 1: Atom ====================================================
     add(topic="Atom", level="Direct",
         stem="Ethanolamine has three different kinds of hydrogen, labeled below. Which labeled H is the most acidic?",
-        stem_img=save("q01", [SH("[H:3]OC([H:1])CN[H:2]", {1: "a", 2: "b", 3: "c"})]),
-        choices=["Hc (the O–H)", "Ha (the C–H on the carbon bearing O)", "Hb (the N–H)",
+        stem_img=save("q01", [SH("[H:3]OC([H:1])CN[H:2]", {1: "1", 2: "2", 3: "3"})]),
+        choices=["H₃ (the O–H)", "H₁ (the C–H on the carbon bearing O)", "H₂ (the N–H)",
                  "All three are about equally acidic"],
         why="Each conjugate base has its charge on a different atom: C, N or O. These are in the same row, so electronegativity decides. O is the most electronegative, so RO⁻ is the most stable base and the O–H is the most acidic.")
 
     add(topic="Atom", level="Two-factor",
         stem="Which labeled hydrogen in 3-mercaptopropan-1-ol is the most acidic?",
-        stem_img=save("q02", [SH("[H:1]OCCC([H:3])S[H:2]", {1: "a", 2: "b", 3: "c"})]),
-        choices=["Hb (the S–H), because S is larger than O and spreads the charge over a larger volume",
-                 "Ha (the O–H), because O is more electronegative than S",
-                 "Hc (the C–H next to S), because it is closest to the large S atom",
-                 "Ha and Hb are equally acidic because O and S are in the same column"],
+        stem_img=save("q02", [SH("[H:1]OCCC([H:3])S[H:2]", {1: "1", 2: "2", 3: "3"})]),
+        choices=["H₂ (the S–H), because S is larger than O and spreads the charge over a larger volume",
+                 "H₁ (the O–H), because O is more electronegative than S",
+                 "H₃ (the C–H next to S), because it is closest to the large S atom",
+                 "H₁ and H₂ are equally acidic because O and S are in the same column"],
         why="Compare RS⁻ with RO⁻. O and S are in the same column, so size is the dominant effect, not electronegativity. The larger S⁻ is more stable, so the S–H is more acidic.")
 
     add(topic="Atom", level="Two-factor",
         stem="Acetaminophen (Tylenol) is shown below. Which labeled H is the most acidic?",
         stem_img=save("q03", [SH("[H:1]OC1=C([H:3])C=C(C=C1)N([H:2])C(=O)C[H:4]",
-                                 {1: "a", 2: "b", 3: "c", 4: "d"})]),
-        choices=["Ha (the phenol O–H), because O is more electronegative than N",
-                 "Hb (the amide N–H), because the N⁻ charge is delocalized onto the carbonyl O",
-                 "Hc (the aromatic C–H), because it is on an sp²-hybridized carbon",
-                 "Hd (the CH₃ hydrogen), because it is next to a C=O"],
-        why="Ha and Hb both give resonance-stabilized bases, so look at factor 1 first: the charge is on O in one and on N in the other. Same row, so the more electronegative O wins. Hc and Hd are C–H bonds, which is the weakest factor 1 outcome.")
+                                 {1: "1", 2: "2", 3: "3", 4: "4"})]),
+        choices=["H₁ (the phenol O–H), because O is more electronegative than N",
+                 "H₂ (the amide N–H), because the N⁻ charge is delocalized onto the carbonyl O",
+                 "H₃ (the aromatic C–H), because it is on an sp²-hybridized carbon",
+                 "H₄ (the CH₃ hydrogen), because it is next to a C=O"],
+        why="H₁ and H₂ both give resonance-stabilized bases, so look at factor 1 first: the charge is on O in one and on N in the other. Same row, so the more electronegative O wins. H₃ and H₄ are C–H bonds, which is the weakest factor 1 outcome.")
 
     add(topic="Atom", level="Direct",
         stem="Two anions are shown. Which is the stronger base, and why?",
@@ -145,39 +146,39 @@ def build():
     # ===== Part 2: Resonance ===============================================
     add(topic="Resonance", level="Direct",
         stem="4-Hydroxybutanoic acid has the labeled hydrogens shown. Which is the most acidic?",
-        stem_img=save("q05", [SH("[H:2]OCCC([H:3])C(=O)O[H:1]", {1: "a", 2: "b", 3: "c"})]),
-        choices=["Ha (the carboxylic acid O–H), because its conjugate base is resonance stabilized",
-                 "Hb (the alcohol O–H), because alcohols are more acidic than carboxylic acids",
-                 "Hc (the C–H next to C=O), because it is next to a carbonyl",
-                 "Ha and Hb are equally acidic because both are on oxygen"],
-        why="Ha and Hb both put the charge on O, so atom does not decide. The carboxylate is delocalized over two oxygens by resonance; the alkoxide is localized. Hc is a C–H (atom favors O).")
+        stem_img=save("q05", [SH("[H:2]OCCC([H:3])C(=O)O[H:1]", {1: "1", 2: "2", 3: "3"})]),
+        choices=["H₁ (the carboxylic acid O–H), because its conjugate base is resonance stabilized",
+                 "H₂ (the alcohol O–H), because alcohols are more acidic than carboxylic acids",
+                 "H₃ (the C–H next to C=O), because it is next to a carbonyl",
+                 "H₁ and H₂ are equally acidic because both are on oxygen"],
+        why="H₁ and H₂ both put the charge on O, so atom does not decide. The carboxylate is delocalized over two oxygens by resonance; the alkoxide is localized. H₃ is a C–H (atom favors O).")
 
     add(topic="Resonance", level="Two-factor",
         stem="Which labeled hydrogen in the following compound is the most acidic?",
         stem_img=save("q06", [SH("CN([H:1])C([H:4])C([H:3])C(=O)N([H:2])C",
-                                 {1: "a", 2: "b", 3: "c", 4: "d"})]),
-        choices=["Hb (the amide N–H)", "Ha (the amine N–H)", "Hc (the C–H next to C=O)",
-                 "Hd (the C–H next to the amine N)"],
-        why="Ha and Hb are both N–H, so factor 1 ties. Deprotonating the amide N–H gives a base whose charge is delocalized onto the carbonyl O by resonance; the amine N⁻ is localized. Hc and Hd are C–H bonds and lose on factor 1.")
+                                 {1: "1", 2: "2", 3: "3", 4: "4"})]),
+        choices=["H₂ (the amide N–H)", "H₁ (the amine N–H)", "H₃ (the C–H next to C=O)",
+                 "H₄ (the C–H next to the amine N)"],
+        why="H₁ and H₂ are both N–H, so factor 1 ties. Deprotonating the amide N–H gives a base whose charge is delocalized onto the carbonyl O by resonance; the amine N⁻ is localized. H₃ and H₄ are C–H bonds and lose on factor 1.")
 
     add(topic="Resonance", level="Direct",
         stem="Which labeled hydrogen is the most acidic?",
-        stem_img=save("q07", [SH("[H:1]OC1=CC=C(C=C1)C([H:3])O[H:2]", {1: "a", 2: "b", 3: "c"})]),
-        choices=["Ha (the phenol O–H), because the phenoxide charge is delocalized into the ring",
-                 "Hb (the benzylic alcohol O–H), because the alkoxide is more electronegative",
-                 "Hc (the benzylic C–H), because the carbanion is next to a ring",
+        stem_img=save("q07", [SH("[H:1]OC1=CC=C(C=C1)C([H:3])O[H:2]", {1: "1", 2: "2", 3: "3"})]),
+        choices=["H₁ (the phenol O–H), because the phenoxide charge is delocalized into the ring",
+                 "H₂ (the benzylic alcohol O–H), because the alkoxide is more electronegative",
+                 "H₃ (the benzylic C–H), because the carbanion is next to a ring",
                  "All three are equally acidic"],
-        why="Ha and Hb both give O⁻, so factor 1 does not decide (Hc is a C–H, which loses). Only the phenoxide is resonance stabilized; the benzylic alkoxide is not.")
+        why="H₁ and H₂ both give O⁻, so factor 1 does not decide (H₃ is a C–H, which loses). Only the phenoxide is resonance stabilized; the benzylic alkoxide is not.")
 
     add(topic="Resonance", level="Two-factor",
         stem="Ethyl acetoacetate has the labeled hydrogens shown. Which one is the most acidic?",
         stem_img=save("q08", [SH("C([H:1])C(=O)C([H:2])C(=O)OC([H:3])C[H:4]",
-                                 {1: "a", 2: "b", 3: "c", 4: "d"})]),
-        choices=["Hb (the CH₂ between the two C=O groups)",
-                 "Ha (the CH₃ next to the ketone)",
-                 "Hc (the OCH₂ hydrogen)",
-                 "Hd (the CH₃ of the ethyl group)"],
-        why="All four are C–H bonds, so factor 1 is a tie. Only removing Hb gives a base whose charge is delocalized onto two carbonyl oxygens. Ha gives a base delocalized onto only one.")
+                                 {1: "1", 2: "2", 3: "3", 4: "4"})]),
+        choices=["H₂ (the CH₂ between the two C=O groups)",
+                 "H₁ (the CH₃ next to the ketone)",
+                 "H₃ (the OCH₂ hydrogen)",
+                 "H₄ (the CH₃ of the ethyl group)"],
+        why="All four are C–H bonds, so factor 1 is a tie. Only removing H₂ gives a base whose charge is delocalized onto two carbonyl oxygens. H₁ gives a base delocalized onto only one.")
 
     def add_arrow_q(topic, level, stem, builder, variants, why, name):
         # variants[0] is the correct one
@@ -209,10 +210,10 @@ def build():
 
     add(topic="Resonance", level="Two-factor",
         stem="Cyclopentadiene is shown. Which labeled hydrogen is the most acidic?",
-        stem_img=save("q11", [SH("C1([H:1])C([H:2])=C([H:3])C=C1", {1: "a", 2: "b", 3: "c"})]),
-        choices=["Ha (the CH₂ hydrogen)", "Hb (the vinyl H next to the CH₂)", "Hc (the other vinyl H)",
+        stem_img=save("q11", [SH("C1([H:1])C([H:2])=C([H:3])C=C1", {1: "1", 2: "2", 3: "3"})]),
+        choices=["H₁ (the CH₂ hydrogen)", "H₂ (the vinyl H next to the CH₂)", "H₃ (the other vinyl H)",
                  "All three are equally acidic"],
-        why="All are C–H bonds. Removing Ha gives the cyclopentadienyl anion, with the charge delocalized over five carbons by resonance. Removing a vinyl H (Hb or Hc) puts the charge in an sp² orbital that does not overlap with the π system, so there is no resonance.")
+        why="All are C–H bonds. Removing H₁ gives the cyclopentadienyl anion, with the charge delocalized over five carbons by resonance. Removing a vinyl H (H₂ or H₃) puts the charge in an sp² orbital that does not overlap with the π system, so there is no resonance.")
 
     # ===== Part 3: Induction ===============================================
     add(topic="Induction", level="Two-factor",
@@ -224,12 +225,12 @@ def build():
 
     add(topic="Induction", level="Two-factor",
         stem="Which labeled hydrogen is the most acidic?",
-        stem_img=save("q13", [SH("[H:1]OC([*:9])([*:8])CCCO[H:2]", {1: "a", 2: "b"},
+        stem_img=save("q13", [SH("[H:1]OC([*:9])([*:8])CCCO[H:2]", {1: "1", 2: "2"},
                                  atomlabels={8: CF3, 9: CF3})]),
-        choices=["Ha, because the CF₃ groups stabilize the nearby alkoxide by induction",
-                 "Hb, because primary alcohols are less hindered",
-                 "Hb, because it is far from the electron-withdrawing groups",
-                 "Ha and Hb are equally acidic"],
+        choices=["H₁, because the CF₃ groups stabilize the nearby alkoxide by induction",
+                 "H₂, because primary alcohols are less hindered",
+                 "H₂, because it is far from the electron-withdrawing groups",
+                 "H₁ and H₂ are equally acidic"],
         why="Both conjugate bases have the charge on O with no resonance. The three F atoms on each CF₃ pull electron density through the σ bonds and stabilize the nearby O⁻. The other alkoxide is too far away to feel it.")
 
     add(topic="Induction", level="Two-factor",
@@ -242,8 +243,8 @@ def build():
     # ===== Part 4: Orbitals ===============================================
     add(topic="Orbitals", level="Direct",
         stem="Which labeled hydrogen in the following compound is the most acidic?",
-        stem_img=save("q15", [SH("[H:1]C#CCC([H:4])CC([H:2])=C[H:3]", {1: "a", 2: "b", 3: "c", 4: "d"})]),
-        choices=["Ha (the alkyne H)", "Hb (the internal vinyl H)", "Hc (the terminal vinyl H)", "Hd (the CH₂)"],
+        stem_img=save("q15", [SH("[H:1]C#CCC([H:4])CC([H:2])=C[H:3]", {1: "1", 2: "2", 3: "3", 4: "4"})]),
+        choices=["H₁ (the alkyne H)", "H₂ (the internal vinyl H)", "H₃ (the terminal vinyl H)", "H₄ (the CH₂)"],
         why="All are C–H bonds, with no resonance or induction available. Only the orbital differs: sp (alkyne) > sp² (vinyl) > sp³ (alkyl). The sp orbital has the most s character, holding the lone pair closest to the nucleus.")
 
     add(topic="Orbitals", level="Direct",
@@ -265,32 +266,32 @@ def build():
     # ===== Part 5: Competing factors =======================================
     add(topic="Competing factors", level="Challenge",
         stem="Which of the labeled hydrogens is more acidic?",
-        stem_img=save("q18", [Text("I", 22, True), SH("CCO[H:1]", {1: "a"}),
-                              Text("II", 22, True), SH("C=CC[H:2]", {2: "b"})], gap=30),
-        choices=["Ha in I (ethanol), because the atom (O vs. C) outranks resonance",
-                 "Hb in II (propene), because the allyl anion is resonance stabilized",
-                 "Hb in II (propene), because the carbon is sp² hybridized",
+        stem_img=save("q18", [Text("I", 22, True), SH("CCO[H:1]", {1: "1"}),
+                              Text("II", 22, True), SH("C=CC[H:2]", {2: "2"})], gap=30),
+        choices=["H₁ in I (ethanol), because the atom (O vs. C) outranks resonance",
+                 "H₂ in II (propene), because the allyl anion is resonance stabilized",
+                 "H₂ in II (propene), because the carbon is sp² hybridized",
                  "They are about equal"],
         why="Propene's CH₃ gives a resonance-stabilized allyl anion, but the charge is on carbon. Ethoxide has the charge on O. The atom (factor 1) takes priority over resonance (factor 2).")
 
     add(topic="Competing factors", level="Challenge",
         stem="Which labeled hydrogen is the most acidic?",
-        stem_img=save("q19", [SH("O=C(O[H:1])CCCC(O[H:2])[*:9]", {1: "a", 2: "b"},
+        stem_img=save("q19", [SH("O=C(O[H:1])CCCC(O[H:2])[*:9]", {1: "1", 2: "2"},
                                  atomlabels={9: CF3})]),
-        choices=["Ha, because resonance outranks induction",
-                 "Hb, because the CF₃ group stabilizes the alkoxide by induction",
-                 "Hb, because alcohols are more acidic than carboxylic acids",
+        choices=["H₁, because resonance outranks induction",
+                 "H₂, because the CF₃ group stabilizes the alkoxide by induction",
+                 "H₂, because alcohols are more acidic than carboxylic acids",
                  "They are equally acidic"],
         why="Both put the charge on O, so factor 1 ties. The carboxylate is resonance stabilized (factor 2); the alkoxide only has the inductive effect of CF₃ (factor 3). Resonance beats induction.")
 
     add(topic="Competing factors", level="Challenge",
         stem="Which labeled hydrogen is more acidic?",
-        stem_img=save("q20", [SH("[H:1]C#CCCO[H:2]", {1: "a", 2: "b"})]),
-        choices=["Hb, because the atom (O vs. C) outranks the orbital",
-                 "Ha, because an sp carbanion is the most stable",
-                 "Ha, because the alkynide ion is resonance stabilized",
+        stem_img=save("q20", [SH("[H:1]C#CCCO[H:2]", {1: "1", 2: "2"})]),
+        choices=["H₂, because the atom (O vs. C) outranks the orbital",
+                 "H₁, because an sp carbanion is the most stable",
+                 "H₁, because the alkynide ion is resonance stabilized",
                  "They are about equal"],
-        why="Ha gives a carbanion on an sp carbon; Hb gives an alkoxide. Atom comes before orbital: O⁻ is more stable than C⁻ even in an sp orbital.")
+        why="H₁ gives a carbanion on an sp carbon; H₂ gives an alkoxide. Atom comes before orbital: O⁻ is more stable than C⁻ even in an sp orbital.")
 
     add(topic="Competing factors", level="Challenge",
         stem="Rank these from LEAST acidic to MOST acidic.",
@@ -301,10 +302,10 @@ def build():
 
     add(topic="Competing factors", level="Two-factor",
         stem="Aspirin is shown. Which labeled hydrogen is the most acidic?",
-        stem_img=save("q22", [SH("O=C(O[H:1])C1=C(OC(=O)C[H:3])C([H:2])=CC=C1", {1: "a", 2: "b", 3: "c"})]),
-        choices=["Ha (the carboxylic acid O–H)", "Hb (the aromatic C–H)", "Hc (the CH₃ on the acetyl group)",
+        stem_img=save("q22", [SH("O=C(O[H:1])C1=C(OC(=O)C[H:3])C([H:2])=CC=C1", {1: "1", 2: "2", 3: "3"})]),
+        choices=["H₁ (the carboxylic acid O–H)", "H₂ (the aromatic C–H)", "H₃ (the CH₃ on the acetyl group)",
                  "All three are about equally acidic"],
-        why="Ha puts the charge on O (factor 1) and the carboxylate is resonance stabilized. Hb and Hc put the charge on carbon, which loses on factor 1.")
+        why="H₁ puts the charge on O (factor 1) and the carboxylate is resonance stabilized. H₂ and H₃ put the charge on carbon, which loses on factor 1.")
 
     # ===== Part 6: Position of equilibrium =================================
     def rxn(name, left, right):
@@ -383,5 +384,53 @@ def build():
         choices_img=[("img", None, "[H]C#[C-:1]"), ("img", None, "CC(=O)[O-:1]"),
                      ("img", None, "[O-:1]C1=CC=CC=C1"), ("img", None, "C[S-:1]")],
         why="Ethanol deprotonates to give ethoxide, so the base must be a less stable (stronger) base than ethoxide. Acetate (resonance), phenoxide (resonance), and CH₃S⁻ (larger atom) are all more stable than ethoxide. The alkynide ion has the charge on C and is less stable.")
+
+    # ===== Part 7: Nomenclature of branched alkanes ========================
+    def name_q(n_img, smi, correct, wrong, why, stem="Which is the correct IUPAC name for this alkane?"):
+        # independent check: the stated answer must match the structure
+        assert name_alkane(smi) == correct, (smi, correct, name_alkane(smi))
+        for w in wrong:
+            assert w != correct
+        add(topic="Nomenclature", level="Direct", stem=stem,
+            stem_img=save(n_img, [S(smi)]), choices=[correct] + wrong, why=why)
+
+    name_q("q31", "CC(C)CCC", "2-methylpentane",
+           ["4-methylpentane", "3-methylpentane", "2-ethylbutane"],
+           "The longest chain has 5 carbons (pentane) with one methyl branch. Number from the end that gives the branch the lower number: 2-methylpentane, not 4-methylpentane.")
+    name_q("q32", "CCC(C)CCC", "3-methylhexane",
+           ["4-methylhexane", "2-ethylpentane", "3-methylpentane"],
+           "The longest chain has 6 carbons (hexane). The methyl is on carbon 3 when numbered from the left and carbon 4 from the right, so use the lower number: 3-methylhexane.")
+    name_q("q33", "CC(C)(C)CC", "2,2-dimethylbutane",
+           ["3,3-dimethylbutane", "2-ethyl-2-methylpropane", "2,2-dimethylpropane"],
+           "The longest chain has 4 carbons (butane) with two methyl groups on the same carbon. Number from the end that gives them the lower number (2,2), and repeat the locant for each methyl.")
+    name_q("q34", "CC(C)C(C)CC", "2,3-dimethylpentane",
+           ["3,4-dimethylpentane", "2-methyl-3-methylpentane", "2,3-dimethylhexane"],
+           "The longest chain has 5 carbons (pentane) with two methyl branches. Numbering from the left gives locants 2,3; from the right it gives 3,4. Use 2,3 and combine the identical groups as dimethyl.")
+    name_q("q35", "CCC(CC)CC", "3-ethylpentane",
+           ["3-methylhexane", "3-propylbutane", "heptane"],
+           "The longest chain has 5 carbons: the central carbon can be reached by chains through any two of the three ethyl groups. The third ethyl is the branch on carbon 3: 3-ethylpentane. (Choosing a 6-carbon chain is not possible for this structure.)")
+    name_q("q36", "CC(C)CC(CC)CC", "4-ethyl-2-methylhexane",
+           ["3-ethyl-5-methylhexane", "2-methyl-4-ethylhexane", "2-ethyl-4-methylhexane"],
+           "The longest chain has 6 carbons (hexane). Numbering from the left gives locants 2,4; from the right it gives 3,5, so use 2,4. List the substituents in alphabetical order: ethyl comes before methyl, so 4-ethyl-2-methylhexane.")
+    name_q("q37", "CC(C)CC(C)(C)C", "2,2,4-trimethylpentane",
+           ["2,4,4-trimethylpentane", "2,2,3-trimethylpentane", "2,2,4-trimethylhexane"],
+           "The longest chain has 5 carbons (pentane) with three methyl groups. Numbering from the end that gives the lowest locants gives 2,2,4 (from the other end the set would be 2,4,4). Three identical groups use the prefix tri.")
+    name_q("q38", "CC(C)C(CC)CC", "3-ethyl-2-methylpentane",
+           ["2-methyl-3-ethylpentane", "3-ethyl-4-methylpentane", "2,3-diethylbutane"],
+           "The longest chain has 5 carbons (pentane). Numbering from the left gives the substituents locants 2 and 3; from the right they would be 3 and 4. Alphabetical order puts ethyl before methyl: 3-ethyl-2-methylpentane.")
+    name_q("q39", "CC(C)CCC(C)C", "2,5-dimethylhexane",
+           ["2,4-dimethylhexane", "1,1,4-trimethylpentane", "2-methyl-5-methylhexane"],
+           "The longest chain has 6 carbons (hexane) with a methyl on each side. The molecule is symmetric, so both directions give 2,5. Combine the two identical groups as dimethyl: 2,5-dimethylhexane.")
+
+    # ---- structure from a name (drawn choices)
+    assert name_alkane("CC(C)C(C)(C)CC") == "2,3,3-trimethylpentane"
+    for smi, nm in (("CC(C)(C)C(C)CC", "2,2,3-trimethylpentane"), ("CC(C)C(C)C(C)C", "2,3,4-trimethylpentane"),
+                    ("CC(C)CC(C)(C)C", "2,2,4-trimethylpentane")):
+        assert name_alkane(smi) == nm, (smi, nm)
+    add(topic="Nomenclature", level="Two-factor",
+        stem="Which structure is 2,3,3-trimethylpentane?",
+        choices_img=[("img", None, "CC(C)C(C)(C)CC"), ("img", None, "CC(C)(C)C(C)CC"),
+                     ("img", None, "CC(C)C(C)C(C)C"), ("img", None, "CC(C)CC(C)(C)C")],
+        why="Draw a 5-carbon chain and put one methyl on carbon 2 and two methyls on carbon 3. The other three choices are the isomers 2,2,3-trimethylpentane, 2,3,4-trimethylpentane and 2,2,4-trimethylpentane.")
 
     return Q

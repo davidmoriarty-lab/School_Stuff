@@ -1,0 +1,1122 @@
+[
+ {
+  "id": "Q01",
+  "number": 1,
+  "topic": "Atom",
+  "level": "Direct",
+  "stem": "Ethanolamine has three different kinds of hydrogen, labeled below. Which labeled H is the most acidic?",
+  "stem_image": "img/q01.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "H₁ (the C–H on the carbon bearing O)"
+   },
+   {
+    "type": "text",
+    "value": "H₂ (the N–H)"
+   },
+   {
+    "type": "text",
+    "value": "H₃ (the O–H)"
+   },
+   {
+    "type": "text",
+    "value": "All three are about equally acidic"
+   }
+  ],
+  "answer": "C",
+  "why": "Each conjugate base has its charge on a different atom: C, N or O. These are in the same row, so electronegativity decides. O is the most electronegative, so RO⁻ is the most stable base and the O–H is the most acidic."
+ },
+ {
+  "id": "Q02",
+  "number": 2,
+  "topic": "Atom",
+  "level": "Two-factor",
+  "stem": "Which labeled hydrogen in 3-mercaptopropan-1-ol is the most acidic?",
+  "stem_image": "img/q02.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "H₁ (the O–H), because O is more electronegative than S"
+   },
+   {
+    "type": "text",
+    "value": "H₂ (the S–H), because S is larger than O and spreads the charge over a larger volume"
+   },
+   {
+    "type": "text",
+    "value": "H₃ (the C–H next to S), because it is closest to the large S atom"
+   },
+   {
+    "type": "text",
+    "value": "H₁ and H₂ are equally acidic because O and S are in the same column"
+   }
+  ],
+  "answer": "B",
+  "why": "Compare RS⁻ with RO⁻. O and S are in the same column, so size is the dominant effect, not electronegativity. The larger S⁻ is more stable, so the S–H is more acidic."
+ },
+ {
+  "id": "Q03",
+  "number": 3,
+  "topic": "Atom",
+  "level": "Two-factor",
+  "stem": "Acetaminophen (Tylenol) is shown below. Which labeled H is the most acidic?",
+  "stem_image": "img/q03.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "H₁ (the phenol O–H), because O is more electronegative than N"
+   },
+   {
+    "type": "text",
+    "value": "H₂ (the amide N–H), because the N⁻ charge is delocalized onto the carbonyl O"
+   },
+   {
+    "type": "text",
+    "value": "H₃ (the aromatic C–H), because it is on an sp²-hybridized carbon"
+   },
+   {
+    "type": "text",
+    "value": "H₄ (the CH₃ hydrogen), because it is next to a C=O"
+   }
+  ],
+  "answer": "A",
+  "why": "H₁ and H₂ both give resonance-stabilized bases, so look at factor 1 first: the charge is on O in one and on N in the other. Same row, so the more electronegative O wins. H₃ and H₄ are C–H bonds, which is the weakest factor 1 outcome."
+ },
+ {
+  "id": "Q04",
+  "number": 4,
+  "topic": "Atom",
+  "level": "Direct",
+  "stem": "Two anions are shown. Which is the stronger base, and why?",
+  "stem_image": "img/q04.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "I, because O is more electronegative, so its charge is held more tightly"
+   },
+   {
+    "type": "text",
+    "value": "II, because N is less electronegative than O, so the negative charge on N is less stable"
+   },
+   {
+    "type": "text",
+    "value": "I, because O is larger than N"
+   },
+   {
+    "type": "text",
+    "value": "They are equally basic because both anions have a lone pair"
+   }
+  ],
+  "answer": "B",
+  "why": "Both charges are in the same row of the periodic table, so electronegativity decides. N is less electronegative than O, so N⁻ is less stable (stronger base)."
+ },
+ {
+  "id": "Q05",
+  "number": 5,
+  "topic": "Resonance",
+  "level": "Direct",
+  "stem": "4-Hydroxybutanoic acid has the labeled hydrogens shown. Which is the most acidic?",
+  "stem_image": "img/q05.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "H₂ (the alcohol O–H), because alcohols are more acidic than carboxylic acids"
+   },
+   {
+    "type": "text",
+    "value": "H₃ (the C–H next to C=O), because it is next to a carbonyl"
+   },
+   {
+    "type": "text",
+    "value": "H₁ and H₂ are equally acidic because both are on oxygen"
+   },
+   {
+    "type": "text",
+    "value": "H₁ (the carboxylic acid O–H), because its conjugate base is resonance stabilized"
+   }
+  ],
+  "answer": "D",
+  "why": "H₁ and H₂ both put the charge on O, so atom does not decide. The carboxylate is delocalized over two oxygens by resonance; the alkoxide is localized. H₃ is a C–H (atom favors O)."
+ },
+ {
+  "id": "Q06",
+  "number": 6,
+  "topic": "Resonance",
+  "level": "Two-factor",
+  "stem": "Which labeled hydrogen in the following compound is the most acidic?",
+  "stem_image": "img/q06.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "H₁ (the amine N–H)"
+   },
+   {
+    "type": "text",
+    "value": "H₃ (the C–H next to C=O)"
+   },
+   {
+    "type": "text",
+    "value": "H₂ (the amide N–H)"
+   },
+   {
+    "type": "text",
+    "value": "H₄ (the C–H next to the amine N)"
+   }
+  ],
+  "answer": "C",
+  "why": "H₁ and H₂ are both N–H, so factor 1 ties. Deprotonating the amide N–H gives a base whose charge is delocalized onto the carbonyl O by resonance; the amine N⁻ is localized. H₃ and H₄ are C–H bonds and lose on factor 1."
+ },
+ {
+  "id": "Q07",
+  "number": 7,
+  "topic": "Resonance",
+  "level": "Direct",
+  "stem": "Which labeled hydrogen is the most acidic?",
+  "stem_image": "img/q07.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "H₁ (the phenol O–H), because the phenoxide charge is delocalized into the ring"
+   },
+   {
+    "type": "text",
+    "value": "H₂ (the benzylic alcohol O–H), because the alkoxide is more electronegative"
+   },
+   {
+    "type": "text",
+    "value": "H₃ (the benzylic C–H), because the carbanion is next to a ring"
+   },
+   {
+    "type": "text",
+    "value": "All three are equally acidic"
+   }
+  ],
+  "answer": "A",
+  "why": "H₁ and H₂ both give O⁻, so factor 1 does not decide (H₃ is a C–H, which loses). Only the phenoxide is resonance stabilized; the benzylic alkoxide is not."
+ },
+ {
+  "id": "Q08",
+  "number": 8,
+  "topic": "Resonance",
+  "level": "Two-factor",
+  "stem": "Ethyl acetoacetate has the labeled hydrogens shown. Which one is the most acidic?",
+  "stem_image": "img/q08.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "H₁ (the CH₃ next to the ketone)"
+   },
+   {
+    "type": "text",
+    "value": "H₂ (the CH₂ between the two C=O groups)"
+   },
+   {
+    "type": "text",
+    "value": "H₃ (the OCH₂ hydrogen)"
+   },
+   {
+    "type": "text",
+    "value": "H₄ (the CH₃ of the ethyl group)"
+   }
+  ],
+  "answer": "B",
+  "why": "All four are C–H bonds, so factor 1 is a tie. Only removing H₂ gives a base whose charge is delocalized onto two carbonyl oxygens. H₁ gives a base delocalized onto only one."
+ },
+ {
+  "id": "Q09",
+  "number": 9,
+  "topic": "Resonance",
+  "level": "Two-factor",
+  "stem": "Acetate is shown. Which set of curved arrows correctly converts this resonance structure into the other one?",
+  "stem_image": null,
+  "options": [
+   {
+    "type": "img",
+    "value": "img/q09_A.png"
+   },
+   {
+    "type": "img",
+    "value": "img/q09_B.png"
+   },
+   {
+    "type": "img",
+    "value": "img/q09_C.png"
+   },
+   {
+    "type": "img",
+    "value": "img/q09_D.png"
+   }
+  ],
+  "answer": "A",
+  "why": "Arrow 1 starts on a lone pair of O⁻ and ends between O and C (forming the C=O π bond). Arrow 2 starts on the C=O π bond and ends on the other O (becoming a lone pair). Every arrow goes from electrons to where the electrons end up."
+ },
+ {
+  "id": "Q10",
+  "number": 10,
+  "topic": "Resonance",
+  "level": "Two-factor",
+  "stem": "Which set of curved arrows correctly shows the charge of phenoxide moving onto an ortho carbon?",
+  "stem_image": null,
+  "options": [
+   {
+    "type": "img",
+    "value": "img/q10_A.png"
+   },
+   {
+    "type": "img",
+    "value": "img/q10_B.png"
+   },
+   {
+    "type": "img",
+    "value": "img/q10_C.png"
+   },
+   {
+    "type": "img",
+    "value": "img/q10_D.png"
+   }
+  ],
+  "answer": "C",
+  "why": "Arrow 1: lone pair on O⁻ forms the C=O π bond. Arrow 2: the adjacent ring C=C π bond moves onto the ortho carbon as a lone pair. A single arrow leaves the ipso carbon with five bonds, and moving the electrons to a meta carbon is not a valid resonance shift. The delocalization of charge into the ring is why phenol is more acidic than an alcohol."
+ },
+ {
+  "id": "Q11",
+  "number": 11,
+  "topic": "Resonance",
+  "level": "Two-factor",
+  "stem": "Cyclopentadiene is shown. Which labeled hydrogen is the most acidic?",
+  "stem_image": "img/q11.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "H₂ (the vinyl H next to the CH₂)"
+   },
+   {
+    "type": "text",
+    "value": "H₃ (the other vinyl H)"
+   },
+   {
+    "type": "text",
+    "value": "All three are equally acidic"
+   },
+   {
+    "type": "text",
+    "value": "H₁ (the CH₂ hydrogen)"
+   }
+  ],
+  "answer": "D",
+  "why": "All are C–H bonds. Removing H₁ gives the cyclopentadienyl anion, with the charge delocalized over five carbons by resonance. Removing a vinyl H (H₂ or H₃) puts the charge in an sp² orbital that does not overlap with the π system, so there is no resonance."
+ },
+ {
+  "id": "Q12",
+  "number": 12,
+  "topic": "Induction",
+  "level": "Two-factor",
+  "stem": "Rank the carboxylic acids from LEAST acidic to MOST acidic.",
+  "stem_image": "img/q12.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "III < II < I"
+   },
+   {
+    "type": "text",
+    "value": "I < II < III"
+   },
+   {
+    "type": "text",
+    "value": "II < I < III"
+   },
+   {
+    "type": "text",
+    "value": "I < III < II"
+   }
+  ],
+  "answer": "B",
+  "why": "All three have the same atom and resonance. Cl withdraws electron density by induction and stabilizes the carboxylate. The effect weakens with distance: III (Cl on the α carbon) > II (Cl on the γ carbon) > I (no Cl)."
+ },
+ {
+  "id": "Q13",
+  "number": 13,
+  "topic": "Induction",
+  "level": "Two-factor",
+  "stem": "Which labeled hydrogen is the most acidic?",
+  "stem_image": "img/q13.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "H₁, because the CF₃ groups stabilize the nearby alkoxide by induction"
+   },
+   {
+    "type": "text",
+    "value": "H₂, because primary alcohols are less hindered"
+   },
+   {
+    "type": "text",
+    "value": "H₂, because it is far from the electron-withdrawing groups"
+   },
+   {
+    "type": "text",
+    "value": "H₁ and H₂ are equally acidic"
+   }
+  ],
+  "answer": "A",
+  "why": "Both conjugate bases have the charge on O with no resonance. The three F atoms on each CF₃ pull electron density through the σ bonds and stabilize the nearby O⁻. The other alkoxide is too far away to feel it."
+ },
+ {
+  "id": "Q14",
+  "number": 14,
+  "topic": "Induction",
+  "level": "Two-factor",
+  "stem": "Which acid is the strongest?",
+  "stem_image": null,
+  "options": [
+   {
+    "type": "img",
+    "value": "img/q14_A.png"
+   },
+   {
+    "type": "img",
+    "value": "img/q14_B.png"
+   },
+   {
+    "type": "img",
+    "value": "img/q14_C.png"
+   },
+   {
+    "type": "img",
+    "value": "img/q14_D.png"
+   }
+  ],
+  "answer": "D",
+  "why": "Same atom, no change in resonance. The halogen on the α carbon withdraws electron density by induction. F is the most electronegative, so FCH₂CO₂⁻ is the most stabilized."
+ },
+ {
+  "id": "Q15",
+  "number": 15,
+  "topic": "Orbitals",
+  "level": "Direct",
+  "stem": "Which labeled hydrogen in the following compound is the most acidic?",
+  "stem_image": "img/q15.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "H₂ (the internal vinyl H)"
+   },
+   {
+    "type": "text",
+    "value": "H₃ (the terminal vinyl H)"
+   },
+   {
+    "type": "text",
+    "value": "H₁ (the alkyne H)"
+   },
+   {
+    "type": "text",
+    "value": "H₄ (the CH₂)"
+   }
+  ],
+  "answer": "C",
+  "why": "All are C–H bonds, with no resonance or induction available. Only the orbital differs: sp (alkyne) > sp² (vinyl) > sp³ (alkyl). The sp orbital has the most s character, holding the lone pair closest to the nucleus."
+ },
+ {
+  "id": "Q16",
+  "number": 16,
+  "topic": "Orbitals",
+  "level": "Direct",
+  "stem": "Which of these anions is the strongest base?",
+  "stem_image": null,
+  "options": [
+   {
+    "type": "img",
+    "value": "img/q16_A.png"
+   },
+   {
+    "type": "img",
+    "value": "img/q16_B.png"
+   },
+   {
+    "type": "img",
+    "value": "img/q16_C.png"
+   },
+   {
+    "type": "text",
+    "value": "All three are equally basic because the charge is on carbon in each"
+   }
+  ],
+  "answer": "C",
+  "why": "The charge is on carbon in all three, with no resonance or induction. The orbital differs: the alkyl anion has the charge in an sp³ orbital (highest energy, least stable, strongest base). The alkynide is in an sp orbital (most stable, weakest base)."
+ },
+ {
+  "id": "Q17",
+  "number": 17,
+  "topic": "Orbitals",
+  "level": "Direct",
+  "stem": "A terminal alkyne C–H is more acidic than an alkene C–H. Which statement best explains why?",
+  "stem_image": null,
+  "options": [
+   {
+    "type": "text",
+    "value": "The sp carbon has more p character, so it is more electronegative"
+   },
+   {
+    "type": "text",
+    "value": "The electron pair in the sp orbital is held closer to the nucleus, so the alkynide ion is more stable"
+   },
+   {
+    "type": "text",
+    "value": "The alkynide ion has resonance structures that spread out the charge"
+   },
+   {
+    "type": "text",
+    "value": "The triple bond withdraws electron density from the C–H bond by induction"
+   }
+  ],
+  "answer": "B",
+  "why": "This is factor 4 (orbitals). An sp orbital is 50% s character, which is closer to the nucleus than the 33% s character of an sp² orbital, so the lone pair in an sp orbital is lower in energy."
+ },
+ {
+  "id": "Q18",
+  "number": 18,
+  "topic": "Competing factors",
+  "level": "Challenge",
+  "stem": "Which of the labeled hydrogens is more acidic?",
+  "stem_image": "img/q18.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "H₂ in II (propene), because the allyl anion is resonance stabilized"
+   },
+   {
+    "type": "text",
+    "value": "H₂ in II (propene), because the carbon is sp² hybridized"
+   },
+   {
+    "type": "text",
+    "value": "They are about equal"
+   },
+   {
+    "type": "text",
+    "value": "H₁ in I (ethanol), because the atom (O vs. C) outranks resonance"
+   }
+  ],
+  "answer": "D",
+  "why": "Propene's CH₃ gives a resonance-stabilized allyl anion, but the charge is on carbon. Ethoxide has the charge on O. The atom (factor 1) takes priority over resonance (factor 2)."
+ },
+ {
+  "id": "Q19",
+  "number": 19,
+  "topic": "Competing factors",
+  "level": "Challenge",
+  "stem": "Which labeled hydrogen is the most acidic?",
+  "stem_image": "img/q19.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "H₁, because resonance outranks induction"
+   },
+   {
+    "type": "text",
+    "value": "H₂, because the CF₃ group stabilizes the alkoxide by induction"
+   },
+   {
+    "type": "text",
+    "value": "H₂, because alcohols are more acidic than carboxylic acids"
+   },
+   {
+    "type": "text",
+    "value": "They are equally acidic"
+   }
+  ],
+  "answer": "A",
+  "why": "Both put the charge on O, so factor 1 ties. The carboxylate is resonance stabilized (factor 2); the alkoxide only has the inductive effect of CF₃ (factor 3). Resonance beats induction."
+ },
+ {
+  "id": "Q20",
+  "number": 20,
+  "topic": "Competing factors",
+  "level": "Challenge",
+  "stem": "Which labeled hydrogen is more acidic?",
+  "stem_image": "img/q20.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "H₁, because an sp carbanion is the most stable"
+   },
+   {
+    "type": "text",
+    "value": "H₁, because the alkynide ion is resonance stabilized"
+   },
+   {
+    "type": "text",
+    "value": "H₂, because the atom (O vs. C) outranks the orbital"
+   },
+   {
+    "type": "text",
+    "value": "They are about equal"
+   }
+  ],
+  "answer": "C",
+  "why": "H₁ gives a carbanion on an sp carbon; H₂ gives an alkoxide. Atom comes before orbital: O⁻ is more stable than C⁻ even in an sp orbital."
+ },
+ {
+  "id": "Q21",
+  "number": 21,
+  "topic": "Competing factors",
+  "level": "Challenge",
+  "stem": "Rank these from LEAST acidic to MOST acidic.",
+  "stem_image": "img/q21.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "III < II < I"
+   },
+   {
+    "type": "text",
+    "value": "II < I < III"
+   },
+   {
+    "type": "text",
+    "value": "I < III < II"
+   },
+   {
+    "type": "text",
+    "value": "I < II < III"
+   }
+  ],
+  "answer": "D",
+  "why": "All three have the charge on O. III is resonance stabilized (factor 2), the strongest effect here. II has the inductive effect of three F atoms (factor 3), and I has neither."
+ },
+ {
+  "id": "Q22",
+  "number": 22,
+  "topic": "Competing factors",
+  "level": "Two-factor",
+  "stem": "Aspirin is shown. Which labeled hydrogen is the most acidic?",
+  "stem_image": "img/q22.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "H₂ (the aromatic C–H)"
+   },
+   {
+    "type": "text",
+    "value": "H₁ (the carboxylic acid O–H)"
+   },
+   {
+    "type": "text",
+    "value": "H₃ (the CH₃ on the acetyl group)"
+   },
+   {
+    "type": "text",
+    "value": "All three are about equally acidic"
+   }
+  ],
+  "answer": "B",
+  "why": "H₁ puts the charge on O (factor 1) and the carboxylate is resonance stabilized. H₂ and H₃ put the charge on carbon, which loses on factor 1."
+ },
+ {
+  "id": "Q23",
+  "number": 23,
+  "topic": "Equilibrium",
+  "level": "Two-factor",
+  "stem": "Which side of the equilibrium is favored?",
+  "stem_image": "img/q23.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "The products, because acetate is resonance stabilized and is the more stable anion"
+   },
+   {
+    "type": "text",
+    "value": "The reactants, because ethoxide is more stable"
+   },
+   {
+    "type": "text",
+    "value": "Neither side, because both anions have the charge on O"
+   },
+   {
+    "type": "text",
+    "value": "The products, because ethanol is a stronger acid than acetic acid"
+   }
+  ],
+  "answer": "A",
+  "why": "The equilibrium favors the more stable ion. Both anions have O⁻, so compare resonance: acetate is delocalized over two O atoms, ethoxide is not. Acetate is the weaker base, so the products are favored."
+ },
+ {
+  "id": "Q24",
+  "number": 24,
+  "topic": "Equilibrium",
+  "level": "Two-factor",
+  "stem": "Which side of the equilibrium is favored?",
+  "stem_image": "img/q24.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "The reactants, because O is more electronegative than S"
+   },
+   {
+    "type": "text",
+    "value": "Neither side, because O and S are both in group 16"
+   },
+   {
+    "type": "text",
+    "value": "The reactants, because hydroxide is the smaller anion"
+   },
+   {
+    "type": "text",
+    "value": "The products, because the larger S atom stabilizes the charge better"
+   }
+  ],
+  "answer": "D",
+  "why": "Compare HO⁻ with RS⁻. O and S are in the same column, so size decides. The larger RS⁻ is more stable (weaker base), so the equilibrium favors the products."
+ },
+ {
+  "id": "Q25",
+  "number": 25,
+  "topic": "Equilibrium",
+  "level": "Challenge",
+  "stem": "Which side of the equilibrium is favored?",
+  "stem_image": "img/q25.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "The products, because the sp carbanion is the most stable carbanion"
+   },
+   {
+    "type": "text",
+    "value": "The reactants, because ethoxide (O⁻) is more stable than the sp carbanion (C⁻)"
+   },
+   {
+    "type": "text",
+    "value": "The products, because the alkynide ion has resonance structures"
+   },
+   {
+    "type": "text",
+    "value": "Neither side, because both anions have lone pairs"
+   }
+  ],
+  "answer": "B",
+  "why": "Compare RO⁻ with the alkynide. Atom (factor 1) before orbital (factor 4): O is more electronegative than C, so ethoxide is more stable. The reactants are favored."
+ },
+ {
+  "id": "Q26",
+  "number": 26,
+  "topic": "Equilibrium",
+  "level": "Two-factor",
+  "stem": "Which side of the equilibrium is favored?",
+  "stem_image": "img/q26.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "The products, because ethanol is the more acidic reactant"
+   },
+   {
+    "type": "text",
+    "value": "The products, because ethoxide is more stable"
+   },
+   {
+    "type": "text",
+    "value": "The reactants, because phenoxide is resonance stabilized"
+   },
+   {
+    "type": "text",
+    "value": "Neither side, because both anions have the charge on O"
+   }
+  ],
+  "answer": "C",
+  "why": "Both anions have O⁻, so compare resonance. Phenoxide is delocalized into the ring; ethoxide is not. The more stable anion (phenoxide) is on the reactant side, so the reactants are favored."
+ },
+ {
+  "id": "Q27",
+  "number": 27,
+  "topic": "Equilibrium",
+  "level": "Challenge",
+  "stem": "Which side of the equilibrium is favored?",
+  "stem_image": "img/q27.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "The products, because acetate is resonance stabilized"
+   },
+   {
+    "type": "text",
+    "value": "The products, because CH₃ donates electron density to the carboxylate"
+   },
+   {
+    "type": "text",
+    "value": "Neither side, because both anions are resonance stabilized"
+   },
+   {
+    "type": "text",
+    "value": "The reactants, because CF₃CO₂⁻ is stabilized by induction"
+   }
+  ],
+  "answer": "D",
+  "why": "Both anions are carboxylates, so atom and resonance tie. The three F atoms stabilize CF₃CO₂⁻ by induction (factor 3), so CF₃CO₂⁻ is more stable and the reactant side is favored."
+ },
+ {
+  "id": "Q28",
+  "number": 28,
+  "topic": "Equilibrium",
+  "level": "Two-factor",
+  "stem": "Hydroxide deprotonates phenol. Which set of curved arrows correctly shows the proton transfer?",
+  "stem_image": null,
+  "options": [
+   {
+    "type": "img",
+    "value": "img/q28_A.png"
+   },
+   {
+    "type": "img",
+    "value": "img/q28_B.png"
+   },
+   {
+    "type": "img",
+    "value": "img/q28_C.png"
+   },
+   {
+    "type": "img",
+    "value": "img/q28_D.png"
+   }
+  ],
+  "answer": "C",
+  "why": "A proton transfer always uses at least two arrows. Arrow 1 starts on a lone pair of the base (HO⁻) and ends on the H. Arrow 2 starts on the O–H bond and ends on the O of the acid, which becomes the conjugate base."
+ },
+ {
+  "id": "Q29",
+  "number": 29,
+  "topic": "Equilibrium",
+  "level": "Two-factor",
+  "stem": "Which side of the equilibrium is favored?",
+  "stem_image": "img/q29.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "The reactants, because the alkynide (charge in an sp orbital) is more stable than the vinyl anion (charge in an sp² orbital)"
+   },
+   {
+    "type": "text",
+    "value": "The products, because the vinyl anion is resonance stabilized"
+   },
+   {
+    "type": "text",
+    "value": "The products, because an sp² orbital is closer to the nucleus than an sp orbital"
+   },
+   {
+    "type": "text",
+    "value": "Neither side, because both anions have the charge on carbon"
+   }
+  ],
+  "answer": "A",
+  "why": "Both ions have the charge on carbon, with no resonance and no inductive effects, so only the orbital differs (factor 4). An sp orbital (50% s character) holds the lone pair closer to the nucleus than an sp² orbital (33% s), so the alkynide is more stable. The more stable ion is on the reactant side, so the reactants are favored."
+ },
+ {
+  "id": "Q30",
+  "number": 30,
+  "topic": "Equilibrium",
+  "level": "Challenge",
+  "stem": "Which anion is a strong enough base to deprotonate ethanol so that the equilibrium favors the products?",
+  "stem_image": null,
+  "options": [
+   {
+    "type": "img",
+    "value": "img/q30_A.png"
+   },
+   {
+    "type": "img",
+    "value": "img/q30_B.png"
+   },
+   {
+    "type": "img",
+    "value": "img/q30_C.png"
+   },
+   {
+    "type": "img",
+    "value": "img/q30_D.png"
+   }
+  ],
+  "answer": "B",
+  "why": "Ethanol deprotonates to give ethoxide, so the base must be a less stable (stronger) base than ethoxide. Acetate (resonance), phenoxide (resonance), and CH₃S⁻ (larger atom) are all more stable than ethoxide. The alkynide ion has the charge on C and is less stable."
+ },
+ {
+  "id": "Q31",
+  "number": 31,
+  "topic": "Nomenclature",
+  "level": "Direct",
+  "stem": "Which is the correct IUPAC name for this alkane?",
+  "stem_image": "img/q31.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "2-methylpentane"
+   },
+   {
+    "type": "text",
+    "value": "4-methylpentane"
+   },
+   {
+    "type": "text",
+    "value": "3-methylpentane"
+   },
+   {
+    "type": "text",
+    "value": "2-ethylbutane"
+   }
+  ],
+  "answer": "A",
+  "why": "The longest chain has 5 carbons (pentane) with one methyl branch. Number from the end that gives the branch the lower number: 2-methylpentane, not 4-methylpentane."
+ },
+ {
+  "id": "Q32",
+  "number": 32,
+  "topic": "Nomenclature",
+  "level": "Direct",
+  "stem": "Which is the correct IUPAC name for this alkane?",
+  "stem_image": "img/q32.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "4-methylhexane"
+   },
+   {
+    "type": "text",
+    "value": "2-ethylpentane"
+   },
+   {
+    "type": "text",
+    "value": "3-methylpentane"
+   },
+   {
+    "type": "text",
+    "value": "3-methylhexane"
+   }
+  ],
+  "answer": "D",
+  "why": "The longest chain has 6 carbons (hexane). The methyl is on carbon 3 when numbered from the left and carbon 4 from the right, so use the lower number: 3-methylhexane."
+ },
+ {
+  "id": "Q33",
+  "number": 33,
+  "topic": "Nomenclature",
+  "level": "Direct",
+  "stem": "Which is the correct IUPAC name for this alkane?",
+  "stem_image": "img/q33.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "3,3-dimethylbutane"
+   },
+   {
+    "type": "text",
+    "value": "2,2-dimethylbutane"
+   },
+   {
+    "type": "text",
+    "value": "2-ethyl-2-methylpropane"
+   },
+   {
+    "type": "text",
+    "value": "2,2-dimethylpropane"
+   }
+  ],
+  "answer": "B",
+  "why": "The longest chain has 4 carbons (butane) with two methyl groups on the same carbon. Number from the end that gives them the lower number (2,2), and repeat the locant for each methyl."
+ },
+ {
+  "id": "Q34",
+  "number": 34,
+  "topic": "Nomenclature",
+  "level": "Direct",
+  "stem": "Which is the correct IUPAC name for this alkane?",
+  "stem_image": "img/q34.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "3,4-dimethylpentane"
+   },
+   {
+    "type": "text",
+    "value": "2-methyl-3-methylpentane"
+   },
+   {
+    "type": "text",
+    "value": "2,3-dimethylpentane"
+   },
+   {
+    "type": "text",
+    "value": "2,3-dimethylhexane"
+   }
+  ],
+  "answer": "C",
+  "why": "The longest chain has 5 carbons (pentane) with two methyl branches. Numbering from the left gives locants 2,3; from the right it gives 3,4. Use 2,3 and combine the identical groups as dimethyl."
+ },
+ {
+  "id": "Q35",
+  "number": 35,
+  "topic": "Nomenclature",
+  "level": "Direct",
+  "stem": "Which is the correct IUPAC name for this alkane?",
+  "stem_image": "img/q35.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "3-methylhexane"
+   },
+   {
+    "type": "text",
+    "value": "3-propylbutane"
+   },
+   {
+    "type": "text",
+    "value": "heptane"
+   },
+   {
+    "type": "text",
+    "value": "3-ethylpentane"
+   }
+  ],
+  "answer": "D",
+  "why": "The longest chain has 5 carbons: the central carbon can be reached by chains through any two of the three ethyl groups. The third ethyl is the branch on carbon 3: 3-ethylpentane. (Choosing a 6-carbon chain is not possible for this structure.)"
+ },
+ {
+  "id": "Q36",
+  "number": 36,
+  "topic": "Nomenclature",
+  "level": "Direct",
+  "stem": "Which is the correct IUPAC name for this alkane?",
+  "stem_image": "img/q36.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "4-ethyl-2-methylhexane"
+   },
+   {
+    "type": "text",
+    "value": "3-ethyl-5-methylhexane"
+   },
+   {
+    "type": "text",
+    "value": "2-methyl-4-ethylhexane"
+   },
+   {
+    "type": "text",
+    "value": "2-ethyl-4-methylhexane"
+   }
+  ],
+  "answer": "A",
+  "why": "The longest chain has 6 carbons (hexane). Numbering from the left gives locants 2,4; from the right it gives 3,5, so use 2,4. List the substituents in alphabetical order: ethyl comes before methyl, so 4-ethyl-2-methylhexane."
+ },
+ {
+  "id": "Q37",
+  "number": 37,
+  "topic": "Nomenclature",
+  "level": "Direct",
+  "stem": "Which is the correct IUPAC name for this alkane?",
+  "stem_image": "img/q37.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "2,4,4-trimethylpentane"
+   },
+   {
+    "type": "text",
+    "value": "2,2,3-trimethylpentane"
+   },
+   {
+    "type": "text",
+    "value": "2,2,4-trimethylpentane"
+   },
+   {
+    "type": "text",
+    "value": "2,2,4-trimethylhexane"
+   }
+  ],
+  "answer": "C",
+  "why": "The longest chain has 5 carbons (pentane) with three methyl groups. Numbering from the end that gives the lowest locants gives 2,2,4 (from the other end the set would be 2,4,4). Three identical groups use the prefix tri."
+ },
+ {
+  "id": "Q38",
+  "number": 38,
+  "topic": "Nomenclature",
+  "level": "Direct",
+  "stem": "Which is the correct IUPAC name for this alkane?",
+  "stem_image": "img/q38.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "2-methyl-3-ethylpentane"
+   },
+   {
+    "type": "text",
+    "value": "3-ethyl-2-methylpentane"
+   },
+   {
+    "type": "text",
+    "value": "3-ethyl-4-methylpentane"
+   },
+   {
+    "type": "text",
+    "value": "2,3-diethylbutane"
+   }
+  ],
+  "answer": "B",
+  "why": "The longest chain has 5 carbons (pentane). Numbering from the left gives the substituents locants 2 and 3; from the right they would be 3 and 4. Alphabetical order puts ethyl before methyl: 3-ethyl-2-methylpentane."
+ },
+ {
+  "id": "Q39",
+  "number": 39,
+  "topic": "Nomenclature",
+  "level": "Direct",
+  "stem": "Which is the correct IUPAC name for this alkane?",
+  "stem_image": "img/q39.png",
+  "options": [
+   {
+    "type": "text",
+    "value": "2,5-dimethylhexane"
+   },
+   {
+    "type": "text",
+    "value": "2,4-dimethylhexane"
+   },
+   {
+    "type": "text",
+    "value": "1,1,4-trimethylpentane"
+   },
+   {
+    "type": "text",
+    "value": "2-methyl-5-methylhexane"
+   }
+  ],
+  "answer": "A",
+  "why": "The longest chain has 6 carbons (hexane) with a methyl on each side. The molecule is symmetric, so both directions give 2,5. Combine the two identical groups as dimethyl: 2,5-dimethylhexane."
+ },
+ {
+  "id": "Q40",
+  "number": 40,
+  "topic": "Nomenclature",
+  "level": "Two-factor",
+  "stem": "Which structure is 2,3,3-trimethylpentane?",
+  "stem_image": null,
+  "options": [
+   {
+    "type": "img",
+    "value": "img/q40_A.png"
+   },
+   {
+    "type": "img",
+    "value": "img/q40_B.png"
+   },
+   {
+    "type": "img",
+    "value": "img/q40_C.png"
+   },
+   {
+    "type": "img",
+    "value": "img/q40_D.png"
+   }
+  ],
+  "answer": "D",
+  "why": "Draw a 5-carbon chain and put one methyl on carbon 2 and two methyls on carbon 3. The other three choices are the isomers 2,2,3-trimethylpentane, 2,3,4-trimethylpentane and 2,2,4-trimethylpentane."
+ }
+]

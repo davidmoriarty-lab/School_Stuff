@@ -1,5 +1,7 @@
 # Substitution and Elimination Problem Bank (100 problems)
 
+> These problems are included in the repo-wide searchable index (`index.html` at the repo root; rebuild with `python3 tools/build_index.py`).
+
 Free-response problems on SN1, SN2, E1 and E2 in **21 different question types**, each with a drawn scheme and a worked answer.
 
 ## Files

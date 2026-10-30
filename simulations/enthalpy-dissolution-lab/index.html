@@ -1,0 +1,1598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enthalpy of Dissolution Virtual Lab</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #0d1b2a 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4fc3f7;
+            text-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
+        }
+
+        .lab-layout {
+            display: grid;
+            grid-template-columns: 200px 1fr 320px;
+            gap: 20px;
+        }
+
+        /* Left Panel - Salt Selection */
+        .salt-panel {
+            background: linear-gradient(180deg, rgba(45, 55, 72, 0.9) 0%, rgba(26, 32, 44, 0.9) 100%);
+            border-radius: 15px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .salt-panel h3 {
+            margin-bottom: 15px;
+            color: #81d4fa;
+            font-size: 0.95em;
+        }
+
+        .salt-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .salt-jar {
+            background: linear-gradient(180deg, #e0e0e0 0%, #bdbdbd 100%);
+            border-radius: 10px 10px 5px 5px;
+            padding: 12px 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            position: relative;
+        }
+
+        .salt-jar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .salt-jar.selected {
+            border-color: #4fc3f7;
+            box-shadow: 0 0 15px rgba(79, 195, 247, 0.5);
+        }
+
+        .salt-jar.used {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .salt-jar .salt-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 0.8em;
+        }
+
+        .salt-jar .salt-formula {
+            color: #666;
+            font-size: 0.75em;
+        }
+
+        .salt-jar .jar-lid {
+            position: absolute;
+            top: -8px;
+            left: 10%;
+            width: 80%;
+            height: 10px;
+            background: linear-gradient(180deg, #757575 0%, #616161 100%);
+            border-radius: 3px 3px 0 0;
+        }
+
+        /* Center Panel - Lab Bench */
+        .lab-bench {
+            background: linear-gradient(180deg, rgba(45, 55, 72, 0.5) 0%, rgba(26, 32, 44, 0.5) 100%);
+            border-radius: 15px;
+            padding: 20px;
+            min-height: 550px;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .bench-surface {
+            background: linear-gradient(180deg, #2d3748 0%, #1a202c 100%);
+            height: 100%;
+            border-radius: 10px;
+            position: relative;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Scale Base Styling */
+        .scale {
+            position: absolute;
+            width: 160px;
+        }
+
+        .scale-platform {
+            width: 140px;
+            height: 12px;
+            background: linear-gradient(180deg, #a0aec0 0%, #718096 100%);
+            border-radius: 3px;
+            margin: 0 auto;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .scale-base {
+            width: 160px;
+            height: 35px;
+            background: linear-gradient(180deg, #4a5568 0%, #2d3748 100%);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .scale-display {
+            background: #1a202c;
+            color: #48bb78;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            padding: 4px 12px;
+            border-radius: 3px;
+            border: 1px solid #2d3748;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .scale-label {
+            text-align: center;
+            font-size: 0.75em;
+            color: #a0aec0;
+            margin-top: 5px;
+        }
+
+        /* Salt Scale - Left side */
+        .salt-scale {
+            left: 30px;
+            bottom: 80px;
+        }
+
+        /* Water Scale - Right side */
+        .water-scale {
+            right: 30px;
+            bottom: 80px;
+        }
+
+        /* Weigh Boat - sits on top of salt scale platform */
+        .weigh-boat {
+            position: absolute;
+            bottom: 147px; /* Shifted up 20px */
+            left: 50px; /* Shifted right 10px */
+            width: 100px;
+            height: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .weigh-boat:hover {
+            transform: scale(1.05);
+        }
+
+        .weigh-boat.selected {
+            filter: drop-shadow(0 0 10px #4fc3f7);
+        }
+
+        .weigh-boat.has-salt {
+            cursor: pointer;
+        }
+
+        .boat-shape {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            clip-path: polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .salt-in-boat {
+            position: absolute;
+            bottom: 0;
+            left: 5%;
+            right: 5%;
+            background: linear-gradient(180deg, #f5f5f5 0%, #e0e0e0 100%);
+            transition: height 0.3s ease;
+        }
+
+        /* Beaker - sits on top of water scale platform */
+        .beaker {
+            position: absolute;
+            bottom: 147px; /* Shifted up 20px */
+            right: 50px; /* Shifted left 10px */
+            width: 100px;
+            height: 120px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .beaker:hover {
+            transform: scale(1.02);
+        }
+
+        .beaker.selected {
+            filter: drop-shadow(0 0 10px #4fc3f7);
+        }
+
+        .beaker-glass {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                rgba(255,255,255,0.1) 0%,
+                rgba(255,255,255,0.3) 10%,
+                rgba(255,255,255,0.1) 20%,
+                rgba(255,255,255,0.05) 80%,
+                rgba(255,255,255,0.2) 90%,
+                rgba(255,255,255,0.1) 100%);
+            border: 3px solid rgba(255,255,255,0.4);
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .beaker-spout {
+            position: absolute;
+            top: 0;
+            right: -8px;
+            width: 15px;
+            height: 15px;
+            border: 3px solid rgba(255,255,255,0.4);
+            border-bottom: none;
+            border-left: none;
+            border-radius: 0 8px 0 0;
+        }
+
+        .water {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg,
+                rgba(33, 150, 243, 0.6) 0%,
+                rgba(33, 150, 243, 0.8) 100%);
+            transition: height 0.5s ease, background 1s ease;
+            border-radius: 0 0 7px 7px;
+        }
+
+        .water.cold {
+            background: linear-gradient(180deg,
+                rgba(100, 181, 246, 0.7) 0%,
+                rgba(66, 165, 245, 0.9) 100%);
+        }
+
+        .water.hot {
+            background: linear-gradient(180deg,
+                rgba(255, 138, 101, 0.7) 0%,
+                rgba(255, 87, 34, 0.9) 100%);
+        }
+
+        /* Dissolving animation - particles inside water */
+        .dissolving-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            opacity: 0;
+        }
+
+        @keyframes dissolve {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(50px) scale(0.3);
+            }
+        }
+
+        /* Thermometer */
+        .thermometer {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 20px;
+            width: 25px;
+            height: 140px;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            z-index: 10;
+        }
+
+        .thermometer:hover {
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        .thermometer.selected {
+            filter: drop-shadow(0 0 10px #4fc3f7);
+        }
+
+        .thermometer.in-beaker {
+            top: auto;
+            bottom: 155px; /* Position so bulb is inside water - adjusted for beaker shift */
+            right: 65px; /* Adjusted for beaker shift left */
+            left: auto;
+            transform: none;
+        }
+
+        .thermometer.in-beaker:hover {
+            transform: scale(1.05);
+        }
+
+        .thermo-tube {
+            width: 10px;
+            height: 110px;
+            background: rgba(255,255,255,0.3);
+            border: 2px solid #ccc;
+            border-radius: 5px 5px 0 0;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .thermo-mercury {
+            position: absolute;
+            bottom: 0;
+            left: 1px;
+            right: 1px;
+            background: linear-gradient(180deg, #f44336 0%, #d32f2f 100%);
+            border-radius: 2px;
+            transition: height 0.3s ease;
+        }
+
+        .thermo-bulb {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            border-radius: 50%;
+            margin: -4px auto 0;
+            border: 2px solid #ccc;
+        }
+
+        .thermo-reading {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            white-space: nowrap;
+        }
+
+        /* Water Dispenser */
+        .water-dispenser {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .water-dispenser:hover {
+            transform: scale(1.05);
+        }
+
+        .water-dispenser.selected {
+            filter: drop-shadow(0 0 10px #4fc3f7);
+        }
+
+        .dispenser-body {
+            width: 50px;
+            height: 80px;
+            background: linear-gradient(90deg, #4299e1 0%, #3182ce 50%, #4299e1 100%);
+            border-radius: 8px 8px 5px 5px;
+            position: relative;
+            border: 2px solid #2b6cb0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .dispenser-label {
+            color: #fff;
+            font-size: 0.6em;
+            padding-top: 8px;
+            line-height: 1.2;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .dispenser-tap {
+            width: 16px;
+            height: 25px;
+            background: linear-gradient(180deg, #718096 0%, #4a5568 100%);
+            margin: 0 auto;
+            border-radius: 0 0 4px 4px;
+        }
+
+        /* Selection Indicator */
+        .selection-indicator {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #63b3ed 0%, #4299e1 100%);
+            color: #1a202c;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 4px 15px rgba(99, 179, 237, 0.4);
+        }
+
+        /* Right Panel - Controls & Data */
+        .control-panel {
+            background: linear-gradient(180deg, rgba(45, 55, 72, 0.9) 0%, rgba(26, 32, 44, 0.9) 100%);
+            border-radius: 15px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-section {
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .control-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .control-section h3 {
+            color: #81d4fa;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+
+        /* Step Indicator */
+        .step-indicator {
+            background: linear-gradient(135deg, rgba(26, 32, 44, 0.8) 0%, rgba(45, 55, 72, 0.8) 100%);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .step-indicator h4 {
+            color: #f6ad55;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .step-indicator p {
+            font-size: 0.8em;
+            color: #cbd5e0;
+            line-height: 1.4;
+        }
+
+        /* Data Display */
+        .data-table {
+            width: 100%;
+            font-size: 0.8em;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .data-label {
+            color: #90a4ae;
+        }
+
+        .data-value {
+            color: #4fc3f7;
+            font-weight: bold;
+        }
+
+        /* Graph Container */
+        .graph-container {
+            background: linear-gradient(135deg, rgba(26, 32, 44, 0.8) 0%, rgba(45, 55, 72, 0.8) 100%);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+            display: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .graph-container h4 {
+            color: #63b3ed;
+            margin-bottom: 8px;
+            font-size: 0.85em;
+        }
+
+        .graph-canvas {
+            background: #1a202c;
+            border-radius: 5px;
+            width: 100%;
+            height: 180px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Answer Input */
+        .answer-section {
+            background: linear-gradient(135deg, rgba(26, 32, 44, 0.8) 0%, rgba(45, 55, 72, 0.8) 100%);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+            display: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .answer-section h4 {
+            color: #68d391;
+            margin-bottom: 10px;
+            font-size: 0.85em;
+        }
+
+        .answer-input-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .answer-input-group input {
+            flex: 1;
+            padding: 8px;
+            border: 2px solid #455a64;
+            border-radius: 5px;
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            font-size: 1em;
+        }
+
+        .answer-input-group input:focus {
+            outline: none;
+            border-color: #4fc3f7;
+        }
+
+        .answer-input-group span {
+            display: flex;
+            align-items: center;
+            color: #90a4ae;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 10px;
+            margin: 4px 0;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #63b3ed 0%, #4299e1 100%);
+            color: #1a202c;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(99, 179, 237, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
+            color: #fff;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #68d391 0%, #48bb78 100%);
+            color: #1a202c;
+            font-weight: 600;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Feedback messages */
+        .feedback {
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.85em;
+            display: none;
+        }
+
+        .feedback.correct {
+            background: rgba(102, 187, 106, 0.3);
+            border: 1px solid #66bb6a;
+            color: #a5d6a7;
+        }
+
+        .feedback.incorrect {
+            background: rgba(244, 67, 54, 0.3);
+            border: 1px solid #f44336;
+            color: #ef9a9a;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            border-radius: 15px;
+            padding: 25px;
+            min-width: 300px;
+            max-width: 400px;
+            border: 1px solid rgba(99, 179, 237, 0.5);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(99, 179, 237, 0.2);
+        }
+
+        .modal h3 {
+            color: #4fc3f7;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .modal-input-group {
+            margin-bottom: 15px;
+        }
+
+        .modal-input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #90a4ae;
+        }
+
+        .modal-input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #455a64;
+            border-radius: 8px;
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        .modal-input-group input:focus {
+            outline: none;
+            border-color: #4fc3f7;
+        }
+
+        .modal-input-group .range-hint {
+            font-size: 0.8em;
+            color: #78909c;
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        .modal-input-group .error-text {
+            font-size: 0.8em;
+            color: #f44336;
+            text-align: center;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-buttons .btn {
+            flex: 1;
+        }
+
+        /* Messages */
+        .message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            z-index: 1001;
+            animation: fadeIn 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .message.info {
+            background: linear-gradient(135deg, #63b3ed 0%, #4299e1 100%);
+            color: #1a202c;
+        }
+
+        .message.success {
+            background: linear-gradient(135deg, #68d391 0%, #48bb78 100%);
+            color: #1a202c;
+        }
+
+        .message.warning {
+            background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
+            color: #1a202c;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Enthalpy of Dissolution Virtual Lab</h1>
+
+        <div class="lab-layout">
+            <!-- Left Panel - Salt Selection -->
+            <div class="salt-panel">
+                <h3>Select a Salt</h3>
+                <div class="salt-container">
+                    <div class="salt-jar" data-salt="NH4NO3" onclick="selectSalt(this)">
+                        <div class="jar-lid"></div>
+                        <div class="salt-name">Ammonium Nitrate</div>
+                        <div class="salt-formula">NH₄NO₃</div>
+                    </div>
+                    <div class="salt-jar" data-salt="KNO3" onclick="selectSalt(this)">
+                        <div class="jar-lid"></div>
+                        <div class="salt-name">Potassium Nitrate</div>
+                        <div class="salt-formula">KNO₃</div>
+                    </div>
+                    <div class="salt-jar" data-salt="CaCl2" onclick="selectSalt(this)">
+                        <div class="jar-lid"></div>
+                        <div class="salt-name">Calcium Chloride</div>
+                        <div class="salt-formula">CaCl₂</div>
+                    </div>
+                    <div class="salt-jar" data-salt="NaOH" onclick="selectSalt(this)">
+                        <div class="jar-lid"></div>
+                        <div class="salt-name">Sodium Hydroxide</div>
+                        <div class="salt-formula">NaOH</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Panel - Lab Bench -->
+            <div class="lab-bench">
+                <div class="bench-surface">
+                    <!-- Selection Indicator -->
+                    <div class="selection-indicator" id="selectionIndicator">
+                        Select target...
+                    </div>
+
+                    <!-- Water Dispenser -->
+                    <div class="water-dispenser" id="waterDispenser" onclick="handleDispenserClick()">
+                        <div class="dispenser-body">
+                            <div class="dispenser-label">Distilled<br>Water</div>
+                        </div>
+                        <div class="dispenser-tap"></div>
+                    </div>
+
+                    <!-- Thermometer -->
+                    <div class="thermometer" id="thermometer" onclick="handleThermometerClick()">
+                        <div class="thermo-reading" id="thermoReading">25.0°C</div>
+                        <div class="thermo-tube">
+                            <div class="thermo-mercury" id="thermoMercury" style="height: 50%;"></div>
+                        </div>
+                        <div class="thermo-bulb"></div>
+                    </div>
+
+                    <!-- Salt Scale (Left) -->
+                    <div class="scale salt-scale">
+                        <div class="scale-platform"></div>
+                        <div class="scale-base">
+                            <div class="scale-display" id="saltScaleDisplay">0.00 g</div>
+                        </div>
+                        <div class="scale-label">Salt Scale</div>
+                    </div>
+
+                    <!-- Weigh Boat on Salt Scale -->
+                    <div class="weigh-boat" id="weighBoat" onclick="handleWeighBoatClick()">
+                        <div class="boat-shape">
+                            <div class="salt-in-boat" id="saltInBoat" style="height: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Water Scale (Right) -->
+                    <div class="scale water-scale">
+                        <div class="scale-platform"></div>
+                        <div class="scale-base">
+                            <div class="scale-display" id="waterScaleDisplay">0.00 g</div>
+                        </div>
+                        <div class="scale-label">Water Scale</div>
+                    </div>
+
+                    <!-- Beaker on Water Scale -->
+                    <div class="beaker" id="beaker" onclick="handleBeakerClick()">
+                        <div class="beaker-spout"></div>
+                        <div class="beaker-glass">
+                            <div class="water" id="water" style="height: 0%;">
+                                <div class="dissolving-particles" id="particles"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Controls & Data -->
+            <div class="control-panel">
+                <div class="step-indicator">
+                    <h4>Step <span id="stepNumber">1</span> of 6</h4>
+                    <p id="stepInstruction">Click on a salt jar, then click on the weigh boat to measure salt.</p>
+                </div>
+
+                <div class="control-section">
+                    <h3>Recorded Data</h3>
+                    <div class="data-table">
+                        <div class="data-row">
+                            <span class="data-label">Salt:</span>
+                            <span class="data-value" id="dataSelectedSalt">-</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Mass of Salt:</span>
+                            <span class="data-value" id="dataSaltMass">- g</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Mass of Water:</span>
+                            <span class="data-value" id="dataWaterMass">- g</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Initial Temp:</span>
+                            <span class="data-value" id="dataInitialTemp">- °C</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Final Temp:</span>
+                            <span class="data-value" id="dataFinalTemp">- °C</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">ΔT:</span>
+                            <span class="data-value" id="dataDeltaT">- °C</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Temperature Graph -->
+                <div class="graph-container" id="graphContainer">
+                    <h4>Temperature vs Time</h4>
+                    <canvas class="graph-canvas" id="tempGraph"></canvas>
+                </div>
+
+                <!-- Answer Section -->
+                <div class="answer-section" id="answerSection">
+                    <h4>Calculate Enthalpy of Dissolution</h4>
+                    <p style="font-size: 0.8em; color: #90a4ae; margin-bottom: 10px;">
+                        Using your data, calculate ΔH<sub>dissolution</sub> and enter your answer:
+                    </p>
+                    <div class="answer-input-group">
+                        <input type="number" id="enthalpyInput" step="0.1" placeholder="Enter ΔH">
+                        <span>kJ/mol</span>
+                    </div>
+                    <button class="btn btn-success" onclick="checkAnswer()">Submit Answer</button>
+                    <div class="feedback" id="feedback"></div>
+                </div>
+
+                <button class="btn btn-secondary" onclick="resetLab()" style="margin-top: 15px;">
+                    Reset Lab
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Salt Amount Modal -->
+    <div class="modal-overlay" id="saltModal">
+        <div class="modal">
+            <h3>Measure Salt</h3>
+            <div class="modal-input-group">
+                <label>Enter mass of <span id="modalSaltName">salt</span> to measure:</label>
+                <input type="number" id="saltAmountInput" step="0.01" min="1" max="5" placeholder="3.00">
+                <div class="range-hint">Range: 1.00 - 5.00 grams</div>
+                <div class="error-text" id="saltError">Please enter a value between 1.00 and 5.00 grams</div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeModal('saltModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="confirmSaltAmount()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Water Amount Modal -->
+    <div class="modal-overlay" id="waterModal">
+        <div class="modal">
+            <h3>Add Distilled Water</h3>
+            <div class="modal-input-group">
+                <label>Enter mass of water to add:</label>
+                <input type="number" id="waterAmountInput" step="0.01" min="50" max="100" placeholder="75.00">
+                <div class="range-hint">Range: 50.00 - 100.00 grams</div>
+                <div class="error-text" id="waterError">Please enter a value between 50.00 and 100.00 grams</div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeModal('waterModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="confirmWaterAmount()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="message info" id="message" style="display: none;"></div>
+
+    <script>
+        // Salt data with thermodynamic properties
+        const saltData = {
+            'NH4NO3': {
+                name: 'Ammonium Nitrate',
+                formula: 'NH₄NO₃',
+                molarMass: 80.04,
+                deltaH: 25.7, // kJ/mol (endothermic, positive)
+                type: 'endothermic'
+            },
+            'KNO3': {
+                name: 'Potassium Nitrate',
+                formula: 'KNO₃',
+                molarMass: 101.1,
+                deltaH: 34.9, // kJ/mol (endothermic, positive)
+                type: 'endothermic'
+            },
+            'CaCl2': {
+                name: 'Calcium Chloride',
+                formula: 'CaCl₂',
+                molarMass: 110.98,
+                deltaH: -81.3, // kJ/mol (exothermic, negative)
+                type: 'exothermic'
+            },
+            'NaOH': {
+                name: 'Sodium Hydroxide',
+                formula: 'NaOH',
+                molarMass: 40.0,
+                deltaH: -44.5, // kJ/mol (exothermic, negative)
+                type: 'exothermic'
+            }
+        };
+
+        // Lab state
+        let state = {
+            currentStep: 1,
+            selectedSalt: null,
+            selectedItem: null, // 'salt', 'water', 'thermometer', 'weighboat'
+            saltMass: 0,
+            waterMass: 0,
+            initialTemp: 25.0,
+            finalTemp: null,
+            peakTemp: null,
+            thermometerInBeaker: false,
+            waterAdded: false,
+            saltInBoat: false,
+            saltAdded: false,
+            graphData: [],
+            graphAnimationId: null,
+            actualEnthalpy: null
+        };
+
+        const specificHeat = 4.184; // J/(g·°C) for water
+
+        // Step instructions
+        const steps = {
+            1: "Click on a salt jar, then click on the weigh boat to measure salt.",
+            2: "Click on the water dispenser, then click on the beaker to add water.",
+            3: "Click on the thermometer, then click on the beaker to measure initial temperature.",
+            4: "Click on the weigh boat (with salt), then click on the water in the beaker to dissolve.",
+            5: "Observe the temperature change on the graph. Note the final temperature.",
+            6: "Calculate the enthalpy of dissolution and enter your answer below."
+        };
+
+        function updateStep(step) {
+            state.currentStep = step;
+            document.getElementById('stepNumber').textContent = step;
+            document.getElementById('stepInstruction').textContent = steps[step];
+        }
+
+        function showMessage(text, type = 'info') {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = `message ${type}`;
+            msg.style.display = 'block';
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 3000);
+        }
+
+        function clearSelection() {
+            state.selectedItem = null;
+            document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+            document.getElementById('selectionIndicator').style.display = 'none';
+        }
+
+        function setSelection(item, element, message) {
+            clearSelection();
+            state.selectedItem = item;
+            element.classList.add('selected');
+            const indicator = document.getElementById('selectionIndicator');
+            indicator.textContent = message;
+            indicator.style.display = 'block';
+        }
+
+        // Salt jar click handler
+        function selectSalt(element) {
+            if (state.saltInBoat) {
+                showMessage('Salt already measured!', 'warning');
+                return;
+            }
+
+            state.selectedSalt = element.dataset.salt;
+            const salt = saltData[state.selectedSalt];
+
+            setSelection('salt', element, `${salt.formula} selected - Click weigh boat`);
+            showMessage(`Selected ${salt.name}. Now click on the weigh boat.`);
+        }
+
+        // Weigh boat click handler
+        function handleWeighBoatClick() {
+            if (state.selectedItem === 'salt' && state.selectedSalt && !state.saltInBoat) {
+                // Open modal to enter salt amount
+                const salt = saltData[state.selectedSalt];
+                document.getElementById('modalSaltName').textContent = salt.formula;
+                document.getElementById('saltAmountInput').value = '';
+                document.getElementById('saltError').style.display = 'none';
+                document.getElementById('saltModal').style.display = 'flex';
+                document.getElementById('saltAmountInput').focus();
+            } else if (state.saltInBoat && state.waterAdded && state.thermometerInBeaker && !state.saltAdded) {
+                // Salt in boat, ready to add to water
+                setSelection('weighboat', document.getElementById('weighBoat'), 'Salt ready - Click on water in beaker');
+                showMessage('Weigh boat selected. Click on the water in the beaker to add salt.');
+            } else if (!state.saltInBoat) {
+                showMessage('Select a salt first by clicking on a salt jar.', 'warning');
+            }
+        }
+
+        // Water dispenser click handler
+        function handleDispenserClick() {
+            if (!state.saltInBoat) {
+                showMessage('Measure salt first!', 'warning');
+                return;
+            }
+            if (state.waterAdded) {
+                showMessage('Water already added!', 'warning');
+                return;
+            }
+
+            setSelection('water', document.getElementById('waterDispenser'), 'Water selected - Click on beaker');
+            showMessage('Water dispenser selected. Click on the beaker to add water.');
+        }
+
+        // Beaker click handler
+        function handleBeakerClick() {
+            if (state.selectedItem === 'water' && !state.waterAdded) {
+                // Open modal to enter water amount
+                document.getElementById('waterAmountInput').value = '';
+                document.getElementById('waterError').style.display = 'none';
+                document.getElementById('waterModal').style.display = 'flex';
+                document.getElementById('waterAmountInput').focus();
+            } else if (state.selectedItem === 'thermometer' && !state.thermometerInBeaker && state.waterAdded) {
+                // Move thermometer to beaker
+                placeThermometerInBeaker();
+            } else if (state.selectedItem === 'weighboat' && state.saltInBoat && state.waterAdded && state.thermometerInBeaker && !state.saltAdded) {
+                // Add salt to water
+                addSaltToWater();
+            }
+        }
+
+        // Thermometer click handler
+        function handleThermometerClick() {
+            if (state.thermometerInBeaker) {
+                showMessage('Thermometer is already in the beaker.');
+                return;
+            }
+            if (!state.waterAdded) {
+                showMessage('Add water to the beaker first!', 'warning');
+                return;
+            }
+
+            setSelection('thermometer', document.getElementById('thermometer'), 'Thermometer selected - Click on beaker');
+            showMessage('Thermometer selected. Click on the beaker to place it.');
+        }
+
+        // Modal functions
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            clearSelection();
+        }
+
+        function validateAndRound(value, min, max) {
+            const num = parseFloat(value);
+            if (isNaN(num) || num < min || num > max) {
+                return null;
+            }
+            // Round to 2 decimal places
+            return Math.round(num * 100) / 100;
+        }
+
+        function confirmSaltAmount() {
+            const input = document.getElementById('saltAmountInput').value;
+            const amount = validateAndRound(input, 1, 5);
+
+            if (amount === null) {
+                document.getElementById('saltError').style.display = 'block';
+                return;
+            }
+
+            state.saltMass = amount;
+            state.saltInBoat = true;
+
+            // Update displays
+            document.getElementById('saltScaleDisplay').textContent = amount.toFixed(2) + ' g';
+            document.getElementById('dataSaltMass').textContent = amount.toFixed(2) + ' g';
+            document.getElementById('dataSelectedSalt').textContent = saltData[state.selectedSalt].formula;
+
+            // Update visual (1-5g maps to 10-90% fill)
+            const boatFill = ((amount - 1) / 4) * 80 + 10;
+            document.getElementById('saltInBoat').style.height = boatFill + '%';
+
+            // Mark salt jar as used
+            document.querySelectorAll('.salt-jar').forEach(jar => {
+                if (jar.dataset.salt === state.selectedSalt) {
+                    jar.classList.add('used');
+                }
+            });
+
+            closeModal('saltModal');
+            showMessage(`Measured ${amount.toFixed(2)} g of ${saltData[state.selectedSalt].formula}`, 'success');
+            updateStep(2);
+        }
+
+        function confirmWaterAmount() {
+            const input = document.getElementById('waterAmountInput').value;
+            const amount = validateAndRound(input, 50, 100);
+
+            if (amount === null) {
+                document.getElementById('waterError').style.display = 'block';
+                return;
+            }
+
+            state.waterMass = amount;
+            state.waterAdded = true;
+
+            // Update displays
+            document.getElementById('waterScaleDisplay').textContent = amount.toFixed(2) + ' g';
+            document.getElementById('dataWaterMass').textContent = amount.toFixed(2) + ' g';
+
+            // Update water visual (50-100g maps to 35-75% height)
+            const waterHeight = 35 + ((amount - 50) / 50) * 40;
+            document.getElementById('water').style.height = waterHeight + '%';
+
+            closeModal('waterModal');
+            showMessage(`Added ${amount.toFixed(2)} g of water`, 'success');
+            updateStep(3);
+        }
+
+        function placeThermometerInBeaker() {
+            state.thermometerInBeaker = true;
+            const thermo = document.getElementById('thermometer');
+            thermo.classList.add('in-beaker');
+            thermo.classList.remove('selected');
+
+            // Record initial temperature
+            document.getElementById('dataInitialTemp').textContent = state.initialTemp.toFixed(1) + ' °C';
+
+            clearSelection();
+            showMessage(`Initial temperature: ${state.initialTemp.toFixed(1)}°C`, 'success');
+            updateStep(4);
+        }
+
+        function updateThermometerDisplay(temp) {
+            document.getElementById('thermoReading').textContent = temp.toFixed(1) + '°C';
+            // Mercury height: 0°C = 10%, 50°C = 90%
+            const mercuryHeight = 10 + (temp / 50) * 80;
+            document.getElementById('thermoMercury').style.height = Math.max(5, Math.min(95, mercuryHeight)) + '%';
+        }
+
+        function addSaltToWater() {
+            state.saltAdded = true;
+            clearSelection();
+
+            // Calculate temperature change
+            const salt = saltData[state.selectedSalt];
+            const moles = state.saltMass / salt.molarMass;
+            const qDissolution = moles * salt.deltaH * 1000; // Convert kJ to J
+
+            // ΔT = -q / (m × c)
+            const deltaT = -qDissolution / (state.waterMass * specificHeat);
+            state.peakTemp = state.initialTemp + deltaT;
+
+            // Add small random variation for realism
+            state.peakTemp += (Math.random() - 0.5) * 0.3;
+            state.peakTemp = Math.round(state.peakTemp * 10) / 10;
+
+            // Calculate actual enthalpy for checking
+            state.actualEnthalpy = salt.deltaH;
+
+            // Animate dissolution
+            animateDissolving();
+
+            // Update water color
+            const water = document.getElementById('water');
+            if (salt.type === 'endothermic') {
+                water.classList.add('cold');
+            } else {
+                water.classList.add('hot');
+            }
+
+            // Clear weigh boat
+            document.getElementById('saltInBoat').style.height = '0%';
+            document.getElementById('saltScaleDisplay').textContent = '0.00 g';
+
+            // Update water scale to show total mass
+            const totalMass = state.waterMass + state.saltMass;
+            document.getElementById('waterScaleDisplay').textContent = totalMass.toFixed(2) + ' g';
+
+            // Show graph and start animation
+            document.getElementById('graphContainer').style.display = 'block';
+            showMessage('Salt dissolving... Watch the temperature change!');
+            updateStep(5);
+
+            // Start temperature graph animation
+            startGraphAnimation();
+        }
+
+        function animateDissolving() {
+            const container = document.getElementById('particles');
+            container.innerHTML = '';
+
+            // Create multiple waves of particles dissolving inside the water
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = (15 + Math.random() * 70) + '%';
+                particle.style.top = '0%'; // Start from top of water
+                particle.style.animation = `dissolve ${2 + Math.random() * 2}s ease-out ${Math.random() * 1.5}s forwards`;
+                container.appendChild(particle);
+            }
+
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 6000);
+        }
+
+        function startGraphAnimation() {
+            const canvas = document.getElementById('tempGraph');
+            const ctx = canvas.getContext('2d');
+
+            // Set canvas size
+            canvas.width = canvas.offsetWidth * 2;
+            canvas.height = canvas.offsetHeight * 2;
+            ctx.scale(2, 2);
+
+            const width = canvas.offsetWidth;
+            const height = canvas.offsetHeight;
+
+            state.graphData = [];
+            let time = 0;
+            const totalTime = 15; // 15 seconds total on graph
+            const changeTime = 10; // Temperature change occurs over 10 seconds
+
+            // Temperature model:
+            // Gradual change over 10 seconds, then stays at final temp
+            function getTemperature(t) {
+                if (t < changeTime) {
+                    // Gradual change over 10 seconds using smooth easing
+                    const progress = t / changeTime;
+                    // Use smooth ease-in-out curve
+                    const easeProgress = progress < 0.5
+                        ? 2 * progress * progress
+                        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+                    return state.initialTemp + (state.peakTemp - state.initialTemp) * easeProgress;
+                } else {
+                    // Stay at final temperature
+                    return state.peakTemp;
+                }
+            }
+
+            function drawGraph() {
+                ctx.clearRect(0, 0, width, height);
+
+                // Graph margins
+                const marginLeft = 40;
+                const marginRight = 15;
+                const marginTop = 15;
+                const marginBottom = 25;
+                const graphWidth = width - marginLeft - marginRight;
+                const graphHeight = height - marginTop - marginBottom;
+
+                // Calculate Y-axis range (whole degrees)
+                const minTemp = Math.floor(Math.min(state.initialTemp, state.peakTemp) - 2);
+                const maxTemp = Math.ceil(Math.max(state.initialTemp, state.peakTemp) + 2);
+                const tempRange = maxTemp - minTemp;
+
+                // Draw background
+                ctx.fillStyle = '#1a202c';
+                ctx.fillRect(0, 0, width, height);
+
+                // Draw grid lines and labels
+                ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+                ctx.fillStyle = '#a0aec0';
+                ctx.font = '9px sans-serif';
+                ctx.textAlign = 'right';
+
+                // Y-axis (temperature) - whole degree intervals
+                for (let temp = minTemp; temp <= maxTemp; temp++) {
+                    const y = marginTop + graphHeight - ((temp - minTemp) / tempRange) * graphHeight;
+
+                    ctx.beginPath();
+                    ctx.moveTo(marginLeft, y);
+                    ctx.lineTo(width - marginRight, y);
+                    ctx.stroke();
+
+                    ctx.fillText(temp + '°', marginLeft - 5, y + 3);
+                }
+
+                // X-axis (time) - intervals of 3 seconds for 15 second total
+                ctx.textAlign = 'center';
+                for (let t = 0; t <= totalTime; t += 3) {
+                    const x = marginLeft + (t / totalTime) * graphWidth;
+
+                    ctx.beginPath();
+                    ctx.moveTo(x, marginTop);
+                    ctx.lineTo(x, height - marginBottom);
+                    ctx.stroke();
+
+                    ctx.fillText(t + 's', x, height - 8);
+                }
+
+                // Draw axes
+                ctx.strokeStyle = '#63b3ed';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(marginLeft, marginTop);
+                ctx.lineTo(marginLeft, height - marginBottom);
+                ctx.lineTo(width - marginRight, height - marginBottom);
+                ctx.stroke();
+
+                // Draw temperature line
+                if (state.graphData.length > 1) {
+                    ctx.strokeStyle = '#ff7043';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+
+                    for (let i = 0; i < state.graphData.length; i++) {
+                        const point = state.graphData[i];
+                        const x = marginLeft + (point.time / totalTime) * graphWidth;
+                        const y = marginTop + graphHeight - ((point.temp - minTemp) / tempRange) * graphHeight;
+
+                        if (i === 0) {
+                            ctx.moveTo(x, y);
+                        } else {
+                            ctx.lineTo(x, y);
+                        }
+                    }
+                    ctx.stroke();
+
+                    // Draw current point
+                    const lastPoint = state.graphData[state.graphData.length - 1];
+                    const lastX = marginLeft + (lastPoint.time / totalTime) * graphWidth;
+                    const lastY = marginTop + graphHeight - ((lastPoint.temp - minTemp) / tempRange) * graphHeight;
+
+                    ctx.beginPath();
+                    ctx.arc(lastX, lastY, 4, 0, Math.PI * 2);
+                    ctx.fillStyle = '#ff7043';
+                    ctx.fill();
+                }
+
+                // Axis labels
+                ctx.fillStyle = '#63b3ed';
+                ctx.font = '10px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Time (s)', marginLeft + graphWidth / 2, height - 1);
+
+                ctx.save();
+                ctx.translate(10, marginTop + graphHeight / 2);
+                ctx.rotate(-Math.PI / 2);
+                ctx.fillText('Temp (°C)', 0, 0);
+                ctx.restore();
+            }
+
+            const startTime = performance.now();
+
+            function animate(currentTime) {
+                // Calculate actual elapsed time in seconds
+                const elapsedTime = (currentTime - startTime) / 1000;
+                time = Math.min(elapsedTime, totalTime);
+
+                const currentTemp = getTemperature(time);
+                state.graphData.push({ time: time, temp: currentTemp });
+
+                // Update thermometer
+                updateThermometerDisplay(currentTemp);
+
+                drawGraph();
+
+                if (time < totalTime) {
+                    state.graphAnimationId = requestAnimationFrame(animate);
+                } else {
+                    // Animation complete
+                    state.finalTemp = state.peakTemp;
+                    document.getElementById('dataFinalTemp').textContent = state.peakTemp.toFixed(1) + ' °C';
+                    document.getElementById('dataDeltaT').textContent = (state.peakTemp - state.initialTemp).toFixed(1) + ' °C';
+
+                    // Show answer section
+                    document.getElementById('answerSection').style.display = 'block';
+                    updateStep(6);
+                    showMessage('Graph complete! Calculate the enthalpy of dissolution.', 'success');
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        function checkAnswer() {
+            const input = document.getElementById('enthalpyInput').value;
+            const userAnswer = parseFloat(input);
+            const feedback = document.getElementById('feedback');
+
+            if (isNaN(userAnswer)) {
+                feedback.className = 'feedback incorrect';
+                feedback.innerHTML = 'Please enter a valid number.';
+                feedback.style.display = 'block';
+                return;
+            }
+
+            const tolerance = 0.5;
+            const difference = Math.abs(userAnswer - state.actualEnthalpy);
+
+            if (difference <= tolerance) {
+                feedback.className = 'feedback correct';
+                feedback.innerHTML = `<strong>Correct!</strong> Your answer of ${userAnswer.toFixed(1)} kJ/mol is within the acceptable range.<br><br>
+                    The dissolution of ${saltData[state.selectedSalt].formula} is <strong>${state.actualEnthalpy > 0 ? 'ENDOTHERMIC' : 'EXOTHERMIC'}</strong>.`;
+                feedback.style.display = 'block';
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedback.innerHTML = `<strong>Not quite.</strong> Your answer of ${userAnswer.toFixed(1)} kJ/mol is not within ±0.5 kJ/mol of the expected value.<br><br>
+                    Check your calculations:<br>
+                    • q = m × c × ΔT<br>
+                    • n = mass of salt / molar mass<br>
+                    • ΔH = -q / n (convert J to kJ)<br><br>
+                    Try again!`;
+                feedback.style.display = 'block';
+            }
+        }
+
+        function resetLab() {
+            // Cancel any running animation
+            if (state.graphAnimationId) {
+                cancelAnimationFrame(state.graphAnimationId);
+            }
+
+            // Reset state
+            state = {
+                currentStep: 1,
+                selectedSalt: null,
+                selectedItem: null,
+                saltMass: 0,
+                waterMass: 0,
+                initialTemp: 25.0,
+                finalTemp: null,
+                peakTemp: null,
+                thermometerInBeaker: false,
+                waterAdded: false,
+                saltInBoat: false,
+                saltAdded: false,
+                graphData: [],
+                graphAnimationId: null,
+                actualEnthalpy: null
+            };
+
+            // Reset UI elements
+            document.querySelectorAll('.salt-jar').forEach(jar => {
+                jar.classList.remove('selected', 'used');
+            });
+
+            document.getElementById('saltScaleDisplay').textContent = '0.00 g';
+            document.getElementById('waterScaleDisplay').textContent = '0.00 g';
+            document.getElementById('saltInBoat').style.height = '0%';
+
+            document.getElementById('water').style.height = '0%';
+            document.getElementById('water').className = 'water';
+            document.getElementById('particles').innerHTML = '';
+
+            const thermo = document.getElementById('thermometer');
+            thermo.classList.remove('in-beaker', 'selected');
+            updateThermometerDisplay(25.0);
+
+            document.getElementById('waterDispenser').classList.remove('selected');
+            document.getElementById('weighBoat').classList.remove('selected');
+            document.getElementById('beaker').classList.remove('selected');
+
+            document.getElementById('selectionIndicator').style.display = 'none';
+
+            document.getElementById('dataSelectedSalt').textContent = '-';
+            document.getElementById('dataSaltMass').textContent = '- g';
+            document.getElementById('dataWaterMass').textContent = '- g';
+            document.getElementById('dataInitialTemp').textContent = '- °C';
+            document.getElementById('dataFinalTemp').textContent = '- °C';
+            document.getElementById('dataDeltaT').textContent = '- °C';
+
+            document.getElementById('graphContainer').style.display = 'none';
+            document.getElementById('answerSection').style.display = 'none';
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('enthalpyInput').value = '';
+
+            // Clear graph canvas
+            const canvas = document.getElementById('tempGraph');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            updateStep(1);
+            showMessage('Lab reset. Ready for new experiment!', 'info');
+        }
+
+        // Handle Enter key in modals
+        document.getElementById('saltAmountInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') confirmSaltAmount();
+        });
+
+        document.getElementById('waterAmountInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') confirmWaterAmount();
+        });
+
+        document.getElementById('enthalpyInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkAnswer();
+        });
+
+        // Initialize
+        updateStep(1);
+    </script>
+</body>
+</html>

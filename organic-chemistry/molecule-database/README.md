@@ -1,5 +1,7 @@
 # Molecule Database (500 structures)
 
+> These molecules are included in the repo-wide searchable index (`index.html` at the repo root; rebuild with `python3 tools/build_index.py`).
+
 500 acyclic organic molecules, each with a drawn skeletal structure (PNG), verified IUPAC names, and properties.
 Built for nomenclature practice and as a reference library for example problems.
 

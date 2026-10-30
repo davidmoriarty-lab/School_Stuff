@@ -1,4 +1,7 @@
 """Build the 30-question quiz and answer key (.docx) from questions.py."""
+import os as _os, sys as _sys
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), '..', '..', '_shared'))
+
 import os
 import collections
 from PIL import Image

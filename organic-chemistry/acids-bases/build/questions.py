@@ -5,6 +5,9 @@ the correct letter, and an ARIO explanation for the answer key.
 For choices the FIRST entry is the correct one; distractors follow in order and
 the correct answer is placed at the letter listed in LETTERS.
 """
+import os as _os, sys as _sys
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), '..', '..', '_shared'))
+
 import os
 from chemdraw import Struct, Text, Plus, Equil, compose, compose_with_arrows
 from check_names import name_alkane

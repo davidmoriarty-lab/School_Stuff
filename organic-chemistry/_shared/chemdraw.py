@@ -286,8 +286,9 @@ class Struct:
     # ---- output -----------------------------------------------------------
     def bbox(self):
         xs, ys = [], []
-        for (x, y) in self.pos.values():
-            xs += [x - 15, x + 15]
+        for i, (x, y) in self.pos.items():
+            r = 27 if self._label_atom(i) else 15
+            xs += [x - r, x + r]
             ys += [y - 15, y + 15]
         for pts in self.lp_pts.values():
             for _, cx, cy in pts:
@@ -363,17 +364,17 @@ class Equil:
 def compose(items, gap=16, pad=10, path=None, scale=3):
     """Lay items out left to right, vertically centered, and write a PNG."""
     laid = [it.layout() for it in items]
-    H = max(h for _, h, _ in laid) + 2 * pad
-    W = sum(w for w, _, _ in laid) + gap * (len(laid) - 1) + 2 * pad
+    H = math.ceil(max(h for _, h, _ in laid) + 2 * pad)
+    W = math.ceil(sum(w for w, _, _ in laid) + gap * (len(laid) - 1) + 2 * pad)
     parts, x = [], pad
     for (w, h, render) in laid:
         parts.append(render(x, (H - h) / 2))
         x += w + gap
     svg = (f'<svg xmlns="http://www.w3.org/2000/svg" width="{W:.0f}" height="{H:.0f}" '
-           f'viewBox="0 0 {W:.1f} {H:.1f}"><rect width="100%" height="100%" fill="white"/>'
+           f'viewBox="0 0 {W:.1f} {H:.1f}"><rect width="{W}" height="{H}" fill="white"/>'
            + "".join(parts) + "</svg>")
     if path:
-        cairosvg.svg2png(bytestring=svg.encode(), write_to=path, scale=scale)
+        cairosvg.svg2png(bytestring=svg.encode(), write_to=path, scale=scale, background_color='white')
     return svg, (W, H)
 
 
@@ -401,8 +402,8 @@ def compose_with_arrows(items, cross, gap=16, pad=10, path=None, scale=3):
     """Like compose, plus arrows between separate Struct items.
     cross: list of dicts {i, frm, j, to, bend, s_off, e_off} (item indices)."""
     laid = [it.layout() for it in items]
-    H = max(h for _, h, _ in laid) + 2 * pad
-    W = sum(w for w, _, _ in laid) + gap * (len(laid) - 1) + 2 * pad
+    H = math.ceil(max(h for _, h, _ in laid) + 2 * pad)
+    W = math.ceil(sum(w for w, _, _ in laid) + gap * (len(laid) - 1) + 2 * pad)
     parts, x, tr = [], pad, {}
     for k, (it, (w, h, render)) in enumerate(zip(items, laid)):
         y = (H - h) / 2
@@ -423,8 +424,8 @@ def compose_with_arrows(items, cross, gap=16, pad=10, path=None, scale=3):
         Eg = (E[0] + tb[0], E[1] + tb[1])
         arrows.append((Sg, Eg, c.get("bend", 0.35)))
     svg = (f'<svg xmlns="http://www.w3.org/2000/svg" width="{W:.0f}" height="{H:.0f}" '
-           f'viewBox="0 0 {W:.1f} {H:.1f}"><rect width="100%" height="100%" fill="white"/>'
+           f'viewBox="0 0 {W:.1f} {H:.1f}"><rect width="{W}" height="{H}" fill="white"/>'
            + "".join(parts) + "".join(arrow_svg(arrows)) + "</svg>")
     if path:
-        cairosvg.svg2png(bytestring=svg.encode(), write_to=path, scale=scale)
+        cairosvg.svg2png(bytestring=svg.encode(), write_to=path, scale=scale, background_color='white')
     return svg, (W, H)

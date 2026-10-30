@@ -27,7 +27,7 @@ def _ang_dist(a, b):
 
 class Struct:
     def __init__(self, smiles, hlabels=None, lone=(), rotate=0, atomlabels=None,
-                 flip=False, redh=True, charge_pref=315):
+                 flip=False, redh=True, charge_pref=315, cip=False):
         """hlabels: {map: 'a'} puts a subscript letter on a labeled H.
         lone: map numbers of uncharged atoms that should also show lone pairs.
         Charged atoms always get a circled charge and their lone pairs.
@@ -90,6 +90,9 @@ class Struct:
         if redh:
             o.updateAtomPalette({1: H_RED})
         o.multipleBondOffset = 0.14
+        if cip:
+            o.addStereoAnnotation = True
+            o.annotationFontScale = 0.7
         d.DrawMolecule(dm)
         d.FinishDrawing()
         svg = d.GetDrawingText()
@@ -286,8 +289,9 @@ class Struct:
     # ---- output -----------------------------------------------------------
     def bbox(self):
         xs, ys = [], []
-        for (x, y) in self.pos.values():
-            xs += [x - 15, x + 15]
+        for i, (x, y) in self.pos.items():
+            r = 27 if self._label_atom(i) else 15
+            xs += [x - r, x + r]
             ys += [y - 15, y + 15]
         for pts in self.lp_pts.values():
             for _, cx, cy in pts:
@@ -363,17 +367,17 @@ class Equil:
 def compose(items, gap=16, pad=10, path=None, scale=3):
     """Lay items out left to right, vertically centered, and write a PNG."""
     laid = [it.layout() for it in items]
-    H = max(h for _, h, _ in laid) + 2 * pad
-    W = sum(w for w, _, _ in laid) + gap * (len(laid) - 1) + 2 * pad
+    H = math.ceil(max(h for _, h, _ in laid) + 2 * pad)
+    W = math.ceil(sum(w for w, _, _ in laid) + gap * (len(laid) - 1) + 2 * pad)
     parts, x = [], pad
     for (w, h, render) in laid:
         parts.append(render(x, (H - h) / 2))
         x += w + gap
     svg = (f'<svg xmlns="http://www.w3.org/2000/svg" width="{W:.0f}" height="{H:.0f}" '
-           f'viewBox="0 0 {W:.1f} {H:.1f}"><rect width="100%" height="100%" fill="white"/>'
+           f'viewBox="0 0 {W:.1f} {H:.1f}"><rect width="{W}" height="{H}" fill="white"/>'
            + "".join(parts) + "</svg>")
     if path:
-        cairosvg.svg2png(bytestring=svg.encode(), write_to=path, scale=scale)
+        cairosvg.svg2png(bytestring=svg.encode(), write_to=path, scale=scale, background_color='white')
     return svg, (W, H)
 
 
@@ -401,8 +405,8 @@ def compose_with_arrows(items, cross, gap=16, pad=10, path=None, scale=3):
     """Like compose, plus arrows between separate Struct items.
     cross: list of dicts {i, frm, j, to, bend, s_off, e_off} (item indices)."""
     laid = [it.layout() for it in items]
-    H = max(h for _, h, _ in laid) + 2 * pad
-    W = sum(w for w, _, _ in laid) + gap * (len(laid) - 1) + 2 * pad
+    H = math.ceil(max(h for _, h, _ in laid) + 2 * pad)
+    W = math.ceil(sum(w for w, _, _ in laid) + gap * (len(laid) - 1) + 2 * pad)
     parts, x, tr = [], pad, {}
     for k, (it, (w, h, render)) in enumerate(zip(items, laid)):
         y = (H - h) / 2
@@ -423,8 +427,31 @@ def compose_with_arrows(items, cross, gap=16, pad=10, path=None, scale=3):
         Eg = (E[0] + tb[0], E[1] + tb[1])
         arrows.append((Sg, Eg, c.get("bend", 0.35)))
     svg = (f'<svg xmlns="http://www.w3.org/2000/svg" width="{W:.0f}" height="{H:.0f}" '
-           f'viewBox="0 0 {W:.1f} {H:.1f}"><rect width="100%" height="100%" fill="white"/>'
+           f'viewBox="0 0 {W:.1f} {H:.1f}"><rect width="{W}" height="{H}" fill="white"/>'
            + "".join(parts) + "".join(arrow_svg(arrows)) + "</svg>")
     if path:
-        cairosvg.svg2png(bytestring=svg.encode(), write_to=path, scale=scale)
+        cairosvg.svg2png(bytestring=svg.encode(), write_to=path, scale=scale, background_color='white')
     return svg, (W, H)
+
+
+class Arrow:
+    """Reaction arrow with text lines above and/or below (list of strings)."""
+    def __init__(self, top=(), bottom=(), length=90, size=15):
+        self.top, self.bottom, self.length, self.size = list(top), list(bottom), length, size
+
+    def layout(self):
+        lines = max(len(self.top), len(self.bottom), 1)
+        w = max([self.length] + [len(t) * self.size * 0.58 + 8 for t in self.top + self.bottom])
+        h = 2 * lines * (self.size + 4) + 6
+
+        def render(x, y):
+            cy, out = y + h / 2, []
+            x0, x1 = x + (w - self.length) / 2, x + (w + self.length) / 2
+            out.append(f'<line x1="{x0:.1f}" y1="{cy:.1f}" x2="{x1 - 2:.1f}" y2="{cy:.1f}" stroke="black" stroke-width="1.8"/>')
+            out.append(f'<polygon points="{x1:.1f},{cy:.1f} {x1 - 10:.1f},{cy - 4.5:.1f} {x1 - 10:.1f},{cy + 4.5:.1f}" fill="black"/>')
+            for k, t in enumerate(reversed(self.top)):
+                out.append(f'<text x="{x + w / 2:.1f}" y="{cy - 6 - k * (self.size + 4):.1f}" text-anchor="middle" font-family="{FONT}" font-size="{self.size}">{t}</text>')
+            for k, t in enumerate(self.bottom):
+                out.append(f'<text x="{x + w / 2:.1f}" y="{cy + 5 + self.size + k * (self.size + 4):.1f}" text-anchor="middle" font-family="{FONT}" font-size="{self.size}">{t}</text>')
+            return ''.join(out)
+        return (w, h, render)

@@ -1,4 +1,7 @@
 """Build the 30-question quiz and answer key (.docx) from questions.py."""
+import os as _os, sys as _sys
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), '..', '..', '_shared'))
+
 import os
 import collections
 from PIL import Image
@@ -226,8 +229,20 @@ def build_key(Q):
     return out
 
 
+def export_json(Q):
+    import json
+    out = []
+    for q in Q:
+        opts = [{'type': k, 'value': os.path.relpath(v, OUT) if k == 'img' else v} for k, v in q['opts']]
+        out.append(dict(id=f"Q{q['n']:02d}", number=q['n'], topic=q['topic'], level=q['level'], stem=q['stem'],
+                        stem_image=os.path.relpath(q['stem_img'], OUT) if q.get('stem_img') else None,
+                        options=opts, answer=q['correct'], why=q['why']))
+    json.dump(out, open(os.path.join(OUT, 'questions.json'), 'w'), indent=1, ensure_ascii=False)
+
+
 if __name__ == "__main__":
     Q = finalize(qmod.build())
     print("answer distribution:", dict(collections.Counter(q["correct"] for q in Q)))
+    export_json(Q)
     print(build_quiz(Q))
     print(build_key(Q))

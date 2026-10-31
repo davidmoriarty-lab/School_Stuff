@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Periodic Table Highway</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg1: #0f0f1a; --bg2: #1a1a2e; --bg3: #0d1b2a;
+    --ink: #f2f6fb; --muted: #9fb0c3; --accent: #4fc3f7; --good: #43d17a; --bad: #ff6b6b;
+    --panel: rgba(12, 16, 32, 0.88); --line: rgba(255, 255, 255, 0.16);
+    --lane0: #2f6df6; --lane1: #e08a14; --lane2: #14a37f;
+  }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 50%, var(--bg3) 100%);
+    color: var(--ink);
+    -webkit-text-size-adjust: 100%;
+  }
+  #app { max-width: 1100px; margin: 0 auto; padding: 8px 12px 10px; display: flex; flex-direction: column; gap: 6px; min-height: 100%; }
+
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  h1 { font-size: 1.05rem; letter-spacing: 0.01em; color: var(--accent); white-space: nowrap; }
+  .hud { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 0.85rem; }
+  .chip { padding: 3px 10px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255, 255, 255, 0.06); white-space: nowrap; }
+  .chip b { font-variant-numeric: tabular-nums; }
+  .progress { width: 110px; height: 8px; border-radius: 999px; background: rgba(255, 255, 255, 0.14); overflow: hidden; }
+  .progress > i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--good)); transition: width 0.25s ease; }
+  .btn {
+    font: inherit; color: var(--ink); background: rgba(255, 255, 255, 0.08); border: 1px solid var(--line);
+    border-radius: 8px; padding: 5px 12px; cursor: pointer;
+  }
+  .btn:hover:not(:disabled) { border-color: var(--accent); }
+  .btn.primary { background: var(--accent); color: #06121c; border-color: var(--accent); font-weight: 700; padding: 9px 22px; font-size: 1rem; }
+  .btn[aria-pressed="true"], .btn.on { background: rgba(79, 195, 247, 0.22); border-color: var(--accent); }
+  :focus-visible { outline: 3px solid #ffd54a; outline-offset: 2px; }
+
+  #stageWrap {
+    position: relative; width: min(100%, calc((100vh - 118px) * 16 / 9)); aspect-ratio: 16 / 9; margin: 0 auto;
+    border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: #0b1020; touch-action: none; user-select: none;
+  }
+  #stage { width: 100%; height: 100%; display: block; }
+  #stageWrap.shake { animation: shake 0.35s ease; }
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-9px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(3px); } }
+
+  #prompt {
+    position: absolute; top: 8px; left: 50%; transform: translateX(-50%); text-align: center; pointer-events: none;
+    background: rgba(8, 11, 24, 0.8); border: 1px solid var(--line); border-radius: 12px; padding: 4px 22px 6px; min-width: 240px;
+  }
+  #prompt .lab { font-size: clamp(0.62rem, 1.5vw, 0.8rem); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  #prompt .nm { font-size: clamp(1.5rem, 5vw, 2.6rem); font-weight: 800; line-height: 1.05; }
+  #prompt[hidden] { display: none; }
+
+  #overlay {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 10px;
+    background: rgba(6, 8, 20, 0.84); overflow: auto;
+  }
+  #overlay[hidden] { display: none; }
+  /* the menu uses the whole window, so it fits a small screen without scrolling */
+  #overlay.full { position: fixed; z-index: 20; background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #0d1b2a 100%); }
+  #overlay.full .card { max-width: 960px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px 18px; max-width: 760px; width: 100%; }
+  .card h2 { font-size: 1.25rem; color: var(--accent); margin-bottom: 4px; }
+  .card h3 { font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 8px 0 4px; }
+  .card p { font-size: 0.9rem; line-height: 1.4; margin-bottom: 4px; }
+  .card .big { font-size: 1.6rem; font-weight: 800; margin: 4px 0; }
+  .card .muted { color: var(--muted); font-size: 0.82rem; }
+  .card .bad { color: var(--bad); }
+  .card .good { color: var(--good); }
+  .row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .lvl { text-align: left; line-height: 1.2; padding: 5px 10px; }
+  .lvl small { display: block; color: var(--muted); font-size: 0.72rem; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; align-items: center; }
+
+  #pips { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; pointer-events: none; }
+  #pips i { width: 26px; height: 8px; border-radius: 4px; background: rgba(255, 255, 255, 0.28); }
+  #pips i.on { background: #fff; }
+
+  #touch { display: none; position: absolute; left: 0; right: 0; bottom: 22px; padding: 0 14px; justify-content: space-between; pointer-events: none; }
+  #touch button { pointer-events: auto; width: 70px; height: 54px; border-radius: 14px; font-size: 1.6rem; background: rgba(255, 255, 255, 0.18); color: #fff; border: 1px solid var(--line); }
+  @media (pointer: coarse) { #touch { display: flex; } }
+
+  .foot { text-align: center; font-size: 0.78rem; color: var(--muted); }
+  kbd { border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; font-family: inherit; font-size: 0.78rem; background: rgba(255, 255, 255, 0.08); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @media (prefers-reduced-motion: reduce) { #stageWrap.shake { animation: none; } .progress > i { transition: none; } }
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <h1>Periodic Table Highway</h1>
+    <div class="hud" role="group" aria-label="Game status">
+      <span class="chip" id="hudLevel">Level</span>
+      <span class="chip">Streak <b id="hudStreak">0</b></span>
+      <span class="chip">Best <b id="hudBest">0</b></span>
+      <span class="chip"><span class="progress" aria-hidden="true"><i id="hudBar"></i></span> <b id="hudProg">0 / 0</b></span>
+      <button class="btn" id="btnPause" type="button" aria-label="Pause">Pause</button>
+      <button class="btn" id="btnSound" type="button" aria-pressed="false" aria-label="Sound off">Sound off</button>
+      <button class="btn" id="btnMenu" type="button">Menu</button>
+    </div>
+  </header>
+
+  <div id="stageWrap">
+    <canvas id="stage" aria-label="A highway seen from the driver's seat with three lanes. Signs with element symbols come toward you."></canvas>
+    <div id="prompt" hidden><div class="lab">Find the symbol for</div><div class="nm" id="promptName"></div></div>
+    <div id="pips" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div id="touch"><button type="button" id="tLeft" aria-label="Move one lane left">&#9664;</button><button type="button" id="tRight" aria-label="Move one lane right">&#9654;</button></div>
+    <div id="overlay"></div>
+  </div>
+
+  <p class="foot"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> or <kbd>A</kbd> <kbd>D</kbd> change lane &middot; <kbd>Space</kbd> pause &middot; <kbd>M</kbd> sound. On a touch screen, tap the left or right side.</p>
+  <p class="sr" id="live" aria-live="polite"></p>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ------------------------------------------------------------------ data */
+
+  /* [atomic number, symbol, name, family] (US spellings, as AP uses)
+     families: nm nonmetal, ng noble gas, ak alkali, ae alkaline earth, mt metalloid, hl halogen,
+               pt post-transition, tm transition, la lanthanide, ac actinide */
+  var RAW = [
+    [1,'H','Hydrogen','nm'],[2,'He','Helium','ng'],[3,'Li','Lithium','ak'],[4,'Be','Beryllium','ae'],[5,'B','Boron','mt'],
+    [6,'C','Carbon','nm'],[7,'N','Nitrogen','nm'],[8,'O','Oxygen','nm'],[9,'F','Fluorine','hl'],[10,'Ne','Neon','ng'],
+    [11,'Na','Sodium','ak'],[12,'Mg','Magnesium','ae'],[13,'Al','Aluminum','pt'],[14,'Si','Silicon','mt'],[15,'P','Phosphorus','nm'],
+    [16,'S','Sulfur','nm'],[17,'Cl','Chlorine','hl'],[18,'Ar','Argon','ng'],[19,'K','Potassium','ak'],[20,'Ca','Calcium','ae'],
+    [21,'Sc','Scandium','tm'],[22,'Ti','Titanium','tm'],[23,'V','Vanadium','tm'],[24,'Cr','Chromium','tm'],[25,'Mn','Manganese','tm'],
+    [26,'Fe','Iron','tm'],[27,'Co','Cobalt','tm'],[28,'Ni','Nickel','tm'],[29,'Cu','Copper','tm'],[30,'Zn','Zinc','tm'],
+    [31,'Ga','Gallium','pt'],[32,'Ge','Germanium','mt'],[33,'As','Arsenic','mt'],[34,'Se','Selenium','nm'],[35,'Br','Bromine','hl'],
+    [36,'Kr','Krypton','ng'],[37,'Rb','Rubidium','ak'],[38,'Sr','Strontium','ae'],[39,'Y','Yttrium','tm'],[40,'Zr','Zirconium','tm'],
+    [41,'Nb','Niobium','tm'],[42,'Mo','Molybdenum','tm'],[43,'Tc','Technetium','tm'],[44,'Ru','Ruthenium','tm'],[45,'Rh','Rhodium','tm'],
+    [46,'Pd','Palladium','tm'],[47,'Ag','Silver','tm'],[48,'Cd','Cadmium','tm'],[49,'In','Indium','pt'],[50,'Sn','Tin','pt'],
+    [51,'Sb','Antimony','mt'],[52,'Te','Tellurium','mt'],[53,'I','Iodine','hl'],[54,'Xe','Xenon','ng'],[55,'Cs','Cesium','ak'],
+    [56,'Ba','Barium','ae'],[57,'La','Lanthanum','la'],[58,'Ce','Cerium','la'],[59,'Pr','Praseodymium','la'],[60,'Nd','Neodymium','la'],
+    [61,'Pm','Promethium','la'],[62,'Sm','Samarium','la'],[63,'Eu','Europium','la'],[64,'Gd','Gadolinium','la'],[65,'Tb','Terbium','la'],
+    [66,'Dy','Dysprosium','la'],[67,'Ho','Holmium','la'],[68,'Er','Erbium','la'],[69,'Tm','Thulium','la'],[70,'Yb','Ytterbium','la'],
+    [71,'Lu','Lutetium','la'],[72,'Hf','Hafnium','tm'],[73,'Ta','Tantalum','tm'],[74,'W','Tungsten','tm'],[75,'Re','Rhenium','tm'],
+    [76,'Os','Osmium','tm'],[77,'Ir','Iridium','tm'],[78,'Pt','Platinum','tm'],[79,'Au','Gold','tm'],[80,'Hg','Mercury','tm'],
+    [81,'Tl','Thallium','pt'],[82,'Pb','Lead','pt'],[83,'Bi','Bismuth','pt'],[84,'Po','Polonium','pt'],[85,'At','Astatine','hl'],
+    [86,'Rn','Radon','ng'],[87,'Fr','Francium','ak'],[88,'Ra','Radium','ae'],[89,'Ac','Actinium','ac'],[90,'Th','Thorium','ac'],
+    [91,'Pa','Protactinium','ac'],[92,'U','Uranium','ac'],[93,'Np','Neptunium','ac'],[94,'Pu','Plutonium','ac'],[95,'Am','Americium','ac'],
+    [96,'Cm','Curium','ac'],[97,'Bk','Berkelium','ac'],[98,'Cf','Californium','ac'],[99,'Es','Einsteinium','ac'],[100,'Fm','Fermium','ac'],
+    [101,'Md','Mendelevium','ac'],[102,'No','Nobelium','ac'],[103,'Lr','Lawrencium','ac'],[104,'Rf','Rutherfordium','tm'],[105,'Db','Dubnium','tm'],
+    [106,'Sg','Seaborgium','tm'],[107,'Bh','Bohrium','tm'],[108,'Hs','Hassium','tm'],[109,'Mt','Meitnerium','tm'],[110,'Ds','Darmstadtium','tm'],
+    [111,'Rg','Roentgenium','tm'],[112,'Cn','Copernicium','tm'],[113,'Nh','Nihonium','pt'],[114,'Fl','Flerovium','pt'],[115,'Mc','Moscovium','pt'],
+    [116,'Lv','Livermorium','pt'],[117,'Ts','Tennessine','hl'],[118,'Og','Oganesson','ng']
+  ];
+  var ELEMENTS = RAW.map(function (a) { return { z: a[0], sym: a[1], name: a[2], fam: a[3] }; });
+
+  var LEVELS = [
+    { id: 'n20',  group: 'number', name: 'First 20', note: 'H to Ca', pick: function (e) { return e.z <= 20; } },
+    { id: 'n36',  group: 'number', name: 'First 36', note: 'H to Kr', pick: function (e) { return e.z <= 36; } },
+    { id: 'n54',  group: 'number', name: 'First 54', note: 'H to Xe', pick: function (e) { return e.z <= 54; } },
+    { id: 'n88',  group: 'number', name: '1 to 88', note: 'no lanthanoids', pick: function (e) { return e.z <= 88 && !(e.z >= 57 && e.z <= 71); } },
+    { id: 'n118', group: 'number', name: 'All 118', note: 'the whole table', pick: function () { return true; } },
+    { id: 'ak', group: 'family', name: 'Alkali metals', note: 'group 1', pick: function (e) { return e.fam === 'ak'; } },
+    { id: 'ae', group: 'family', name: 'Alkaline earth', note: 'group 2', pick: function (e) { return e.fam === 'ae'; } },
+    { id: 'hl', group: 'family', name: 'Halogens', note: 'group 17', pick: function (e) { return e.fam === 'hl' && e.z <= 85; } },
+    { id: 'ng', group: 'family', name: 'Noble gases', note: 'group 18', pick: function (e) { return e.fam === 'ng' && e.z <= 86; } },
+    { id: 'mt', group: 'family', name: 'Metalloids', note: 'B, Si, Ge, As, Sb, Te', pick: function (e) { return e.fam === 'mt'; } },
+    { id: 'tm', group: 'family', name: 'Transition metals', note: 'Sc to Hg, no lanthanoids', pick: function (e) { return e.fam === 'tm' && e.z <= 80; } },
+    { id: 'p2',  group: 'family', name: 'Period 2', note: 'Li to Ne', pick: function (e) { return e.z >= 3 && e.z <= 10; } },
+    { id: 'p3',  group: 'family', name: 'Period 3', note: 'Na to Ar', pick: function (e) { return e.z >= 11 && e.z <= 18; } },
+    { id: 'p4',  group: 'family', name: 'Period 4', note: 'K to Kr', pick: function (e) { return e.z >= 19 && e.z <= 36; } }
+  ];
+  function level(id) { for (var i = 0; i < LEVELS.length; i++) if (LEVELS[i].id === id) return LEVELS[i]; return LEVELS[0]; }
+  function poolOf(id) { return ELEMENTS.filter(level(id).pick); }
+
+  /* units per second: start speed, top speed, gain per right answer */
+  var SPEEDS = {
+    relaxed: { name: 'Relaxed', v0: 4.0, vMax: 7.0, ramp: 0.15 },
+    normal:  { name: 'Normal',  v0: 5.5, vMax: 10.0, ramp: 0.22 },
+    fast:    { name: 'Fast',    v0: 7.0, vMax: 14.0, ramp: 0.30 }
+  };
+
+  /* ------------------------------------------------------------- the rules */
+
+  var SPAWN_D = 26, JUDGE_D = 0.5, CULL_D = -1.4, GAP = 0.45, LANE_TAU = 0.07, END_DELAY = 0.9;
+
+  function rngFrom(seed) {
+    var a = seed >>> 0;
+    return function () {
+      a = (a + 0x6D2B79F5) >>> 0;
+      var t = a;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function shuffle(arr, rand) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(rand() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+
+  /* How much a wrong symbol looks like the right one: same first letter, shared letters, same length,
+     near in the table. The two best (with a little luck) become the wrong signs. */
+  function lookalike(el, c, rand) {
+    var s = 0, a = el.sym.toLowerCase(), b = c.sym.toLowerCase(), i;
+    if (a.charAt(0) === b.charAt(0)) s += 4;
+    for (i = 0; i < b.length; i++) if (a.indexOf(b.charAt(i)) >= 0) s += 1;
+    if (a.length === b.length) s += 1;
+    if (Math.abs(el.z - c.z) <= 2) s += 1;
+    if (el.fam === c.fam) s += 1;
+    return s + rand() * 2;
+  }
+  function distractors(el, pool, rand) {
+    var cands = pool.filter(function (c) { return c.sym !== el.sym; });
+    if (cands.length < 10) {   /* a small family: add lookalikes from the first 36 so it is not the same few signs */
+      ELEMENTS.filter(function (c) { return c.z <= 36 && c.sym !== el.sym && cands.indexOf(c) < 0; }).forEach(function (c) { cands.push(c); });
+    }
+    cands.sort(function (x, y) { return lookalike(el, y, rand) - lookalike(el, x, rand); });
+    return cands.slice(0, 2).map(function (c) { return c.sym; });
+  }
+
+  function makeGame(opts) {
+    var rand = opts.rng || Math.random;
+    var preset = SPEEDS[opts.speed] || SPEEDS.normal;
+    var pool = opts.pool.slice();
+    var weakFirst = (opts.weak || []).map(function (s) { return pool.filter(function (e) { return e.sym === s; })[0]; }).filter(Boolean);
+    weakFirst = shuffle(weakFirst, rand).slice(0, 3);
+    var rest = shuffle(pool.filter(function (e) { return weakFirst.indexOf(e) < 0; }), rand);
+    var G = {
+      phase: 'play',            /* play | wrong | win */
+      paused: false,
+      pool: pool, total: pool.length, preset: preset,
+      queue: weakFirst.concat(rest),
+      answered: 0, streak: 0, speed: preset.v0,
+      lane: 1, camLane: 1,
+      q: null, gap: 0.8, odo: 0, elapsed: 0, phaseTime: 0, lastLanes: [],
+      history: [], missed: null, handlers: {}
+    };
+    function emit(type, data) { var f = G.handlers[type]; if (f) f(data); }
+    G.on = function (type, fn) { G.handlers[type] = fn; };
+
+    G.move = function (delta) {
+      if (G.phase !== 'play' || G.paused) return;
+      var n = Math.max(0, Math.min(2, G.lane + delta));
+      if (n !== G.lane) { G.lane = n; emit('lane', n); }
+    };
+
+    function spawn() {
+      var el = G.queue.shift();
+      var wrong = distractors(el, pool, rand);
+      var correctLane = Math.floor(rand() * 3);
+      var l = G.lastLanes;
+      if (l.length >= 2 && l[l.length - 1] === l[l.length - 2] && correctLane === l[l.length - 1]) correctLane = (correctLane + 1 + Math.floor(rand() * 2)) % 3;
+      G.lastLanes.push(correctLane);
+      var opts2 = [], w = 0;
+      for (var i = 0; i < 3; i++) opts2.push(i === correctLane ? el.sym : wrong[w++]);
+      G.q = { el: el, options: opts2, correctLane: correctLane, d: SPAWN_D, judged: false, result: null, chosen: null };
+      emit('spawn', G.q);
+    }
+
+    function judge() {
+      var q = G.q;
+      var chosen = Math.max(0, Math.min(2, Math.round(G.camLane)));
+      q.judged = true; q.chosen = chosen;
+      if (chosen === q.correctLane) {
+        q.result = 'ok';
+        G.answered++; G.streak++;
+        G.speed = Math.min(preset.vMax, preset.v0 + preset.ramp * G.streak);
+        G.history.push(q.el.sym);
+        emit('correct', q);
+        if (G.answered >= G.total) { G.phase = 'win'; G.phaseTime = 0; emit('win', { time: G.elapsed }); }
+      } else {
+        q.result = 'bad';
+        G.phase = 'wrong'; G.phaseTime = 0; G.missed = q.el;
+        emit('wrong', q);
+      }
+    }
+
+    /* advance the world by dt seconds */
+    G.step = function (dt) {
+      if (G.paused) return;
+      if (G.phase !== 'play') { G.phaseTime += dt; return; }
+      G.elapsed += dt;
+      G.camLane += (G.lane - G.camLane) * (1 - Math.exp(-dt / LANE_TAU));
+      G.odo += G.speed * dt;
+      if (!G.q) {
+        G.gap -= dt;
+        if (G.gap <= 0 && G.queue.length) spawn();
+        return;
+      }
+      G.q.d -= G.speed * dt;
+      if (!G.q.judged && G.q.d <= JUDGE_D) judge();
+      if (G.q && G.q.judged && G.phase === 'play' && G.q.d < CULL_D) { G.q = null; G.gap = GAP; }
+    };
+    return G;
+  }
+
+  /* ----------------------------------------------------------------- store */
+
+  var store = {
+    get: function (k, d) { try { var v = localStorage.getItem('pth:' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set: function (k, v) { try { localStorage.setItem('pth:' + k, JSON.stringify(v)); } catch (e) { /* private mode */ } }
+  };
+
+  /* ------------------------------------------------------------------ view */
+
+  var VW = 960, VH = 540, Y0 = 196, F = 540, HCAM = 2.2, DNEAR = 3, LANEW = 1.8, BW = 1.7, STRIPE = 2.5;
+  var LANE_COL = ['#2f6df6', '#e08a14', '#14a37f'];
+  var canvas = document.getElementById('stage'), ctx = canvas.getContext('2d');
+  var wrap = document.getElementById('stageWrap'), overlay = document.getElementById('overlay');
+  var promptEl = document.getElementById('prompt'), promptName = document.getElementById('promptName');
+  var live = document.getElementById('live');
+  var reduceMotion = false;
+  try { reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { /* old browser */ }
+  var params = new URLSearchParams(location.search);
+  var manual = params.has('manual');
+
+  var sky = null, hills = [];
+  function resize() {
+    var r = wrap.getBoundingClientRect();
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.max(2, Math.round(r.width * dpr));
+    canvas.height = Math.max(2, Math.round(r.height * dpr));
+    ctx.setTransform(canvas.width / VW, 0, 0, canvas.height / VH, 0, 0);
+    sky = ctx.createLinearGradient(0, 0, 0, Y0);
+    sky.addColorStop(0, '#16264d'); sky.addColorStop(0.55, '#6a4c93'); sky.addColorStop(1, '#ff9e6b');
+  }
+  (function makeHills() {
+    var rand = rngFrom(7);
+    [0, 1].forEach(function (layer) {
+      var pts = [], x = -40;
+      while (x < VW + 80) { pts.push([x, Y0 - 12 - layer * 8 - rand() * (46 - layer * 14)]); x += 40 + rand() * 50; }
+      hills.push(pts);
+    });
+  })();
+
+  function ground(d) { return Y0 + HCAM * F / (d + DNEAR); }
+  function scaleAt(d) { return F / (d + DNEAR); }
+
+  function draw(G) {
+    var bob = reduceMotion ? 0 : Math.sin(G.odo * 1.7) * 1.4;
+    var camX = (G.camLane - 1) * LANEW;
+    var cx = VW / 2;
+    ctx.save();
+    ctx.translate(0, bob);
+
+    ctx.fillStyle = sky; ctx.fillRect(0, -10, VW, Y0 + 12);
+    ctx.fillStyle = 'rgba(255, 236, 190, 0.9)'; ctx.beginPath(); ctx.arc(700 - camX * 4, Y0 - 62, 26, 0, 6.3); ctx.fill();
+    ['#3b2f63', '#2a2250'].forEach(function (col, layer) {
+      ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(-60, Y0 + 2);
+      hills[layer].forEach(function (p) { ctx.lineTo(p[0] - camX * (3 + layer * 2), p[1]); });
+      ctx.lineTo(VW + 80, Y0 + 2); ctx.closePath(); ctx.fill();
+    });
+
+    /* the ground in bands, far to near, so the stripes scroll and the edges stay clean */
+    function quad(x1, y1, x2, y2, x3, y3, x4, y4) {
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.lineTo(x3, y3); ctx.lineTo(x4, y4); ctx.closePath(); ctx.fill();
+    }
+    ctx.fillStyle = '#238042'; ctx.fillRect(0, Y0, VW, VH - Y0 + 40);
+    var ddNear = 3.1, ddFar = 260;
+    var nStart = Math.floor((ddNear + G.odo) / STRIPE), nEnd = Math.floor((ddFar + G.odo) / STRIPE);
+    for (var n = nEnd; n >= nStart; n--) {
+      var da = Math.max(ddNear, n * STRIPE - G.odo), db = (n + 1) * STRIPE - G.odo;
+      var ya = Y0 + HCAM * F / da, yb = Y0 + HCAM * F / db;           /* ya is the nearer (lower) edge */
+      var ka = (ya - Y0) / HCAM, kb = (yb - Y0) / HCAM;               /* px per world unit at each edge */
+      var par = n & 1;
+      ctx.fillStyle = par ? '#1f6f3a' : '#238042'; ctx.fillRect(0, yb, VW, ya - yb + 0.7);
+      var La = cx + (-1.5 * LANEW - camX) * ka, Ra = cx + (1.5 * LANEW - camX) * ka;
+      var Lb = cx + (-1.5 * LANEW - camX) * kb, Rb = cx + (1.5 * LANEW - camX) * kb;
+      ctx.fillStyle = par ? '#3c4150' : '#454a5a'; quad(La, ya + 0.7, Ra, ya + 0.7, Rb, yb, Lb, yb);
+      ctx.fillStyle = par ? '#d94040' : '#f4f4f4';
+      quad(La - 0.22 * ka, ya + 0.7, La, ya + 0.7, Lb, yb, Lb - 0.22 * kb, yb);
+      quad(Ra, ya + 0.7, Ra + 0.22 * ka, ya + 0.7, Rb + 0.22 * kb, yb, Rb, yb);
+      if (par) {
+        ctx.fillStyle = '#e8ecf4';
+        [-0.5, 0.5].forEach(function (x) {
+          var xa = cx + (x * LANEW - camX) * ka, xb = cx + (x * LANEW - camX) * kb, wa = 0.0225 * ka, wb = 0.0225 * kb;
+          quad(xa - wa, ya + 0.7, xa + wa, ya + 0.7, xb + wb, yb, xb - wb, yb);
+        });
+      }
+    }
+
+    /* roadside posts and trees, far to near */
+    var per = 6, off = G.odo % per;
+    for (var i = 12; i >= 0; i--) {
+      var d = i * per - off - 1;
+      if (d < -2) continue;
+      var s = scaleAt(d), gy = ground(d);
+      [-1, 1].forEach(function (side) {
+        var X = side * (1.5 * LANEW + 1.4);
+        var sx = cx + (X - camX) * s;
+        ctx.fillStyle = '#5b3a24'; ctx.fillRect(sx - 0.1 * s, gy - 1.5 * s, 0.2 * s, 1.5 * s);
+        ctx.fillStyle = (i % 2) ? '#2d9a52' : '#38b360';
+        ctx.beginPath(); ctx.arc(sx, gy - 1.9 * s, 0.85 * s, 0, 6.3); ctx.fill();
+      });
+    }
+
+    /* the signs */
+    var q = G.q;
+    if (q) {
+      var sd = Math.max(q.d, CULL_D), sc = scaleAt(sd);
+      var alpha = q.d >= JUDGE_D ? 1 : Math.max(0, (q.d - CULL_D) / (JUDGE_D - CULL_D));
+      if (G.phase !== 'play') alpha = 1;
+      for (var lane = 0; lane < 3; lane++) {
+        var X = (lane - 1) * LANEW;
+        var left = cx + (X - camX - BW / 2) * sc;
+        var top = Y0 + (HCAM - 2.65) * sc, bot = Y0 + (HCAM - 1.25) * sc;
+        var gy2 = ground(sd);
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = '#9aa3b5'; ctx.fillRect(left + BW * sc / 2 - 0.05 * sc, bot, 0.1 * sc, gy2 - bot);
+        var col = LANE_COL[lane];
+        var mark = '';
+        if (q.judged) {
+          if (lane === q.correctLane) { col = '#22c55e'; mark = '✓'; }
+          else if (lane === q.chosen) { col = '#ef4444'; mark = '✗'; }
+          else col = '#556';
+        }
+        var w = BW * sc, hh = bot - top, rr = 0.12 * sc;
+        ctx.fillStyle = col; ctx.strokeStyle = '#fff'; ctx.lineWidth = Math.max(1.5, 0.07 * sc);
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(left, top, w, hh, rr); else ctx.rect(left, top, w, hh);
+        ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.font = '800 ' + Math.max(8, Math.round(hh * 0.62)) + 'px system-ui, "Segoe UI", sans-serif';
+        ctx.fillText(q.options[lane], left + w / 2, top + hh * 0.54);
+        if (mark) {
+          ctx.font = '800 ' + Math.round(hh * 0.3) + 'px system-ui, sans-serif';
+          ctx.fillText(mark, left + w * 0.86, top + hh * 0.2);
+        }
+        ctx.globalAlpha = 1;
+      }
+    }
+    ctx.restore();
+
+    /* a soft vignette so the edges recede */
+    var vg = ctx.createRadialGradient(VW / 2, VH * 0.55, VH * 0.45, VW / 2, VH * 0.55, VW * 0.65);
+    vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.38)');
+    ctx.fillStyle = vg; ctx.fillRect(0, 0, VW, VH);
+  }
+
+  /* ------------------------------------------------------------------ sound */
+
+  var audio = null, muted = store.get('muted', true);
+  function beep(freq, dur, type, vol, slide) {
+    if (muted) return;
+    try {
+      if (!audio) audio = new (window.AudioContext || window.webkitAudioContext)();
+      if (audio.state === 'suspended') audio.resume();
+      var o = audio.createOscillator(), g = audio.createGain(), t = audio.currentTime;
+      o.type = type || 'sine'; o.frequency.setValueAtTime(freq, t);
+      if (slide) o.frequency.exponentialRampToValueAtTime(slide, t + dur);
+      g.gain.setValueAtTime(vol || 0.08, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(audio.destination); o.start(t); o.stop(t + dur);
+    } catch (e) { /* no audio */ }
+  }
+
+  /* --------------------------------------------------------------- the app */
+
+  var $ = function (id) { return document.getElementById(id); };
+  var G = null, cfg = { level: store.get('level', 'n20'), speed: store.get('speed', 'normal') };
+  if (!LEVELS.some(function (l) { return l.id === cfg.level; })) cfg.level = 'n20';
+  if (!SPEEDS[cfg.speed]) cfg.speed = 'normal';
+  var ui = 'menu';     /* menu | play | paused | over | win */
+
+  function say(t) { live.textContent = t; }
+  function bestKey() { return 'best:' + cfg.level + ':' + cfg.speed; }
+  function hud() {
+    var lv = level(cfg.level);
+    $('hudLevel').textContent = lv.name + ' · ' + SPEEDS[cfg.speed].name;
+    $('hudStreak').textContent = G ? G.streak : 0;
+    $('hudBest').textContent = store.get(bestKey(), 0);
+    var total = G ? G.total : poolOf(cfg.level).length, done = G ? G.answered : 0;
+    $('hudProg').textContent = done + ' / ' + total;
+    $('hudBar').style.width = (total ? 100 * done / total : 0) + '%';
+    $('btnSound').textContent = muted ? 'Sound off' : 'Sound on';
+    $('btnSound').setAttribute('aria-pressed', muted ? 'false' : 'true');
+    $('btnSound').setAttribute('aria-label', muted ? 'Sound is off. Turn on' : 'Sound is on. Turn off');
+    $('btnPause').textContent = ui === 'paused' ? 'Resume' : 'Pause';
+    $('btnPause').disabled = !(ui === 'play' || ui === 'paused');
+    var pips = $('pips').children;
+    for (var i = 0; i < 3; i++) pips[i].className = G && G.lane === i ? 'on' : '';
+  }
+
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    Object.keys(attrs || {}).forEach(function (k) {
+      if (k === 'text') n.textContent = attrs[k];
+      else if (k.slice(0, 2) === 'on') n.addEventListener(k.slice(2), attrs[k]);
+      else n.setAttribute(k, attrs[k]);
+    });
+    (kids || []).forEach(function (c) { if (c) n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
+    return n;
+  }
+  function show(card, focusSel, full) {
+    overlay.innerHTML = '';
+    overlay.appendChild(card);
+    overlay.className = full ? 'full' : '';
+    overlay.hidden = false;
+    var f = focusSel && overlay.querySelector(focusSel);
+    if (f) f.focus();
+  }
+  function hideOverlay() { overlay.hidden = true; overlay.className = ''; overlay.innerHTML = ''; }
+
+  function menu() {
+    ui = 'menu'; G = null; promptEl.hidden = true; hud();
+    function lvlBtn(l) {
+      var perfect = store.get('perfect:' + l.id + ':' + cfg.speed, 0);
+      var best = store.get('best:' + l.id + ':' + cfg.speed, 0);
+      var n = poolOf(l.id).length;
+      return el('button', { type: 'button', class: 'btn lvl' + (l.id === cfg.level ? ' on' : ''), 'aria-pressed': l.id === cfg.level ? 'true' : 'false',
+        'data-level': l.id, onclick: function () { cfg.level = l.id; store.set('level', l.id); menu(); } },
+        [l.name + (perfect ? ' ★' : ''), el('small', { text: n + ' elements' + (l.note ? ' · ' + l.note : '') + (best ? ' · best ' + best : '') })]);
+    }
+    function spBtn(k) {
+      return el('button', { type: 'button', class: 'btn' + (k === cfg.speed ? ' on' : ''), 'aria-pressed': k === cfg.speed ? 'true' : 'false', 'data-speed': k,
+        onclick: function () { cfg.speed = k; store.set('speed', k); menu(); } }, [SPEEDS[k].name]);
+    }
+    var card = el('div', { class: 'card', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'mTitle' }, [
+      el('h2', { id: 'mTitle', text: 'Periodic Table Highway' }),
+      el('p', { text: 'An element name appears at the top. Signs with symbols come down the road. Steer into the lane with the right symbol before the signs reach you. One wrong lane and you start over.' }),
+      el('h3', { text: 'By atomic number' }),
+      el('div', { class: 'row' }, LEVELS.filter(function (l) { return l.group === 'number'; }).map(lvlBtn)),
+      el('h3', { text: 'By family or period' }),
+      el('div', { class: 'row' }, LEVELS.filter(function (l) { return l.group === 'family'; }).map(lvlBtn)),
+      el('h3', { text: 'Speed' }),
+      el('div', { class: 'row' }, Object.keys(SPEEDS).map(spBtn)),
+      el('div', { class: 'actions' }, [
+        el('button', { type: 'button', class: 'btn primary', id: 'bStart', text: 'Start', onclick: start }),
+        el('span', { class: 'muted', text: 'Get every element right in a row to finish the set. Elements you miss come back first.' })
+      ])
+    ]);
+    show(card, '#bStart', true);
+    say('Menu. Choose your elements and speed, then press Start.');
+  }
+
+  function start() {
+    var weak = store.get('weak:' + cfg.level, []);
+    var seed = params.get('seed') ? parseInt(params.get('seed'), 10) : Math.floor(Math.random() * 1e9);
+    var rng = rngFrom(seed);
+    G = makeGame({ pool: poolOf(cfg.level), speed: cfg.speed, weak: weak, rng: rng });
+    G.on('spawn', function (q) {
+      promptName.textContent = q.el.name; promptEl.hidden = false;
+      say('Find the symbol for ' + q.el.name + '. Left lane ' + q.options[0] + '. Middle lane ' + q.options[1] + '. Right lane ' + q.options[2] + '.');
+      hud();
+    });
+    G.on('lane', function () { beep(520, 0.05, 'triangle', 0.04); hud(); });
+    G.on('correct', function () {
+      beep(660, 0.12, 'sine', 0.09, 990);
+      var b = store.get(bestKey(), 0);
+      if (G.streak > b) store.set(bestKey(), G.streak);
+      var wk = store.get('weak:' + cfg.level, []).filter(function (s) { return s !== G.q.el.sym; });
+      store.set('weak:' + cfg.level, wk);
+      say('Correct.'); hud();
+    });
+    G.on('wrong', function (q) {
+      beep(180, 0.3, 'sawtooth', 0.09, 90);
+      if (!reduceMotion) { wrap.classList.remove('shake'); void wrap.offsetWidth; wrap.classList.add('shake'); }
+      var wk = store.get('weak:' + cfg.level, []);
+      if (wk.indexOf(q.el.sym) < 0) wk.push(q.el.sym);
+      store.set('weak:' + cfg.level, wk);
+      var b = store.get(bestKey(), 0);
+      if (G.streak > b) store.set(bestKey(), G.streak);
+      say('Wrong lane. The symbol for ' + q.el.name + ' is ' + q.el.sym + '.'); hud();
+    });
+    G.on('win', function () {
+      store.set('perfect:' + cfg.level + ':' + cfg.speed, 1);
+      beep(523, 0.15, 'sine', 0.09, 784);
+      say('You got every element in the set.'); hud();
+    });
+    ui = 'play'; hideOverlay(); promptEl.hidden = true; hud();
+    say('Go. Use the left and right arrow keys to change lanes.');
+    wrap.focus && wrap.setAttribute('tabindex', '-1');
+  }
+
+  function gameOver() {
+    ui = 'over'; promptEl.hidden = true;
+    var q = G.q, wrongSym = q.options[q.chosen];
+    var card = el('div', { class: 'card', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'oTitle' }, [
+      el('h2', { id: 'oTitle', class: 'bad', text: 'Wrong lane' }),
+      el('p', { class: 'big', text: q.el.name + ' is ' + q.el.sym }),
+      el('p', { text: 'You steered into ' + wrongSym + '. The right symbol was ' + q.el.sym + ' (atomic number ' + q.el.z + ').' }),
+      el('p', { text: 'Streak: ' + G.streak + ' of ' + G.total + ' · Best: ' + store.get(bestKey(), 0) }),
+      el('p', { class: 'muted', text: q.el.name + ' will come back first next time.' }),
+      el('div', { class: 'actions' }, [
+        el('button', { type: 'button', class: 'btn primary', id: 'bAgain', text: 'Try again', onclick: start }),
+        el('button', { type: 'button', class: 'btn', text: 'Change elements', onclick: menu })
+      ])
+    ]);
+    show(card, '#bAgain');
+  }
+  function winScreen() {
+    ui = 'win'; promptEl.hidden = true;
+    var t = Math.round(G.elapsed);
+    var card = el('div', { class: 'card', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'wTitle' }, [
+      el('h2', { id: 'wTitle', class: 'good', text: 'Every element, no mistakes!' }),
+      el('p', { class: 'big', text: level(cfg.level).name + ': ' + G.total + ' of ' + G.total }),
+      el('p', { text: 'Time: ' + Math.floor(t / 60) + ':' + ('0' + (t % 60)).slice(-2) + ' at ' + SPEEDS[cfg.speed].name + ' speed.' }),
+      el('div', { class: 'actions' }, [
+        el('button', { type: 'button', class: 'btn primary', id: 'bAgain', text: 'Play again', onclick: start }),
+        el('button', { type: 'button', class: 'btn', text: 'Change elements', onclick: menu })
+      ])
+    ]);
+    show(card, '#bAgain');
+  }
+  function pause(on) {
+    if (!G || (ui !== 'play' && ui !== 'paused')) return;
+    if (on === undefined) on = ui === 'play';
+    if (on) {
+      ui = 'paused'; G.paused = true;
+      show(el('div', { class: 'card', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'pTitle' }, [
+        el('h2', { id: 'pTitle', text: 'Paused' }),
+        el('div', { class: 'actions' }, [
+          el('button', { type: 'button', class: 'btn primary', id: 'bResume', text: 'Resume', onclick: function () { pause(false); } }),
+          el('button', { type: 'button', class: 'btn', text: 'Change elements', onclick: menu })
+        ])
+      ]), '#bResume');
+    } else { ui = 'play'; G.paused = false; hideOverlay(); }
+    hud();
+  }
+
+  /* one tick of the whole game: used by the animation loop and by the tests */
+  function tick(dt, skipDraw) {
+    if (!G) return;
+    G.step(dt);
+    if (ui === 'play' && G.phase === 'wrong' && G.phaseTime >= END_DELAY) gameOver();
+    if (ui === 'play' && G.phase === 'win' && G.phaseTime >= END_DELAY) winScreen();
+    if (!skipDraw) draw(G);
+  }
+  function drawIdle() {
+    var idle = { camLane: 1, odo: (performance.now() / 1000) * 3, q: null, phase: 'idle' };
+    draw(idle);
+  }
+
+  var last = null;
+  function frame(ts) {
+    if (last == null) last = ts;
+    var dt = Math.min(0.05, (ts - last) / 1000); last = ts;
+    if (G && ui !== 'menu') tick(dt); else drawIdle();
+    requestAnimationFrame(frame);
+  }
+
+  /* ----------------------------------------------------------------- input */
+
+  function steer(d) { if (G && ui === 'play') G.move(d); }
+  document.addEventListener('keydown', function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    var k = e.key;
+    if (ui === 'play') {
+      if (k === 'ArrowLeft' || k === 'a' || k === 'A') { e.preventDefault(); if (!e.repeat) steer(-1); return; }
+      if (k === 'ArrowRight' || k === 'd' || k === 'D') { e.preventDefault(); if (!e.repeat) steer(1); return; }
+      if (k === ' ' || k === 'p' || k === 'P' || k === 'Escape') { e.preventDefault(); pause(true); return; }
+    } else if (ui === 'paused' && (k === 'p' || k === 'P' || k === 'Escape')) { e.preventDefault(); pause(false); return; }
+    if (k === 'm' || k === 'M') { muted = !muted; store.set('muted', muted); hud(); return; }
+    if ((ui === 'over' || ui === 'win') && k === 'Enter' && document.activeElement && document.activeElement.tagName !== 'BUTTON') { e.preventDefault(); start(); }
+    if (ui === 'over' && k === 'Escape') menu();
+    if (ui === 'menu' && k === 'Enter' && document.activeElement && document.activeElement.tagName !== 'BUTTON') start();
+  });
+  wrap.addEventListener('pointerdown', function (e) {
+    if (ui !== 'play') return;
+    if (e.target.closest && e.target.closest('#touch')) return;
+    var r = wrap.getBoundingClientRect();
+    steer(e.clientX < r.left + r.width / 2 ? -1 : 1);
+  });
+  $('tLeft').addEventListener('click', function () { steer(-1); });
+  $('tRight').addEventListener('click', function () { steer(1); });
+  $('btnPause').addEventListener('click', function () { pause(); });
+  $('btnMenu').addEventListener('click', menu);
+  $('btnSound').addEventListener('click', function () { muted = !muted; store.set('muted', muted); hud(); if (!muted) beep(660, 0.08, 'sine', 0.06); });
+  document.addEventListener('visibilitychange', function () { if (document.hidden && ui === 'play') pause(true); });
+  window.addEventListener('blur', function () { if (ui === 'play') pause(true); });
+  window.addEventListener('resize', resize);
+
+  /* ------------------------------------------------------------------ boot */
+
+  resize();
+  hud();
+  menu();
+  if (!manual) requestAnimationFrame(frame);
+
+  /* a small handle for the tests (tests/test.js) and for curious teachers */
+  window.PTH = {
+    ELEMENTS: ELEMENTS, LEVELS: LEVELS, SPEEDS: SPEEDS, poolOf: poolOf, makeGame: makeGame, rngFrom: rngFrom,
+    game: function () { return G; }, ui: function () { return ui; }, cfg: function () { return cfg; },
+    tick: function (dt, n, skip) { n = n || 1; for (var i = 0; i < n; i++) tick(dt, skip || i < n - 1); }, start: start, menu: menu,
+    constants: { SPAWN_D: SPAWN_D, JUDGE_D: JUDGE_D, END_DELAY: END_DELAY }
+  };
+})();
+</script>
+</body>
+</html>

@@ -75,7 +75,7 @@ button.chip[aria-pressed=true]{background:var(--acc);border-color:var(--acc);col
 details{font-size:14px}summary{cursor:pointer;color:var(--acc);font-weight:600}
 .ans{color:var(--ok);font-weight:600}.meta{font-size:12px;color:var(--mute);word-break:break-all}
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:6px}.opts div{font-size:13px}.opts img{max-height:110px}
-#more{display:block;margin:6px auto 24px}a{color:var(--acc)}
+#more{display:block;margin:6px auto 24px}#more[hidden]{display:none}a{color:var(--acc)}
 </style></head><body>
 <header><h1>Teaching Materials Index</h1>
 <div class="row"><input id="q" type="search" placeholder="Search everything: names, SMILES, questions, answers, mechanisms…" aria-label="Search">

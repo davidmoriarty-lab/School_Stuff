@@ -44,3 +44,9 @@ python3 generate.py     # picks and names the molecules (seeded, so the set is r
 python3 export.py       # draws images, writes CSV/JSON/gallery
 ```
 Requires `rdkit`, `cairosvg`, `py2opsin` (Java needed by OPSIN); drawing code is in `../_shared/chemdraw.py`.
+
+## Reproducibility note
+The 500 molecules were selected once and `molecules.json` is the source of truth (IDs such as `M051` must stay stable
+because problems and other repos refer to them). The namer was improved after that first selection, so running
+`build/generate.py` again now picks a different, equally valid set of 500. Only re-run it if you intend to replace the
+whole set (and every ID with it). `build/export.py` redraws images from a `_records.pkl` produced by `generate.py`.

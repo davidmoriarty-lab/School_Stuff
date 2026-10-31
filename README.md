@@ -10,6 +10,7 @@ One page searches all molecules, problems and quiz questions, with filters by co
 | `organic-chemistry/substitution-elimination/` | 100 SN1/SN2/E1/E2 free-response problems with schemes and answer key |
 | `organic-chemistry/_shared/` | Structure-drawing code shared by the organic projects |
 | `simulations/enthalpy-dissolution-lab/` | Enthalpy of Dissolution Virtual Lab (moved from the repo root) |
+| `simulations/periodic-table-highway/` | Periodic Table Highway: a lane-switching driving game for learning element symbols (single page, with tests) |
 | `honors-chemistry/`, `ap-chemistry/` | Reserved for those courses |
 | `tools/build_index.py` | Rebuilds the master `index.html` |
 

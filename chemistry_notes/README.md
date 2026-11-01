@@ -4,9 +4,9 @@ Guided notes for the courses, as Word documents, with the code that builds the h
 
 | Folder | What is in it |
 | --- | --- |
-| `Honors Chemistry/Student Notes Packets/` | Units 0 to 7, each as a `STUDENT NOTES` packet (blank, to fill in) and a `TEACHER EDITION` (same pages, answers filled in, teacher notes). Unit numbers follow the notes sequence: 0 Measurement and Math Skills, 1 Atomic Structure, 2 Electrons and Periodic Trends, 3 Chemical Bonding, 4 Intermolecular Forces, 5 Chemical Reactions, 6 Stoichiometry, 7 Gases. |
+| `Honors Chemistry/Student Notes Packets/` | Units 0 to 7 plus the new Unit 6 (Moles and Molar Quantities), each as a `STUDENT NOTES` packet (blank, to fill in) and a `TEACHER EDITION` (same pages, answers filled in, teacher notes). The new Unit 6 (Moles and Molar Quantities) is built; Stoichiometry and Gases still carry their old numbers (6 and 7) until they are renumbered to 7 and 8. Old sequence: 0 Measurement and Math Skills, 1 Atomic Structure, 2 Electrons and Periodic Trends, 3 Chemical Bonding, 4 Intermolecular Forces, 5 Chemical Reactions, 6 Stoichiometry, 7 Gases. |
 | `Honors Chemistry/NOTES-PACKET-GUIDE.md` | The rules for building a packet: length, layout, building blocks, writing space, teacher edition, style. Includes the plan for the Gases unit. |
-| `Honors Chemistry/_packet_builder/` | The Python scripts that build a packet (`lib.py` helpers, `make.py` and `build_gases.py` for Gases, `figs.py` for the figures, `img/` for the images). They use the Unit 5 packet as a template and compute every answer in code. Needs python-docx, Pillow, NumPy and Matplotlib. |
+| `Honors Chemistry/_packet_builder/` | The Python scripts that build a packet (`lib.py` helpers, `make.py` and `build_gases.py` for Gases, `make_moles.py`, `build_moles.py` and `figs_moles.py` for Moles, `figs.py` for the figures, `img/` for the images). They use the Unit 5 packet as a template and compute every answer in code. Needs python-docx, Pillow, NumPy and Matplotlib. |
 | `Honors Chemistry/PDF Sources/` | The topic homework PDFs the packets follow. |
 | `Honors Chemistry/Nomenclature/` | Nomenclature notes. |
 | `AP Chemistry/Equilibrium/` | Equilibrium guided notes (student and key), a notes outline, ICE tables and K, and Le Chatelier's principle. |

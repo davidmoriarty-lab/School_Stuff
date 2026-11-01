@@ -1,7 +1,7 @@
 # Honors Chemistry Notes Packets: Build Guide
 
 Rules for building the student and teacher notes packets from the homework PDFs in `PDF Sources/`.
-Reverse-engineered from the finished Unit 5 packet (`Unit 5 - Chemical Reactions`), which is the model to copy.
+Reverse-engineered from the finished Unit 4 packet (`Unit 4 - Chemical Reactions`), which is the model to copy.
 Rules marked *(inferred)* were read off the file, not remembered from the earlier session. Confirm or edit them.
 
 ## Deliverables (per unit)
@@ -12,12 +12,12 @@ Rules marked *(inferred)* were read off the file, not remembered from the earlie
 | `Unit N - <Title> - TEACHER EDITION.docx` | `Student Notes Packets/` | Same pages, answers filled in, plus teacher notes |
 
 Numbering: the homework PDFs use their own unit numbers (Reactions is "Unit 4", Gases is "Unit 8"). The notes sequence is
-0 Measurement, 1 Atomic, 2 Electrons, 3 Bonding, 4 IMF, 5 Reactions, 6 Stoichiometry, **7 Gases**, then Thermo, Nuclear, etc.
-State the mapping in the teacher overview, as Unit 5 does.
+0 Measurement, 1 Atomic, 2 Electrons, 3 Bonding, 4 Reactions, 5 Moles, 6 Stoichiometry, **7 Gases**, 8 IMF, then Thermo, Nuclear, etc. (the Gases and later numbers may still change; the teacher has only confirmed Reactions 4 and Moles 5).
+State the mapping in the teacher overview, as Unit 4 does.
 
 ## Length and layout
 
-- **Target 18–22 pages; hard cap 25.** Unit 5 is 18 pages for 7 topics. A unit with fewer topics should land well under that.
+- **Target 18–22 pages; hard cap 25.** Unit 4 is 18 pages for 7 topics. A unit with fewer topics should land well under that.
 - US Letter, margins 0.75" left/right, 0.55" top/bottom. Calibri throughout.
 - Font sizes (pt): body/table text 10, box text 9.5–10.5, topic headings 12.5–14, captions 9, big title ~34. Small type is fine, but never at the expense of writing room.
 - **Header:** `Name: ____  Date: ____  Period: ____`. **Footer:** `Honors Chemistry • Unit N: <Title> • page X`.
@@ -32,15 +32,15 @@ State the mapping in the teacher overview, as Unit 5 does.
 2. **BIG IDEA** box (1–3 sentences, plain language). Use a **PREDICTION RULES / STEPS / HOW TO … (numbered)** box wherever there is a procedure.
 3. **Key vocabulary table**: `Term | Definition (your words) | Example / sketch`. The prompt in column 2 is a question, not the answer. Four rows at most.
 4. **Reasoning prompt(s)** with a framed blank answer box.
-5. **Figure** (particle diagram, apparatus, graph) with a 9 pt caption. Unit 5 has 5 images in total. Keep figures small.
+5. **Figure** (particle diagram, apparatus, graph) with a 9 pt caption. Unit 4 has 5 images in total. Keep figures small.
 6. **Worked example** box (title + a "Work it out here:" box under it).
-7. **Practice table**: numbered rows, a blank column to fill. Unit 5 uses 8–12 rows per table; the blank cell is tall enough to write in.
+7. **Practice table**: numbered rows, a blank column to fill. Unit 4 uses 8–12 rows per table; the blank cell is tall enough to write in.
 8. **1–3 multiple-choice** items, with the options on one line (`A)  …        B)  …`).
 9. **LAB CORNER** box (data or an apparatus scenario) with a "show your reasoning" answer box, at most one every second topic.
 
 ## Writing-space rules
 
-- Fill-in tables: the blank column is the work space. Row heights in Unit 5 range from about 0.3" for names and short answers up to 1.6" for multi-step problems.
+- Fill-in tables: the blank column is the work space. Row heights in Unit 4 range from about 0.3" for names and short answers up to 1.6" for multi-step problems.
 - Any calculation row needs about 1.0–1.5" of height so the student can show given, formula, substitution, and answer with units.
 - Free-response answer boxes: at least 5 blank lines (about 1.2"). Graph or sketch boxes: about 2".
 - Leave the MC items compact; they do not need blank space.
@@ -49,7 +49,7 @@ State the mapping in the teacher overview, as Unit 5 does.
 ## Content rules
 
 - **Source fidelity:** use the homework PDF's problems and order, so each topic maps to one PDF section. Keep the PDF's numbers and wording.
-- **Fix homework errors rather than copy them.** Unit 5 corrected typos and impossible formulas, and flagged each correction in a TEACHER NOTE — CORRECTIONS box. Do the same.
+- **Fix homework errors rather than copy them.** Unit 4 corrected typos and impossible formulas, and flagged each correction in a TEACHER NOTE — CORRECTIONS box. Do the same.
 - **Teach the method before the problems:** a box with the procedure, then the worked example, then the practice.
 - Use the "(your words)" vocabulary pattern for definitions rather than handing students the text.
 - Add state symbols, units, and sig figs where the homework leaves them out; say so in the teacher overview.
@@ -84,7 +84,7 @@ Estimated length: 12–16 pages student, same for teacher. Gases is one of the u
 | 7.3 | Combined Gas Law | WS #2 Q1–5 | Boyle, Charles, Gay-Lussac as special cases. Worked example, then 5 solve-for-unknown problems (one solves for T, one for P₁). |
 | 7.4 | Ideal Gas Law | WS #3 Q1–4 | PV = nRT, choose R (0.0821 L·atm/mol·K; show how to handle mmHg). Moles, volume, grams-from-moles. Molar-mass experiment (Q4). |
 | 7.5 | Gas Stoichiometry | WS #4 Q1–2 | Mass → mol → PV = nRT → L. Octane combustion (CO₂ and O₂ volumes, ΔH energy). NaN₃ airbag (volume in mL, mass of NaN₃ for 75.0 L). |
-| — | Extra Practice | new | Sections A–D as in Unit 5: mixed gas-law calcs, "which law?" classification, a data/graph item, think/explain. |
+| — | Extra Practice | new | Sections A–D as in Unit 4: mixed gas-law calcs, "which law?" classification, a data/graph item, think/explain. |
 
 ## Open decisions (flag before building)
 

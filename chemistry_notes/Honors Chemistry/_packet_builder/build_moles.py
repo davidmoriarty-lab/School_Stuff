@@ -1,4 +1,4 @@
-"""Unit 6, Moles and Molar Quantities: every answer in the key is computed here, then rounded to the sig figs of the data.
+"""Unit 5, Moles and Molar Quantities: every answer in the key is computed here, then rounded to the sig figs of the data.
 
 Conventions (the same as the Stoichiometry and Gases packets): atomic masses to 0.01 g/mol, N_A = 6.022 x 10^23,
 22.4 L/mol at STP, unrounded values carry through a calculation and only the final answer is rounded.
@@ -75,19 +75,19 @@ def pct(part, whole, d=2):
     return "%s%%" % v
 
 
-# ---------------------------------------------------------------- 6.1 the mole and Avogadro's number
+# ---------------------------------------------------------------- 5.1 the mole and Avogadro's number
 a1 = 1.75 * NA                      # atoms of Al in 1.75 mol
 a2 = 3.25 * NA                      # molecules in 3.25 mol H2O
 a3 = 3.4e26 / NA                    # mol CO2
 a4 = 3.88e25 / NA                   # mol Ni
 w_mg = 2.50 * NA                    # worked example: atoms in 2.50 mol Mg
 
-# ---------------------------------------------------------------- 6.2 molar mass
+# ---------------------------------------------------------------- 5.2 molar mass
 MOLAR_LIST = [("Be", "Be"), ("N₂", "N2"), ("O₂", "O2"), ("F₂", "F2"), ("Mg", "Mg"), ("Ag", "Ag"),
               ("LiI", "LiI"), ("PbCO₃", "PbCO3"), ("Mg(OH)₂", "Mg(OH)2"), ("K₃PO₄", "K3PO4"),
               ("(NH₄)₃PO₄", "(NH4)3PO4"), ("C₆H₁₂O₆", "C6H12O6")]
 
-# ---------------------------------------------------------------- 6.3 mole conversions
+# ---------------------------------------------------------------- 5.3 mole conversions
 c1 = 2.5e24 / NA * mm_exact("CO2")                  # g CO2
 c2 = 176 / mm_exact("CF4")                          # mol CF4
 c3 = 360.0 / mm_exact("H2O")                        # mol H2O
@@ -97,7 +97,7 @@ c6 = 5.6 * 2 * NA                                   # Cu atoms in 5.6 mol Cu2O3
 c7 = 2.5 * 6 * MASS["O"]                            # g O in 2.5 mol glucose
 c8 = 15.0 / mm_exact("CaCl2") * 2 * MASS["Cl"]      # g Cl in 15.0 g CaCl2
 
-# ---------------------------------------------------------------- 6.4 gas volume at STP
+# ---------------------------------------------------------------- 5.4 gas volume at STP
 v1 = 3.20 * MOLAR_VOLUME
 v2 = 1.75 * MOLAR_VOLUME
 v3 = 37.8 * MOLAR_VOLUME
@@ -111,7 +111,7 @@ v10n = 0.12 / MOLAR_VOLUME
 v10m = v10n * NA                                    # molecules CO2
 v10g = v10n * mm_exact("CO2")                       # g CO2
 
-# ---------------------------------------------------------------- 6.5 percent composition
+# ---------------------------------------------------------------- 5.5 percent composition
 PCT = [("NaOH", "NaOH"), ("CuBr₂", "CuBr2"), ("N₂S₂", "N2S2"), ("(NH₄)₂S", "(NH4)2S"), ("(NH₄)₃PO₄", "(NH4)3PO4")]
 
 
@@ -121,7 +121,7 @@ def pct_rows(formula):
     return [(el, pct(MASS[el] * n, tot)) for el, n in f.items()]
 
 
-# ---------------------------------------------------------------- 6.6 empirical and molecular formulas
+# ---------------------------------------------------------------- 5.6 empirical and molecular formulas
 def ratios(moles):
     low = min(moles)
     return [m / low for m in moles]
@@ -140,7 +140,7 @@ w_emp = [40.0 / MASS["C"], 6.7 / MASS["H"], 53.3 / MASS["O"]]    # worked exampl
 w_emp_r = ratios(w_emp)
 w_emp_n = 180.0 / (MASS["C"] + 2 * MASS["H"] + MASS["O"])
 
-# ---------------------------------------------------------------- 6.7 hydrates
+# ---------------------------------------------------------------- 5.7 hydrates
 H2O = mm_exact("H2O")
 
 
@@ -208,8 +208,8 @@ class MolesPacket(Packet):
     def save(self, path, unit_label, title):
         sec = self.doc.sections[0]
         for r in sec.footer.paragraphs[0].runs:
-            if "Unit 5" in r.text:
-                r.text = "  Unit 6: "
+            if "Unit 4" in r.text:
+                r.text = "  Unit 5: "
             elif r.text.startswith("Reactions"):
                 r.text = "Moles and Molar Quantities  •"
         if self.T:
@@ -224,10 +224,10 @@ if __name__ == "__main__":
     print("self-check passed")
     for f in ("Be", "N2", "O2", "F2", "Mg", "Ag", "LiI", "PbCO3", "Mg(OH)2", "K3PO4", "(NH4)3PO4", "C6H12O6", "Al2(SO4)3"):
         print(f, mm(f))
-    print("6.1:", sci(a1, 3), sci(a2, 3), sci(a3, 2), sci(a4, 3))
-    print("6.3:", sci(c1, 2), sf(c2, 3), sf(c3, 4), sf(c4, 4), sci(c5, 3), sci(c6, 2), sf(c7, 2), sf(c8, 3))
-    print("6.4:", sf(v1, 3), sf(v2, 3), sf(v3, 3), sf(v4, 3), sf(v5, 3), sci(v6, 3), sf(v7, 3), sf(v8, 3), sci(v9, 3), sci(v10m, 2), sf(v10g, 2))
-    print("6.5:", {f: pct_rows(f) for _, f in PCT})
-    print("6.6:", [round(x, 2) for x in e1_r], [round(x, 2) for x in e2_r], round(e3_n, 2), [round(x, 2) for x in e4_r], round(e4_n, 3), round(e4_emp, 2))
-    print("6.7:", [[round(v, 4) for v in h] for h in (h1, h2, h3, h4)], round(h5_x, 3))
+    print("5.1:", sci(a1, 3), sci(a2, 3), sci(a3, 2), sci(a4, 3))
+    print("5.3:", sci(c1, 2), sf(c2, 3), sf(c3, 4), sf(c4, 4), sci(c5, 3), sci(c6, 2), sf(c7, 2), sf(c8, 3))
+    print("5.4:", sf(v1, 3), sf(v2, 3), sf(v3, 3), sf(v4, 3), sf(v5, 3), sci(v6, 3), sf(v7, 3), sf(v8, 3), sci(v9, 3), sci(v10m, 2), sf(v10g, 2))
+    print("5.5:", {f: pct_rows(f) for _, f in PCT})
+    print("5.6:", [round(x, 2) for x in e1_r], [round(x, 2) for x in e2_r], round(e3_n, 2), [round(x, 2) for x in e4_r], round(e4_n, 3), round(e4_emp, 2))
+    print("5.7:", [[round(v, 4) for v in h] for h in (h1, h2, h3, h4)], round(h5_x, 3))
     print("extra:", sci(x_a, 3), x_b, [round(x, 2) for x in x_c_r], round(x_c_n, 3), sf(x_d, 3), round(x_e_hyd, 2), round(x_e_anh, 2), round(x_e_w, 2), round(x_e_x, 3))

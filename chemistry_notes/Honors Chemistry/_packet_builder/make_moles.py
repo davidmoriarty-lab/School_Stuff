@@ -1,9 +1,9 @@
-"""Builds Unit 6, Moles and Molar Quantities (student notes and teacher edition).
+"""Builds Unit 5, Moles and Molar Quantities (student notes and teacher edition).
 
     python3 make_moles.py
 
 Needs python-docx, Pillow, NumPy and Matplotlib. The source is the Unit 5 homework in PDF Sources (topics 5.1 to 5.6 in the
-homework are 6.1 to 6.7 here). Every answer in the key is computed in build_moles.py.
+homework are 5.1 to 5.7 here). Every answer in the key is computed in build_moles.py.
 """
 import sys, os
 sys.path.insert(0, os.path.dirname(__file__))
@@ -50,7 +50,7 @@ def build(T):
     MAP = F_MAP_T if T else F_MAP_S
 
     # ============================================================ page 1
-    P.title("6", "Moles and Molar Quantities",
+    P.title("5", "Moles and Molar Quantities",
             "Count particles by the mole, then connect particles, grams and gas volume through molar mass.")
     if not T:
         P.box("HOW TO USE THIS PACKET", [
@@ -64,10 +64,9 @@ def build(T):
             "interpretation choices, corrections) appear in the heavy-bordered boxes labeled TEACHER NOTE. The pages follow "
             "the student packet, so they line up closely."], kind="teacher")
         P.box("TEACHER OVERVIEW", [
-            "**Numbering:** the homework folder calls this “Unit 5 Topic Homework” (Topics 5.1–5.6). This packet is "
-            "Unit 6 in the notes sequence (between Chemical Reactions and Stoichiometry), with topics 6.1–6.7: homework "
-            "5.1 is split into 6.1 (the mole) and 6.2 (molar mass); 5.2 = 6.3, 5.3 = 6.4, 5.4 = 6.5, 5.5 = 6.6, 5.6 = 6.7. "
-            "Stoichiometry is Unit 7 and Gases Unit 8.",
+            "**Numbering:** the homework folder calls this “Unit 5 Topic Homework” (Topics 5.1–5.6), the same unit number as "
+            "this packet (between Chemical Reactions, Unit 4, and Stoichiometry, Unit 6). The packet has topics 5.1–5.7: homework "
+            "5.1 is split into 5.1 (the mole) and 5.2 (molar mass); homework 5.2 = 5.3, 5.3 = 5.4, 5.4 = 5.5, 5.5 = 5.6, 5.6 = 5.7.",
             "**Answers are computed.** Every numerical answer in the key was calculated by code from the formulas, using "
             "atomic masses to 0.01 g/mol (H 1.01, C 12.01, N 14.01, O 16.00, Na 22.99, Mg 24.31, Al 26.98, P 30.97, S 32.06, "
             "Cl 35.45, K 39.10, Ca 40.08, Fe 55.85, Cu 63.55, Ag 107.87), N₍A₎ = 6.022 × 10²³ and 22.4 L/mol at STP. "
@@ -86,18 +85,18 @@ def build(T):
             "using the atomic number as the mass; forgetting the subscript outside parentheses; multiplying when you "
             "should divide (and the reverse); using 22.4 L/mol away from STP or for a liquid or solid; rounding a ratio "
             "such as 1.5 to 2 instead of doubling; reading the water of a hydrate as part of the salt’s molar mass.",
-            "**Pacing idea:** 6.1–6.2 on day 1; 6.3 (mole map until students can draw it) on day 2; 6.4 on day 3; "
-            "6.5–6.6 on days 4–5; 6.7 with the hydrate lab and Extra Practice on day 6."], kind="teacher")
+            "**Pacing idea:** 5.1–5.2 on day 1; 5.3 (mole map until students can draw it) on day 2; 5.4 on day 3; "
+            "5.5–5.6 on days 4–5; 5.7 with the hydrate lab and Extra Practice on day 6."], kind="teacher")
 
     P.sub("What we will learn")
     P.table([1000, 9080], ["", "Topic"], [
-        ["6.1", "The mole and Avogadro’s number"],
-        ["6.2", "Molar mass"],
-        ["6.3", "Mole conversions (particles, moles and grams)"],
-        ["6.4", "Volume of a gas at STP"],
-        ["6.5", "Percent composition"],
-        ["6.6", "Empirical and molecular formulas"],
-        ["6.7", "Hydrates"]], 0.3)
+        ["5.1", "The mole and Avogadro’s number"],
+        ["5.2", "Molar mass"],
+        ["5.3", "Mole conversions (particles, moles and grams)"],
+        ["5.4", "Volume of a gas at STP"],
+        ["5.5", "Percent composition"],
+        ["5.6", "Empirical and molecular formulas"],
+        ["5.7", "Hydrates"]], 0.3)
     P.sub("By the end of this unit I can…")
     for t in [
         "Explain what a mole is and use Avogadro’s number to convert between particles and moles.",
@@ -112,8 +111,8 @@ def build(T):
     lib.FLOW.hard_break()
     P.emit(PB)
 
-    # ============================================================ 6.1 the mole
-    P.topic("6.1", "The Mole and Avogadro’s Number",
+    # ============================================================ 5.1 the mole
+    P.topic("5.1", "The Mole and Avogadro’s Number",
             "Counting by the mole • 6.022 × 10²³ • atoms, molecules and formula units")
     P.box("BIG IDEA", [
         "Atoms and molecules are far too small to count one at a time, so chemists count them in huge groups called "
@@ -166,8 +165,8 @@ def build(T):
     P.mc(2, "How many oxygen atoms are in 1 mol of O₂ molecules?",
          ["6.022 × 10²³", "1.204 × 10²⁴", "3.011 × 10²³", "32"], "B", "2 atoms per molecule × 6.022 × 10²³")
 
-    # ============================================================ 6.2 molar mass
-    P.topic("6.2", "Molar Mass", "Grams per mole • add the atomic masses • subscripts and parentheses")
+    # ============================================================ 5.2 molar mass
+    P.topic("5.2", "Molar Mass", "Grams per mole • add the atomic masses • subscripts and parentheses")
     P.box("BIG IDEA", [
         "The **molar mass** of a substance is the mass of 1 mole of it, in **g/mol**. For a compound, add the atomic "
         "masses of every atom in the formula. Molar mass is the bridge between grams and moles."])
@@ -217,8 +216,8 @@ def build(T):
     P.mc(2, "What is the molar mass of Ca(OH)₂?", ["57.09 g/mol", "74.10 g/mol", "58.10 g/mol", "73.09 g/mol"], "B",
          "40.08 + 2(16.00) + 2(1.01) = 74.10")
 
-    # ============================================================ 6.3 mole conversions
-    P.topic("6.3", "Mole Conversions", "Particles • moles • grams • the mole map")
+    # ============================================================ 5.3 mole conversions
+    P.topic("5.3", "Mole Conversions", "Particles • moles • grams • the mole map")
     P.box("BIG IDEA", [
         "You can never go straight from particles to grams. **Every conversion goes through moles.** The mole map "
         "shows which factor to use for each arrow: Avogadro’s number for particles, molar mass for grams."])
@@ -264,8 +263,8 @@ def build(T):
          "Grams go to moles first.")
     P.mc(2, "What is the mass of 0.50 mol of H₂O?", ["9.0 g", "18 g", "36 g", "0.50 g"], "A", "0.50 × 18.02 = 9.0 g")
 
-    # ============================================================ 6.4 STP
-    P.topic("6.4", "Volume of a Gas at STP", "22.4 L/mol • 0 °C and 1 atm • moles, grams and particles")
+    # ============================================================ 5.4 STP
+    P.topic("5.4", "Volume of a Gas at STP", "22.4 L/mol • 0 °C and 1 atm • moles, grams and particles")
     P.box("BIG IDEA", [
         "At **STP** (standard temperature and pressure: **0 °C and 1 atm**), 1 mole of **any** gas takes up "
         "**22.4 L**. That adds one more arrow to the mole map: moles ↔ liters of gas."])
@@ -319,8 +318,8 @@ def build(T):
          ["22.4 L/mol applies only at 0 °C and 1 atm", "The gas has no molar mass at 25 °C",
           "Moles change with temperature", "22.4 L/mol is only for noble gases"], "A")
 
-    # ============================================================ 6.5 percent composition
-    P.topic("6.5", "Percent Composition", "Part ÷ whole × 100 • mass percent of each element")
+    # ============================================================ 5.5 percent composition
+    P.topic("5.5", "Percent Composition", "Part ÷ whole × 100 • mass percent of each element")
     P.box("BIG IDEA", [
         "**Percent composition** tells you what part of a compound’s mass comes from each element. "
         "The percents of all the elements add up to **100 %**."])
@@ -353,8 +352,8 @@ def build(T):
     P.mc(2, "Which has the greater percent oxygen by mass?", ["H₂O", "H₂O₂", "They are the same", "Cannot be told"], "B",
          "H₂O₂: 32.00/34.02 = 94.06 %;  H₂O: 16.00/18.02 = 88.79 %")
 
-    # ============================================================ 6.6 empirical and molecular formulas
-    P.topic("6.6", "Empirical and Molecular Formulas", "Simplest whole-number ratio • percent → grams → moles → ratio")
+    # ============================================================ 5.6 empirical and molecular formulas
+    P.topic("5.6", "Empirical and Molecular Formulas", "Simplest whole-number ratio • percent → grams → moles → ratio")
     P.box("BIG IDEA", [
         "The **empirical formula** is the simplest whole-number ratio of atoms in a compound. The **molecular formula** "
         "is the actual number of each atom, and it is a whole-number multiple of the empirical formula: "
@@ -408,8 +407,8 @@ def build(T):
     P.mc(2, "A compound has the empirical formula CH and a molar mass of 78 g/mol. Its molecular formula is…",
          ["CH", "C₂H₂", "C₆H₆", "C₆H₁₂"], "C", "78 / 13.02 = 6")
 
-    # ============================================================ 6.7 hydrates
-    P.topic("6.7", "Hydrates", "Water in the crystal • heating • the formula and the name")
+    # ============================================================ 5.7 hydrates
+    P.topic("5.7", "Hydrates", "Water in the crystal • heating • the formula and the name")
     P.box("BIG IDEA", [
         "A **hydrate** is an ionic compound with a fixed number of water molecules built into its crystal, such as "
         "CuSO₄ · 5H₂O. Heating drives the water off and leaves the **anhydrous** (“without water”) salt. The mass "
@@ -473,7 +472,7 @@ def build(T):
     b = ('<w:top w:val="single" w:sz="24" w:space="0" w:color="000000"/><w:left w:val="nil"/>'
          '<w:bottom w:val="single" w:sz="24" w:space="0" w:color="000000"/><w:right w:val="nil"/>')
     P.emit(tbl([10080], [tr([tc(10080, para("PRACTICE", sz=17, b=True, color=DARK, after=0) +
-                                para("Extra Practice — Unit 6", sz=36, b=True, color="000000", after=0) +
+                                para("Extra Practice — Unit 5", sz=36, b=True, color="000000", after=0) +
                                 para("Show your work. Every conversion goes through moles.", sz=21, after=0),
                                 fill="EDEDED", borders=b, mar=(120, 200, 120, 200))])]))
     lib.FLOW.add(0.9)
@@ -537,8 +536,8 @@ def build(T):
     P.mc(4, "A compound has the empirical formula CH₂O and a molar mass of 60.06 g/mol. Its molecular formula is…",
          ["CH₂O", "C₂H₄O₂", "C₃H₆O₃", "C₆H₁₂O₆"], "B", "60.06 / 30.03 = 2")
 
-    out = os.path.join(OUTDIR, "Unit 6 - Moles and Molar Quantities - %s.docx" % ("TEACHER EDITION" if T else "STUDENT NOTES"))
-    P.save(out, "6", "Unit 6: Moles and Molar Quantities")
+    out = os.path.join(OUTDIR, "Unit 5 - Moles and Molar Quantities - %s.docx" % ("TEACHER EDITION" if T else "STUDENT NOTES"))
+    P.save(out, "5", "Unit 5: Moles and Molar Quantities")
     return out, lib.FLOW
 
 

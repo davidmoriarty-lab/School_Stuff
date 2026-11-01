@@ -1,4 +1,4 @@
-"""Small XML helpers that reproduce the Unit 5 packet look (python-docx + raw WordprocessingML)."""
+"""Small XML helpers that reproduce the Unit 4 (Chemical Reactions) packet look (python-docx + raw WordprocessingML)."""
 import math, re
 from xml.sax.saxutils import escape
 from docx.oxml import parse_xml

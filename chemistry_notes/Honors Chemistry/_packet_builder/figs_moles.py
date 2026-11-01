@@ -62,36 +62,38 @@ def mole_map(teacher):
 
 
 def hydrate_apparatus():
-    """A crucible with its lid ajar on a clay triangle, heated by a burner (same picture in both editions)."""
-    W, H = 3.3, 2.5
+    """Heating a hydrate: Bunsen burner under a tripod, clay triangle, crucible with lid ajar (same picture in both editions)."""
+    W, H = 3.6, 2.7
     fig = plt.figure(figsize=(W, H), dpi=DPI)
     ax = fig.add_axes([0.005, 0.005, 0.99, 0.99])
     ax.set_xlim(0, W); ax.set_ylim(0, H); ax.axis("off")
-    # stand rod and ring
-    ax.add_patch(Rectangle((0.28, 0.12), 0.07, 2.1, fc="#8C8C8C", ec=INK, lw=1.0))
-    ax.add_patch(Rectangle((0.2, 0.08), 0.9, 0.07, fc="#8C8C8C", ec=INK, lw=1.0))
-    ax.plot([0.35, 1.45], [1.28, 1.28], color=INK, lw=2.0)
-    ax.add_patch(Ellipse((1.55, 1.28), 0.9, 0.12, fc="none", ec=INK, lw=1.8))
-    # clay triangle
-    ax.add_patch(Polygon([[1.2, 1.29], [1.9, 1.29], [1.55, 0.78]], closed=True, fc="none", ec=INK, lw=2.2))
-    # crucible
-    ax.add_patch(Polygon([[1.28, 1.34], [1.82, 1.34], [1.74, 0.92], [1.36, 0.92]], closed=True, fc="white", ec=INK, lw=1.6))
-    for (x, y) in [(1.46, 1.0), (1.54, 1.02), (1.62, 1.0), (1.5, 1.07), (1.6, 1.08)]:
+    kw = dict(fontsize=7.5, color=INK, va="center")
+    # tripod: top ring and three legs (two seen)
+    ax.add_patch(Rectangle((0.35, 1.5), 1.5, 0.06, fc="#BDBDBD", ec=INK, lw=1.2))
+    ax.plot([0.45, 0.2], [1.5, 0.08], color=INK, lw=2.0)
+    ax.plot([1.75, 2.0], [1.5, 0.08], color=INK, lw=2.0)
+    # clay triangle: a bar on the tripod with two arms cradling the crucible
+    ax.plot([0.7, 1.4], [1.6, 1.6], color=INK, lw=2.6)
+    ax.plot([0.7, 0.86], [1.6, 1.8], color=INK, lw=2.0)
+    ax.plot([1.4, 1.24], [1.6, 1.8], color=INK, lw=2.0)
+    # crucible sitting in the triangle
+    ax.add_patch(Polygon([[0.8, 2.12], [1.3, 2.12], [1.22, 1.66], [0.88, 1.66]], closed=True, fc="white", ec=INK, lw=1.6))
+    for (x, y) in [(0.95, 1.7), (1.02, 1.72), (1.09, 1.7), (0.99, 1.77), (1.07, 1.78)]:
         ax.add_patch(Rectangle((x, y), 0.05, 0.04, fc="#9A9A9A", ec=INK, lw=0.5))
-    # lid, ajar
-    ax.add_patch(Polygon([[1.3, 1.43], [1.86, 1.52], [1.84, 1.56], [1.28, 1.47]], closed=True, fc="#BDBDBD", ec=INK, lw=1.2))
-    # burner and flame
-    ax.add_patch(Rectangle((1.45, 0.12), 0.2, 0.5, fc="#8C8C8C", ec=INK, lw=1.2))
-    ax.add_patch(Polygon([[1.55, 0.62], [1.46, 0.78], [1.5, 0.9], [1.55, 0.84], [1.6, 0.9], [1.64, 0.78]], closed=True,
+    # lid, ajar: resting on the rim, tipped up on one side
+    ax.add_patch(Polygon([[0.8, 2.13], [1.36, 2.24], [1.35, 2.28], [0.79, 2.17]], closed=True, fc="#BDBDBD", ec=INK, lw=1.2))
+    # Bunsen burner: barrel, collar, base, flame
+    ax.add_patch(Rectangle((0.99, 0.35), 0.12, 0.62, fc="#E0E0E0", ec=INK, lw=1.2))
+    ax.add_patch(Rectangle((0.95, 0.35), 0.2, 0.18, fc="#8C8C8C", ec=INK, lw=1.2))
+    ax.add_patch(Rectangle((0.62, 0.08), 0.86, 0.07, fc="#8C8C8C", ec=INK, lw=1.2))
+    ax.add_patch(Polygon([[1.05, 0.97], [0.95, 1.15], [1.0, 1.32], [1.05, 1.25], [1.1, 1.32], [1.15, 1.15]], closed=True,
                          fc="#E6E6E6", ec=INK, lw=1.0))
-    ax.add_patch(Rectangle((1.3, 0.08), 0.5, 0.06, fc="#8C8C8C", ec=INK, lw=1.0))
-    # labels
-    kw = dict(fontsize=7.5, color=INK)
-    ax.annotate("lid (slightly open)", xy=(1.85, 1.5), xytext=(2.15, 1.9), arrowprops=dict(arrowstyle="-", color=INK, lw=0.8), **kw)
-    ax.annotate("crucible", xy=(1.8, 1.18), xytext=(2.25, 1.45), arrowprops=dict(arrowstyle="-", color=INK, lw=0.8), **kw)
-    ax.annotate("hydrate sample", xy=(1.65, 1.04), xytext=(2.25, 0.95), arrowprops=dict(arrowstyle="-", color=INK, lw=0.8), **kw)
-    ax.annotate("clay triangle", xy=(1.78, 1.04), xytext=(2.25, 1.2), arrowprops=dict(arrowstyle="-", color=INK, lw=0.8), **kw)
-    ax.annotate("burner", xy=(1.65, 0.4), xytext=(2.25, 0.4), arrowprops=dict(arrowstyle="-", color=INK, lw=0.8), **kw)
+    # labels with leader lines
+    ax.annotate("crucible with lid\n(slightly open)", xy=(1.35, 2.24), xytext=(2.15, 2.4), arrowprops=dict(arrowstyle="-", color=INK, lw=0.8), **kw)
+    ax.annotate("hydrate sample", xy=(1.14, 1.82), xytext=(2.15, 1.98), arrowprops=dict(arrowstyle="-", color=INK, lw=0.8), **kw)
+    ax.annotate("clay triangle", xy=(1.3, 1.62), xytext=(2.15, 1.7), arrowprops=dict(arrowstyle="-", color=INK, lw=0.8), **kw)
+    ax.annotate("tripod", xy=(1.85, 1.3), xytext=(2.3, 1.2), arrowprops=dict(arrowstyle="-", color=INK, lw=0.8), **kw)
+    ax.annotate("Bunsen burner", xy=(1.11, 0.65), xytext=(2.3, 0.6), arrowprops=dict(arrowstyle="-", color=INK, lw=0.8), **kw)
     p = os.path.join(OUT, "hydrate.png")
     fig.savefig(p, dpi=DPI); plt.close(fig)
     return p

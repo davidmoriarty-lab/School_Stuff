@@ -7,7 +7,7 @@ from lib import *
 import figs
 
 HERE = os.path.dirname(__file__)
-TEMPLATE = os.path.join(HERE, "..", "Student Notes Packets", "Unit 5 - Chemical Reactions - STUDENT NOTES.docx")  # page setup, styles, header/footer
+TEMPLATE = os.path.join(HERE, "..", "Student Notes Packets", "Unit 4 - Chemical Reactions - STUDENT NOTES.docx")  # page setup, styles, header/footer
 OUTDIR = os.path.join(HERE, "..", "Student Notes Packets")
 R = 0.0821
 
@@ -250,7 +250,7 @@ class Packet:
     def save(self, path, unit_label, title):
         sec = self.doc.sections[0]
         for r in sec.footer.paragraphs[0].runs:
-            if "Unit 5" in r.text:
+            if "Unit 4" in r.text:
                 r.text = "  Unit 7: "
             elif r.text.startswith("Reactions"):
                 r.text = "Gases  •" if not self.T else "Gases  •"

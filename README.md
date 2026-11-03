@@ -12,6 +12,7 @@ One page searches all molecules, problems and quiz questions, with filters by co
 | `simulations/enthalpy-dissolution-lab/` | Enthalpy of Dissolution Virtual Lab (moved from the repo root) |
 | `simulations/periodic-table-highway/` | Periodic Table Highway: a lane-switching driving game for learning element symbols (single page, with tests) |
 | `chemistry_notes/` | Guided notes: honors packets (units 0 to 7, student and teacher editions) with the packet builder, nomenclature notes, and AP equilibrium notes |
+| `4-year-course-planner/` | Student tool for planning four years of classes and tracking graduation requirements (scaffold; files to be added) |
 | `honors-chemistry/`, `ap-chemistry/` | Reserved for those courses |
 | `tools/build_index.py` | Rebuilds the master `index.html` |
 

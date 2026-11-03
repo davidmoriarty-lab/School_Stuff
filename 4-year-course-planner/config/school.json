@@ -1,0 +1,15 @@
+{
+  "schoolName": "Summit High School",
+  "districtName": "Williamson County Schools",
+  "colors": {
+    "primary": "#03244D",
+    "secondary": "#DD550C",
+    "_comment": "Auburn University navy blue (#03244D) and burnt orange (#DD550C). Confirm or replace with the exact hex the school already uses on other materials."
+  },
+  "logoFile": "config/logo.png",
+  "_logoNote": "Spartan head logo, to be added later. App works without it until then.",
+  "diplomaType": "Traditional",
+  "creditTarget": 23,
+  "gradYears": [2027, 2028, 2029, 2030, 2031],
+  "requireACTNote": true
+}

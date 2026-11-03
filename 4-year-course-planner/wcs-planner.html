@@ -1,0 +1,963 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Summit High School 4-Year Course Planner</title>
+<style>
+
+:root{--primary:#03244D;--secondary:#DD550C;--ink:#1a1a1a;--line:#cfcfcf;--bg:#f6f5f2;--panel:#fff;--ok:#1f7a1f;--warn:#8a6d00;--gap:#a12d2d}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Times New Roman",Times,Georgia,serif;font-size:18px;line-height:1.55;color:var(--ink);background:var(--bg)}
+header{background:var(--primary);color:#fff;padding:14px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header img{height:46px;width:auto}
+header h1{margin:0;font-size:22px}
+header .sub{font-size:14px;opacity:.85;margin-top:2px}
+nav{display:flex;gap:2px;background:var(--primary);padding:0 14px;flex-wrap:wrap}
+nav button{font-family:inherit;font-size:16px;border:0;background:rgba(255,255,255,.12);color:#fff;padding:10px 16px;border-radius:6px 6px 0 0;cursor:pointer}
+nav button.active{background:var(--bg);color:var(--ink);font-weight:700}
+.notofficial{margin-left:auto;max-width:320px;background:#b00020;color:#fff;border:2px solid rgba(255,255,255,.55);border-radius:8px;padding:8px 12px;font-size:12.5px;line-height:1.35;text-align:right}
+.notofficial strong{display:block;font-size:14px;font-weight:700;letter-spacing:.5px;margin-bottom:2px}
+@media (max-width:760px){.notofficial{margin-left:0;max-width:100%;text-align:left;width:100%}}
+main{max-width:1080px;margin:0 auto;padding:22px}
+section{display:none} section.active{display:block}
+h2{color:var(--primary);margin:.1em 0 .5em}
+h3{color:var(--primary);margin:1em 0 .3em}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px;margin-bottom:16px}
+button.act{font-family:inherit;font-size:16px;padding:9px 16px;border-radius:6px;border:1px solid var(--primary);background:var(--primary);color:#fff;cursor:pointer}
+button.act.ghost{background:#fff;color:var(--primary)}
+button.act:disabled{background:#9aa0a6;border-color:#9aa0a6;color:#fff;cursor:not-allowed;opacity:.85}
+button.act.ghost:disabled{background:#f0f0f0;color:#888;border-color:var(--line)}
+button.mini{font-family:inherit;font-size:13px;padding:4px 10px;border-radius:5px;border:1px solid var(--line);background:#fff;cursor:pointer}
+input[type=text],select{font-family:inherit;font-size:16px;padding:7px 9px;border:1px solid var(--line);border-radius:5px;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:16px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:#ecebe6}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.yearcol{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px}
+.yearcol h3{margin:.1em 0 .35em;display:flex;justify-content:space-between;align-items:baseline}
+.yearcol .cr{font-size:13px;font-weight:400;color:#555}
+.coursechip{border:1px solid var(--line);border-radius:6px;padding:6px 8px;margin-bottom:6px;background:#faf9f6;font-size:15px;cursor:pointer}
+.coursechip .lv{font-size:12px;color:#555}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.pill{display:inline-block;font-size:12px;padding:1px 8px;border-radius:10px;border:1px solid var(--line);margin:1px 3px 1px 0;background:#f0efea}
+.muted{color:#555;font-size:15px}
+.reqrow{border:1px solid var(--line);border-radius:7px;margin-bottom:7px;background:var(--panel);overflow:hidden}
+.reqrow>summary{list-style:none;cursor:pointer;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.reqrow>summary::-webkit-details-marker{display:none}
+.reqrow[open]>summary{border-bottom:1px solid var(--line)}
+.reqrow .body{padding:10px 12px;font-size:15px}
+.status{font-size:13px;font-weight:700;padding:2px 9px;border-radius:11px;border:1px solid}
+.status.met{color:#fff;background:var(--ok);border-color:var(--ok)}
+.status.ontrack{color:var(--warn);background:#fff5d6;border-color:#e6d28a}
+.status.gap{color:#fff;background:var(--gap);border-color:var(--gap)}
+.warnbox{background:#fff8e6;border:1px solid #e6d28a;border-radius:6px;padding:8px 12px;margin:6px 0;font-size:15px}
+.infobox{background:#eef4fb;border:1px solid #9fc0e4;border-left:5px solid var(--primary);border-radius:6px;padding:12px 14px;margin:10px 0 16px;font-size:16px;line-height:1.5}
+.bar{height:12px;background:#e5e4df;border-radius:6px;overflow:hidden;margin-top:4px}
+.bar>span{display:block;height:100%;background:var(--secondary)}
+dialog{border:1px solid var(--primary);border-radius:10px;padding:0;width:min(620px,94vw)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+.dlg-head{background:var(--primary);color:#fff;padding:12px 18px;font-size:20px;font-weight:700}
+.dlg-body{padding:18px}
+.dlg-foot{padding:12px 18px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end}
+.kv{margin:4px 0} .kv b{color:var(--primary)}
+dialog#pickerModal{width:min(940px,96vw)}
+.pickwrap{display:flex;gap:16px}
+.pickleft{flex:1.5;min-width:0}
+.pickright{flex:1;min-width:0;border-left:1px solid var(--line);padding-left:14px}
+.pickright h3{margin-top:0}
+.picklist{max-height:54vh;overflow:auto;border:1px solid var(--line);border-radius:6px}
+.pickitem{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--line);font-size:15px}
+.pickitem:last-child{border-bottom:0}
+.pickitem .meta{font-size:12px;color:#555}
+.chosenitem{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin-bottom:6px;background:#faf9f6;font-size:14px}
+.chosenlist{max-height:54vh;overflow:auto}
+.futrow{display:flex;gap:16px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:8px;background:var(--panel)}
+.futrow .fleft{flex:1;min-width:0}
+.futrow .fname{font-weight:700}
+.futrow .fright{flex:1.1;min-width:0;font-size:14px;border-left:1px solid var(--line);padding-left:14px}
+.futrow .fright .opt{display:block;margin:3px 0;cursor:pointer}
+@media(max-width:820px){.grid4{grid-template-columns:1fr 1fr}}
+@media(max-width:720px){.pickwrap{flex-direction:column}.pickright{border-left:0;border-top:1px solid var(--line);padding-left:0;padding-top:12px}.futrow{flex-direction:column}.futrow .fright{border-left:0;border-top:1px solid var(--line);padding-left:0;padding-top:8px}}
+
+</style>
+</head>
+<body>
+
+<header>
+  <img id="hLogo" alt="" hidden>
+  <div><h1 id="hName">4-Year Course Planner</h1><div class="sub" id="hSub"></div></div>
+  <div class="notofficial">
+    <strong>NOT AN OFFICIAL DOCUMENT</strong>
+    A planning tool only. It does not guarantee graduation or course placement. Meet with your school counselor to finalize your schedule.
+  </div>
+</header>
+<nav id="pnav">
+  <button data-tab="dash" class="active">Dashboard</button>
+  <button data-tab="taken">Classes Taken</button>
+  <button data-tab="future">Future Classes</button>
+  <button data-tab="tracker">Requirement Tracker</button>
+  <button data-tab="search">Class Search</button>
+  <button data-tab="save">Save / Load</button>
+</nav>
+<main>
+  <section id="p-dash" class="active">
+    <h2>Dashboard</h2>
+    <div class="panel">
+      <div class="toolbar">
+        <div><label style="font-size:13px;font-weight:700;display:block">Student name</label><input type="text" id="dName"></div>
+        <div><label style="font-size:13px;font-weight:700;display:block">Current high school status</label>
+          <select id="dStatus"><option value="">Select...</option><option>Freshman</option><option>Sophomore</option><option>Junior</option><option>Senior</option></select>
+        </div>
+        <div><label style="font-size:13px;font-weight:700;display:block">Graduating class</label><select id="dYear"></select></div>
+      </div>
+      <div class="infobox"><strong>Set your current high school status above.</strong> The <strong>Future Classes</strong> tab uses it to show the classes you plan for your next school year. For example, if you are a sophomore now, Future Classes will show your junior-year plan.</div>
+      <p id="dCredits" style="font-size:18px"></p>
+      <div class="bar"><span id="dBar"></span></div>
+    </div>
+    <div class="panel"><h3>Warnings</h3><div id="dWarn"></div></div>
+    <div class="panel"><h3>Requirements at a glance</h3><div id="dReq"></div></div>
+    <div class="infobox">Use the <strong>Save / Load</strong> tab to export a PDF of your plan and to load last year's PDF back in.</div>
+  </section>
+
+  <section id="p-taken">
+    <h2>Classes Taken</h2>
+    <p class="muted">Add classes you have already completed. Use the same steps as Future Classes: find the course, choose the year you took it.</p>
+    <div class="infobox">
+      <strong>Already have last year's plan?</strong> If you saved a PDF from this planner last year, go to the <strong>Save / Load</strong> tab and choose <strong>Import a PDF</strong>. Your completed classes will load in automatically, so you do not have to add them one by one. The PDF must have been created by this same planner - a school transcript or any other PDF will not work.
+    </div>
+    <div class="toolbar"><button class="act" id="btnAddTaken">+ Add a completed class</button></div>
+    <div id="takenList"></div>
+  </section>
+
+  <section id="p-future">
+    <h2>Future Classes</h2>
+    <div id="futHead"></div>
+    <div id="futureList"></div>
+  </section>
+
+  <section id="p-tracker">
+    <h2>Requirement Tracker</h2>
+    <p class="muted">What you have earned, what is planned, and what is still needed. Click a requirement to see the exact classes being applied to it.</p>
+    <div id="trackerList"></div>
+  </section>
+
+  <section id="p-save">
+    <h2>Save / Load Your Plan</h2>
+    <div class="infobox">
+      <strong>You will use this planner again next year.</strong> Export your plan as a PDF now and save the file. Next year, open the planner, come back to this tab, and import that PDF. You will pick up exactly where you left off, and every class you completed this year will already be filled in for you.
+    </div>
+    <div class="panel">
+      <h3>Save your plan (export a PDF)</h3>
+      <p>This creates a PDF that lists every class you have completed and planned, along with your progress toward each graduation requirement. The PDF also stores your plan inside the file so it can be loaded back next year.</p>
+      <p><strong>After it downloads, keep it somewhere safe</strong> - email it to yourself, save it to your school drive, or put it in a folder you will find again next year. It is not saved anywhere automatically.</p>
+      <button class="act" id="btnExport">Export my plan as a PDF</button>
+    </div>
+    <div class="panel">
+      <h3>Load last year's plan (import a PDF)</h3>
+      <p>Used this planner in a previous year? Choose the PDF it made for you and everything loads back in: your completed classes, your current status, your graduating class, and any classes you had planned.</p>
+      <p class="muted">It must be a PDF that this planner created. A school transcript or any other PDF will not work.</p>
+      <button class="act ghost" id="btnImport">Choose last year's PDF</button>
+      <input type="file" id="impFile" accept="application/pdf" style="display:none">
+    </div>
+  </section>
+
+  <section id="p-search">
+    <h2>Class Search</h2>
+    <div class="toolbar">
+      <input type="text" id="sText" placeholder="Search name or code">
+      <select id="sDept"><option value="">All departments</option></select>
+      <select id="sLevel"><option value="">All levels</option><option>Standard</option><option>Honors</option><option>AP</option><option>DualEnrollment</option></select>
+      <select id="sReq"><option value="">Any graduation requirement</option></select>
+      <span class="muted" id="sCount"></span>
+    </div>
+    <div id="searchList"></div>
+  </section>
+</main>
+
+<dialog id="courseModal">
+  <div class="dlg-head" id="cmTitle"></div>
+  <div class="dlg-body" id="cmBody"></div>
+  <div class="dlg-foot" id="cmFoot"></div>
+</dialog>
+
+<dialog id="pickerModal">
+  <div class="dlg-head" id="pkrTitle">Add classes</div>
+  <div class="dlg-body">
+    <div class="pickwrap">
+      <div class="pickleft">
+        <div class="toolbar">
+          <select id="pkrDept"><option value="">All subjects</option></select>
+          <input type="text" id="pkrSearch" placeholder="Search name or code">
+        </div>
+        <div class="picklist" id="pkrList"></div>
+      </div>
+      <div class="pickright">
+        <h3 id="pkrRightTitle">Classes you are adding</h3>
+        <div class="chosenlist" id="pkrChosen"></div>
+      </div>
+    </div>
+  </div>
+  <div class="dlg-foot"><button class="act" id="pkrDone">Done</button></div>
+</dialog>
+
+<dialog id="confirmModal">
+  <div class="dlg-head" id="confirmTitle">Remove this class?</div>
+  <div class="dlg-body"><p id="confirmMsg" class="kv"></p></div>
+  <div class="dlg-foot">
+    <button class="act ghost" id="confirmNo">Cancel</button>
+    <button class="act" id="confirmYes">Remove</button>
+  </div>
+</dialog>
+
+<dialog id="importModal">
+  <div class="dlg-head">Plan loaded</div>
+  <div class="dlg-body">
+    <p>Your plan was loaded from the PDF.</p>
+    <p id="importQ" class="kv"></p>
+  </div>
+  <div class="dlg-foot">
+    <button class="act ghost" id="importNo">No, keep them as planned classes</button>
+    <button class="act" id="importYes">Yes, I finished them</button>
+  </div>
+</dialog>
+
+<dialog id="pickModal">
+  <div class="dlg-head">Which year did you take this?</div>
+  <div class="dlg-body">
+    <p class="kv"><b id="pkCourse"></b></p>
+    <label style="font-size:13px;font-weight:700;display:block">Year completed</label>
+    <select id="pkYear"></select>
+    <div id="pkWarn" style="margin-top:10px"></div>
+  </div>
+  <div class="dlg-foot">
+    <button class="act ghost" id="pkCancel">Cancel</button>
+    <button class="act" id="pkAdd">Add class</button>
+  </div>
+</dialog>
+
+<script>
+window.__CONFIG__ = {"schoolName":"Summit High School","districtName":"Williamson County Schools","colors":{"primary":"#03244D","secondary":"#DD550C"},"logo":"","creditTarget":23,"gradYears":[2027,2028,2029,2030,2031],"requirements":[{"key":"english","group":"English","label":"English I-IV","credits":4,"kind":"catchall"},{"key":"math.algebra1","group":"Mathematics","label":"Algebra I","credits":1},{"key":"math.geometry","group":"Mathematics","label":"Geometry","credits":1},{"key":"math.algebra2","group":"Mathematics","label":"Algebra II","credits":1},{"key":"math.fourth","group":"Mathematics","label":"4th math (beyond Algebra II)","credits":1,"kind":"flex"},{"key":"science.biology","group":"Science","label":"Biology","credits":1},{"key":"science.chemphys","group":"Science","label":"Chemistry or Physics","credits":1},{"key":"science.lab","group":"Science","label":"3rd lab science","credits":1,"kind":"flex"},{"key":"ss.world","group":"Social Studies","label":"World History / AP Human Geo / AP Euro","credits":1},{"key":"ss.ushistory","group":"Social Studies","label":"U.S. History","credits":1},{"key":"ss.gov","group":"Social Studies","label":"U.S. Government & Civics","credits":0.5},{"key":"ss.econ","group":"Social Studies","label":"Economics","credits":0.5},{"key":"pe","group":"Wellness / PE","label":"Physical Education","credits":0.5},{"key":"wellness","group":"Wellness / PE","label":"Lifetime Wellness","credits":1},{"key":"finance","group":"Other","label":"Personal Finance","credits":0.5},{"key":"worldlang","group":"World Language","label":"World Language (same language, 2 credits)","credits":2},{"key":"finearts","group":"Fine Arts","label":"Fine Arts","credits":1},{"key":"compsci","group":"Computer Science","label":"Computer Science","credits":1},{"key":"electivefocus","group":"Elective Focus","label":"Elective Focus","credits":3,"kind":"catchall"}],"courses":[{"id":"MATH_ALG1","code":"G01H00","name":"Algebra I","department":"Math","level":"Standard","grades":[9,10,11,12],"credit":1,"satisfies":["math.algebra1"],"prereqs":[],"description":"The initial high school math course. Linear and quadratic expressions, equations, inequalities and functions; absolute value and exponential functions; interpreting statistical data; modeling real-world problems.","notes":"","epso":false,"ncaa":true,"eoc":false},{"id":"MATH_ALG1_H","code":"G01H00","name":"Algebra I Honors","department":"Math","level":"Honors","grades":[9,10,11,12],"credit":1,"satisfies":["math.algebra1"],"prereqs":[],"description":"Algebra I content in greater depth with enrichment and rigorous honors assignments: complex problem-solving, research writing, investigations and advanced technology use.","notes":"Teacher recommendation required","epso":false,"ncaa":true,"eoc":false},{"id":"MATH_GEO","code":"G02H11","name":"Geometry","department":"Math","level":"Standard","grades":[9,10,11,12],"credit":1,"satisfies":["math.geometry"],"prereqs":[{"any":["MATH_ALG1","MATH_ALG1_H"],"concurrent":false}],"description":"Congruence, similarity, right-triangle trigonometry, coordinate geometry, constructions, surface area and volume, and probability, with real-world modeling.","notes":"","epso":false,"ncaa":true,"eoc":false},{"id":"MATH_GEO_H","code":"G02H11","name":"Geometry Honors","department":"Math","level":"Honors","grades":[9,10,11,12],"credit":1,"satisfies":["math.geometry"],"prereqs":[{"any":["MATH_ALG1","MATH_ALG1_H"],"concurrent":false}],"description":"All Geometry topics in greater depth with enrichment; strong analytical thinking beyond algebraic computation; rigorous honors assignments.","notes":"Teacher recommendation required","epso":false,"ncaa":true,"eoc":false},{"id":"MATH_ALG2","code":"G02H05","name":"Algebra II","department":"Math","level":"Standard","grades":[9,10,11,12],"credit":1,"satisfies":["math.algebra2"],"prereqs":[{"any":["MATH_ALG1","MATH_ALG1_H"],"concurrent":false}],"description":"Expands function types from Algebra I: cubic, exponential, inverse, logarithmic, piecewise and radical functions; systems of equations including matrices; statistics for decision-making.","notes":"","epso":false,"ncaa":true,"eoc":false},{"id":"MATH_ALG2_H","code":"G02H05","name":"Algebra II Honors","department":"Math","level":"Honors","grades":[9,10,11,12],"credit":1,"satisfies":["math.algebra2"],"prereqs":[{"any":["MATH_ALG1","MATH_ALG1_H"],"concurrent":false}],"description":"All Algebra II topics in greater depth with enrichment; strong analytical thinking required; rigorous honors assignments.","notes":"Teacher recommendation required","epso":false,"ncaa":true,"eoc":false},{"id":"MATH_PRECALC_H","code":"G02H23","name":"Pre-Calculus Honors","department":"Math","level":"Honors","grades":[10,11,12],"credit":1,"satisfies":["math.fourth"],"prereqs":[{"any":["MATH_ALG1","MATH_ALG1_H"],"concurrent":false},{"any":["MATH_GEO","MATH_GEO_H"],"concurrent":false},{"any":["MATH_ALG2","MATH_ALG2_H"],"concurrent":false}],"description":"Prepares students for college STEM courses: complex number system, vectors and matrices, sequences and series, parametric equations, conic sections, trigonometric functions, regression modeling.","notes":"Prerequisite for any Calculus course. Teacher recommendation required","epso":false,"ncaa":true,"eoc":false},{"id":"MATH_APPRECALC","code":"G02146","name":"AP Pre-Calculus","department":"Math","level":"AP","grades":[10,11,12],"credit":1,"satisfies":["math.fourth"],"prereqs":[{"any":["MATH_ALG1","MATH_ALG1_H"],"concurrent":false},{"any":["MATH_GEO","MATH_GEO_H"],"concurrent":false},{"any":["MATH_ALG2","MATH_ALG2_H"],"concurrent":false}],"description":"AP course centered on functions modeling dynamic phenomena; graphical, numerical, verbal and analytical representations; symbolic manipulation to prepare for college calculus.","notes":"Prerequisite for any Calculus course. Teacher recommendation required","epso":true,"ncaa":true,"eoc":false},{"id":"MATH_CALC_H","code":"G02H18","name":"Calculus Honors","department":"Math","level":"Honors","grades":[11,12],"credit":1,"satisfies":["math.fourth"],"prereqs":[{"any":["MATH_PRECALC_H","MATH_APPRECALC"],"concurrent":false}],"description":"For students interested in STEM careers; builds on precalculus with limits, derivatives, and an introduction to integrals; rigorous honors assignments.","notes":"Not offered at all schools in the district. Teacher recommendation required","epso":false,"ncaa":true,"eoc":false},{"id":"MATH_STATS","code":"G02H37","name":"Statistics","department":"Math","level":"Standard","grades":[11,12],"credit":1,"satisfies":["math.fourth"],"prereqs":[{"any":["MATH_ALG2","MATH_ALG2_H"],"concurrent":false}],"description":"Collecting, analyzing, and drawing conclusions from data. Serves as a 4th-year math credit; aligned with the Statewide Dual Credit Probability and Statistics learning objectives.","notes":"Teacher recommendation required","epso":false,"ncaa":true,"eoc":false},{"id":"MATH_APSTATS","code":"G02H26","name":"AP Statistics","department":"Math","level":"AP","grades":[11,12],"credit":1,"satisfies":["math.fourth"],"prereqs":[{"any":["MATH_ALG1","MATH_ALG1_H"],"concurrent":false}],"description":"Major concepts and processes for collecting and analyzing data and making inferences about a population from a sample; follows the College Board AP course description.","notes":"Teacher recommendation required","epso":true,"ncaa":true,"eoc":false},{"id":"MATH_APCALC_AB","code":"G02H24","name":"AP Calculus AB","department":"Math","level":"AP","grades":[11,12],"credit":1,"satisfies":["math.fourth"],"prereqs":[{"any":["MATH_PRECALC_H","MATH_APPRECALC"],"concurrent":false}],"description":"Differential and integral calculus following the College Board AP Mathematics course description.","notes":"Teacher recommendation required","epso":true,"ncaa":true,"eoc":false},{"id":"MATH_APCALC_BC","code":"G02H25","name":"AP Calculus BC","department":"Math","level":"AP","grades":[11,12],"credit":1,"satisfies":["math.fourth"],"prereqs":[{"any":["MATH_PRECALC_H","MATH_APPRECALC","MATH_APCALC_AB"],"concurrent":false}],"description":"Reviews all AP Calculus AB topics plus additional objectives and topics; follows the College Board AP course description.","notes":"AB students are recommended to follow up with BC. Teacher recommendation required","epso":true,"ncaa":true,"eoc":false},{"id":"SCI_BIO","code":"G03H03","name":"Biology I","department":"Science","level":"Standard","grades":[9,10],"credit":1,"satisfies":["science.biology"],"prereqs":[],"description":"Study of living organisms: cells, interactions, photosynthesis and respiration, genetics, evolution and ecology. Hands-on labs and technology. State End of Course exam.","notes":"","epso":false,"ncaa":true,"eoc":true},{"id":"SCI_BIO_H","code":"G03H03","name":"Biology I Honors","department":"Science","level":"Honors","grades":[9,10],"credit":1,"satisfies":["science.biology"],"prereqs":[],"description":"More in-depth Biology with added rigor through research, lab investigation and engineering design. State End of Course exam.","notes":"Prerequisite: grade of 90 or above in a science course. Teacher recommendation required","epso":false,"ncaa":true,"eoc":true},{"id":"SCI_APBIO","code":"G03H10","name":"AP Biology","department":"Science","level":"AP","grades":[11,12],"credit":1,"satisfies":["science.biology","science.lab"],"prereqs":[{"any":["SCI_BIO","SCI_BIO_H"],"concurrent":false},{"any":["SCI_CHEM","SCI_CHEM_H"],"concurrent":false}],"description":"Introductory college-level biology: evolution, energetics, information storage and transfer, system interactions; college-equivalent inquiry-based lab component. Intended for students entering biology fields or pre-medicine.","notes":"Teacher recommendation required","epso":true,"ncaa":true,"eoc":false},{"id":"SCI_PHYSCI","code":"G03H00","name":"Physical Science","department":"Science","level":"Standard","grades":[9,10],"credit":1,"satisfies":["science.lab"],"prereqs":[],"description":"Introduction to chemistry and physics: structure and properties of matter, interactions of matter, force and motion, and energy. Foundation for chemistry and physics.","notes":"Cannot be taken after chemistry or physics","epso":false,"ncaa":true,"eoc":false},{"id":"SCI_CHEM","code":"G03H12","name":"Chemistry I","department":"Science","level":"Standard","grades":[10,11,12],"credit":1,"satisfies":["science.chemphys"],"prereqs":[{"any":["MATH_ALG1","MATH_ALG1_H"],"concurrent":false}],"description":"Properties of substances and the changes they undergo; conceptual model of the Atomic Theory of Matter; hands-on labs and algebra-based problem solving.","notes":"","epso":false,"ncaa":true,"eoc":false},{"id":"SCI_CHEM_H","code":"G03H12","name":"Chemistry I Honors","department":"Science","level":"Honors","grades":[10,11,12],"credit":1,"satisfies":["science.chemphys"],"prereqs":[{"any":["MATH_ALG1_H"],"concurrent":false}],"description":"More in-depth Chemistry I with added honors rigor through research, lab investigation and engineering design.","notes":"Recommendation by previous science and math teachers","epso":false,"ncaa":true,"eoc":false},{"id":"SCI_APCHEM","code":"G03H16","name":"AP Chemistry","department":"Science","level":"AP","grades":[11,12],"credit":1,"satisfies":["science.chemphys","science.lab"],"prereqs":[{"any":["SCI_CHEM","SCI_CHEM_H"],"concurrent":false},{"any":["MATH_ALG2","MATH_ALG2_H"],"concurrent":false}],"description":"College-level foundation: atomic structure, intermolecular forces and bonding, chemical reactions, kinetics, thermodynamics and equilibrium; equivalent to first-year college general chemistry.","notes":"Teacher recommendation required","epso":true,"ncaa":true,"eoc":false},{"id":"SCI_ORGCHEM_H","code":"Y03H14","name":"Organic Chemistry Honors","department":"Science","level":"Honors","grades":[11,12],"credit":1,"satisfies":["science.lab"],"prereqs":[{"any":["SCI_CHEM_H"],"concurrent":false}],"description":"The chemistry of organic molecules: structures, nomenclature, properties and reactions of carbon compounds, with emphasis on aliphatic compounds. Introduction to reaction mechanisms, stereochemistry and spectroscopy. Includes laboratory work on the preparation, isolation and purification of typical organic compounds to illustrate basic techniques.","notes":"Prerequisite: Chemistry I Honors AND either co-enrollment in an AP science course or completion of 2 AP science courses. Teacher recommendation required. (WCS Program Planning Guide p.34)","epso":false,"ncaa":true,"eoc":false},{"id":"SCI_ECOLOGY","code":"G03H32","name":"Ecology","department":"Science","level":"Standard","grades":[10,11,12],"credit":1,"satisfies":["science.lab"],"prereqs":[],"description":"Natural environment and environmental problems: ecological principles, population dynamics, natural resources, human impact, and civic responsibility; hands-on and outdoor labs.","notes":"Biology recommended","epso":false,"ncaa":true,"eoc":false},{"id":"SCI_APENV","code":"G03H25","name":"AP Environmental Science","department":"Science","level":"AP","grades":[11,12],"credit":1,"satisfies":["science.lab"],"prereqs":[{"any":["SCI_BIO","SCI_BIO_H"],"concurrent":false},{"any":["MATH_ALG1","MATH_ALG1_H"],"concurrent":false},{"any":["SCI_CHEM","SCI_CHEM_H"],"concurrent":false}],"description":"Equivalent to a one-semester introductory college environmental science course; identify and analyze natural and human-made environmental problems and evaluate solutions; interdisciplinary with field study.","notes":"Teacher recommendation required","epso":true,"ncaa":true,"eoc":false},{"id":"SCI_ANATOMY","code":"G03H31","name":"Human Anatomy and Physiology","department":"Science","level":"Standard","grades":[10,11,12],"credit":1,"satisfies":["science.lab"],"prereqs":[{"any":["SCI_BIO","SCI_BIO_H"],"concurrent":false}],"description":"Human body structure and function: orientation, protection, support and movement, regulation, transport, absorption and excretion, reproduction and development; lab dissections and microscopy. For health and medical careers.","notes":"","epso":false,"ncaa":true,"eoc":false},{"id":"SCI_ANATOMY_H","code":"G03H16","name":"Human Anatomy and Physiology Honors","department":"Science","level":"Honors","grades":[11,12],"credit":1,"satisfies":["science.lab"],"prereqs":[{"any":["SCI_BIO","SCI_BIO_H"],"concurrent":false}],"description":"Advanced study of human anatomy and physiology with numerous lab dissections, microscopy and lab equipment; added honors rigor. Dissection required. For health and medical careers.","notes":"","epso":false,"ncaa":true,"eoc":false},{"id":"SCI_PHYS","code":"G03H20","name":"Physics I","department":"Science","level":"Standard","grades":[10,11,12],"credit":1,"satisfies":["science.chemphys","math.fourth"],"prereqs":[{"any":["MATH_GEO","MATH_GEO_H"],"concurrent":false},{"any":["MATH_ALG2","MATH_ALG2_H"],"concurrent":true}],"description":"Relationship between matter and energy; inquiry-based learning, hands-on labs and demonstrations; emphasis on conceptual physics with algebraic problem solving.","notes":"Algebra II may be concurrent. If used as a 4th math credit it cannot also count as science. Teacher recommendation required","epso":false,"ncaa":true,"eoc":false},{"id":"SCI_PHYS_H","code":"G03H20","name":"Physics I Honors","department":"Science","level":"Honors","grades":[10,11,12],"credit":1,"satisfies":["science.chemphys","math.fourth"],"prereqs":[{"any":["MATH_GEO","MATH_GEO_H"],"concurrent":false},{"any":["MATH_ALG2","MATH_ALG2_H"],"concurrent":true}],"description":"Interaction between matter and energy with more emphasis on mathematics than standard physics; strong math and analytical skills; added honors rigor.","notes":"Algebra II may be concurrent. If used as a 4th math credit it cannot also count as science. Teacher recommendation required","epso":false,"ncaa":true,"eoc":false},{"id":"SCI_APPHYS1","code":"G03H27","name":"AP Physics 1: Algebra-Based","department":"Science","level":"AP","grades":[10,11,12],"credit":1,"satisfies":["science.chemphys","math.fourth"],"prereqs":[{"any":["MATH_GEO","MATH_GEO_H"],"concurrent":false},{"any":["MATH_ALG2","MATH_ALG2_H"],"concurrent":true}],"description":"Algebra-based introductory college-level physics: kinematics, dynamics, circular motion and gravitation, energy, momentum, simple harmonic motion, torque and rotational motion.","notes":"Algebra II may be concurrent. Teacher recommendation required","epso":true,"ncaa":true,"eoc":false},{"id":"SCI_APPHYSC","code":"G03H29","name":"AP Physics C","department":"Science","level":"AP","grades":[11,12],"credit":1,"satisfies":["science.lab","math.fourth"],"prereqs":[{"any":["SCI_PHYS_H","SCI_APPHYS1"],"concurrent":false},{"any":["MATH_CALC_H","MATH_APCALC_AB","MATH_APCALC_BC"],"concurrent":true}],"description":"Calculus-based college-level physics. Roughly half mechanics (Newton's laws; work, energy, power; momentum; rotation; oscillations; gravitation) and half electricity and magnetism. Two College Board exams.","notes":"Calculus may be concurrent. Teacher recommendation required","epso":true,"ncaa":true,"eoc":false},{"id":"SCI_ASTRO","code":"Y03H11","name":"Astronomy","department":"Science","level":"Standard","grades":[12],"credit":1,"satisfies":["electivefocus"],"prereqs":[{"any":["SCI_BIO","SCI_BIO_H"],"concurrent":false},{"any":["SCI_CHEM","SCI_CHEM_H"],"concurrent":false}],"description":"Survey of the universe from the solar system to remote galaxies: observational astronomy, modern observation techniques, planetary astronomy, stellar evolution, cosmology, and space exploration.","notes":"Elective credit only - NOT a lab science. Teacher recommendation required","epso":false,"ncaa":false,"eoc":false},{"id":"ENG_ENGLISH_I","code":"G01H09","name":"English I","department":"English","level":"Standard","grades":[9],"credit":1,"satisfies":["english"],"prereqs":[],"description":"English I addresses four strands of literacy: Reading, both literary and informational texts, Writing, including research, Listening and Speaking, and Language. Students read a variety of fiction and nonfiction, including short stories, poetry, drama, novels, and literary nonfiction and informational texts. Writing involves the modes of narrative, informative/explanatory, and argument with an emphasis on providing relevant and ample evidence with commentary to support a claim.","notes":"","epso":false,"ncaa":true,"eoc":true},{"id":"ENG_ENGLISH_I_HONORS","code":"G01H09","name":"English I Honors","department":"English","level":"Honors","grades":[9],"credit":1,"satisfies":["english"],"prereqs":[],"description":"Students in English I Honors have demonstrated above grade level skills in reading and writing and an ability to work independently and collaboratively. As in English I, students read a variety of increasingly complex tests and write in various modes, with the additional expectation of extended reading, writing, and research. Students must successfully complete at least one or more extended reading and writing assignments related to the quarter’s content.","notes":"Teacher recommendation required","epso":false,"ncaa":true,"eoc":true},{"id":"ENG_ENGLISH_II","code":"G01H10","name":"English II","department":"English","level":"Standard","grades":[10],"credit":1,"satisfies":["english"],"prereqs":[{"any":["ENG_ENGLISH_I","ENG_ENGLISH_I_HONORS"],"concurrent":false}],"description":"English II addresses four strands of literacy: Reading, both literary and informational texts, Writing, including research, Listening and Speaking, and Language. Students complete a survey of thematically aligned units, including a variety of books, fiction and nonfiction, short stories, poetry, drama, literary nonfiction and informational texts. Writing involves the modes of narrative, informative/explanatory, and argument with an emphasis on providing relevant and ample evidence and commentary to support a claim while using increasingly sophisticated structures.","notes":"","epso":false,"ncaa":true,"eoc":true},{"id":"ENG_ENGLISH_II_HONORS","code":"G01H10","name":"English II Honors","department":"English","level":"Honors","grades":[10],"credit":1,"satisfies":["english"],"prereqs":[{"any":["ENG_ENGLISH_I","ENG_ENGLISH_I_HONORS"],"concurrent":false}],"description":"Students in English II Honors have successfully completed English I Honors or demonstrated above grade level skills in reading and writing and an ability to work independently and collaboratively. As in English II, students read a variety of increasingly complex texts and write in a variety of modes, with the additional expectation of extended reading, writing, and research. Students must successfully complete at least one or more extended reading and writing assignments related to the quarter’s content.","notes":"Teacher recommendation required","epso":false,"ncaa":true,"eoc":true},{"id":"ENG_ENGLISH_III","code":"G01H11","name":"English III","department":"English","level":"Standard","grades":[11],"credit":1,"satisfies":["english"],"prereqs":[{"any":["ENG_ENGLISH_II","ENG_ENGLISH_II_HONORS"],"concurrent":false}],"description":"English III continues to develop skills in the four strands of Reading, Writing, Listening and Speaking, and Language through a survey of American Literature in thematically aligned units. Students are expected to read and analyze complex works of literary nonfiction, as well as a wide spectrum of genres of American literature, and produce ample evidence to support inferences. Students will determine themes across multiple texts and express their thinking in writing and speaking supported by ample and relevant evidence from the texts.","notes":"","epso":false,"ncaa":true,"eoc":true},{"id":"ENG_ENGLISH_III_HONORS","code":"G01H11","name":"English III Honors","department":"English","level":"Honors","grades":[11],"credit":1,"satisfies":["english"],"prereqs":[{"any":["ENG_ENGLISH_II","ENG_ENGLISH_II_HONORS"],"concurrent":false}],"description":"Students in English III Honors have successfully completed English II Honors and have demonstrated above grade level skills in reading and writing and an ability to work independently and collaboratively. As in English III, students perform a variety of complex reading tasks focused on recurrent themes in American literature and foundational works of American political philosophy. Student writing is heavily focused on analytical writing (both argument/opinion and informative/explanatory).","notes":"Teacher recommendation required","epso":false,"ncaa":true,"eoc":true},{"id":"ENG_LANGUAGE_AND_COMPOSITION_AP","code":"G01H17","name":"Language and Composition AP","department":"English","level":"AP","grades":[11,12],"credit":1,"satisfies":["english"],"prereqs":[{"any":["ENG_ENGLISH_II","ENG_ENGLISH_II_HONORS","ENG_ENGLISH_III","ENG_ENGLISH_III_HONORS"],"concurrent":false}],"description":"AP English Language and Composition cultivates the reading and writing skills that students need for college success and for intellectually responsible civic engagement. The course guides students in becoming curious, critical, and responsive readers of diverse texts and becoming flexible, reflective writers of texts addressed to diverse audiences for diverse purposes.","notes":"Teacher recommendation required","epso":true,"ncaa":true,"eoc":false},{"id":"ENG_ENGLISH_IV","code":"G01H13","name":"English IV","department":"English","level":"Standard","grades":[12],"credit":1,"satisfies":["english"],"prereqs":[{"any":["ENG_ENGLISH_III","ENG_ENGLISH_III_HONORS"],"concurrent":false}],"description":"English IV continues to develop and refine skills in Reading, Writing, Listening and Speaking, and Language through a survey of British Literature in thematically aligned units. Students are expected to read and analyze complex works of literary nonfiction, as well as a wide spectrum of various genres of British literature and produce ample evidence to support inferences. Students will determine themes across multiple texts and express their thinking in writing and speaking supported by ample and relevant evidence from the texts.","notes":"","epso":false,"ncaa":true,"eoc":false},{"id":"ENG_ENGLISH_IV_HONORS","code":"G01H13","name":"English IV Honors","department":"English","level":"Honors","grades":[12],"credit":1,"satisfies":["english"],"prereqs":[{"any":["ENG_ENGLISH_III","ENG_ENGLISH_III_HONORS"],"concurrent":false}],"description":"Students in English IV Honors have successfully completed English III Honors and have demonstrated above grade level skills in reading and writing and an ability to work independently and collaboratively. As in English IV, students perform a variety of complex reading tasks focused on recurrent themes in British literature and foundational works of British history and philosophy. Student writing is heavily focused on analytical writing (both argument and informative/explanatory).","notes":"Teacher recommendation required","epso":false,"ncaa":true,"eoc":false},{"id":"ENG_LITERATURE_AND_COMPOSITION_AP","code":"G01H18","name":"Literature and Composition AP","department":"English","level":"AP","grades":[11,12],"credit":1,"satisfies":["english"],"prereqs":[{"any":["ENG_ENGLISH_II","ENG_ENGLISH_II_HONORS","ENG_ENGLISH_III","ENG_ENGLISH_III_HONORS"],"concurrent":false}],"description":"In the AP English Literature and Composition course, students devote themselves to the study of literary works written in—or translated into—English. Careful reading and critical analysis of such works of fiction, drama, and poetry, selected locally by responsible, professional educators, provide rich opportunities for students to develop an appreciation of ways literature reflects and comments on a range of experiences, institutions, and social structures. Students will examine the choices literary writers make and the techniques they utilize to achieve purposes and generate meanings.","notes":"Teacher recommendation required","epso":true,"ncaa":true,"eoc":false},{"id":"ENG_AP_SEMINAR","code":"G01H22","name":"AP Seminar","department":"English","level":"AP","grades":[10,11,12],"credit":1,"satisfies":["english"],"prereqs":[{"any":["ENG_ENGLISH_I","ENG_ENGLISH_I_HONORS"],"concurrent":false}],"description":"AP Seminar is a foundational course that engages students in cross-curricular conversations that explore the complexities of academic and real-world topics and issues by analyzing divergent perspectives. Using an inquiry framework, students practice reading and analyzing articles, research studies, and foundational, literary, and philosophical texts; listening to and viewing speeches, broadcasts, and personal accounts; and experiencing artistic works and performances.","notes":"Teacher recommendation required","epso":true,"ncaa":false,"eoc":false},{"id":"ENG_AP_RESEARCH","code":"G01H23","name":"AP Research","department":"English","level":"AP","grades":[11,12],"credit":1,"satisfies":["english"],"prereqs":[{"any":["ENG_AP_SEMINAR"],"concurrent":false}],"description":"AP Research, the second course in the AP Capstone experience, allows students to deeply explore an academic topic, problem, issue, or idea of individual interest. Students design, plan, and implement a yearlong investigation to address a research question. Through this inquiry, they further the skills they acquired in the AP Seminar course by learning research methodology, employing ethical research practices, and accessing, analyzing, and synthesizing information.","notes":"","epso":true,"ncaa":false,"eoc":false},{"id":"ENG_PREPARING_FOR_ACT_POSTSECONDARY_AND_CAREER","code":"G25H00","name":"Preparing for ACT, Postsecondary, and Career","department":"English","level":"Standard","grades":[9,10,11,12],"credit":0.5,"satisfies":["electivefocus"],"prereqs":[],"description":"Students review skills and competencies required for success on the ACT. They will become familiar with the format and scoring of the ACT, learn test-taking skills, and receive individualized instruction, enabling them to demonstrate their knowledge on the ACT. This is a pass/fail course.","notes":"","epso":false,"ncaa":false,"eoc":false},{"id":"ENG_GREEK_AND_ROMAN_MYTHOLOGY","code":"G01H74","name":"Greek and Roman Mythology","department":"English","level":"Standard","grades":[10,11,12],"credit":0.5,"satisfies":["electivefocus"],"prereqs":[{"any":["ENG_ENGLISH_I","ENG_ENGLISH_I_HONORS"],"concurrent":false}],"description":"Greek and Roman Mythology will examine the classical deities of Ancient Greece and Rome, emphasizing the cultural impact of the pantheons on societies of the ancient world. Students will also study the use of this culture in literary allusions throughout the ages in literature. Student assignments will include reading various ancient sources and contemporary retelling of mythological stories, as well as projects demonstrating mastery of the curriculum.","notes":"","epso":false,"ncaa":false,"eoc":false},{"id":"ENG_FILM_AS_LITERATURE","code":"G01H05","name":"Film as Literature","department":"English","level":"Standard","grades":[11,12],"credit":0.5,"satisfies":["electivefocus"],"prereqs":[{"any":["ENG_ENGLISH_II","ENG_ENGLISH_II_HONORS"],"concurrent":false}],"description":"Film as Literature is a semester course for students interested in film history, the language of film, and production techniques. The class is meant to be interesting and interactive; therefore, teamwork, attendance, oral communication, and critical thinking skills are required in addition to the core literacy components of Reading, Writing, Speaking and Listening, and Language. Students learn the language of film to analyze film.","notes":"","epso":false,"ncaa":false,"eoc":false},{"id":"SS_WORLD_HISTORY_AND_GEOGRAPHY","code":"G04H10","name":"World History and Geography","department":"Social Studies","level":"Standard","grades":[9,10,11,12],"credit":1,"satisfies":["ss.world"],"prereqs":[],"description":"This course is a continuation of the 6th and 7th grade survey courses of world history and geography. Students will study the rise of the nation-state in Europe, the origins and consequences of the Industrial Revolution, political reform in Western Europe, imperialism across the world, and the economic and political roots of the modern world. Students will explain the causes and consequences of the great military and economic events of the past century, including the World Wars, Great Depression, Cold War, and Russian and Chinese Revolutions.","notes":"","epso":false,"ncaa":true,"eoc":false},{"id":"SS_WORLD_HISTORY_AND_GEOGRAPHY_HONORS","code":"G04H10","name":"World History and Geography Honors","department":"Social Studies","level":"Honors","grades":[9,10,11,12],"credit":1,"satisfies":["ss.world"],"prereqs":[],"description":"A more rigorous approach to learning is associated with this course. Students will be expected to think, read and write critically and analytically using primary sources. This course is a continuation of the 6th and 7th grade survey courses in world history and geography. Students will study the rise of the nation-state in Europe, the origins and consequences of the Industrial Revolution, political reform in Western Europe, imperialism across the world, and the economic and political roots of the modern world.","notes":"Teacher recommendation required","epso":false,"ncaa":true,"eoc":false},{"id":"SS_HUMAN_GEOGRAPHY_AP","code":"G04H30","name":"Human Geography AP","department":"Social Studies","level":"AP","grades":[9,10,11,12],"credit":1,"satisfies":["ss.world"],"prereqs":[],"description":"Rigorous and challenging classwork with a strong emphasis on extensive reading, writing and research skills is associated with this college-level course. AP level classes require more independent practice and outside reading than Honors level classes. Coursework requirements are guided by the College Board; therefore, students enrolled in this course may take the College Board Advanced Placement Exam in May. Human Geography AP introduces students to the systematic study of patterns and processes that have shaped human understanding, use, and alteration of the Earth’s surface.","notes":"Teacher recommendation required","epso":true,"ncaa":true,"eoc":false},{"id":"SS_EUROPEAN_HISTORY_AP","code":"G04H22","name":"European History AP","department":"Social Studies","level":"AP","grades":[10,11,12],"credit":1,"satisfies":["ss.world"],"prereqs":[],"description":"Rigorous and challenging classwork with a strong emphasis on extensive reading, writing and research skills is associated with this college-level course. AP level classes require more independent practice and outside reading than Honors level classes. Coursework requirements are guided by the College Board; therefore, students enrolled in this course may take the College Board Advanced Placement Exam in May. European History AP focuses on political, economic, and social events from the 14th century to the present.","notes":"Teacher recommendation required","epso":true,"ncaa":true,"eoc":false},{"id":"SS_UNITED_STATES_HISTORY_AND_GEOGRAPHY","code":"G04H11","name":"United States History and Geography","department":"Social Studies","level":"Standard","grades":[11],"credit":1,"satisfies":["ss.ushistory"],"prereqs":[],"description":"Students will examine the causes and consequences of the Industrial Revolution and the United States’ growing role in world diplomatic relations, including the Spanish-American War and World War I. Students will study the goals and accomplishments of the Progressive movement and the New Deal. Students will also learn about the various factors that led the US into World War II, as well as the consequences for American life. Students will explore the causes and courses of the Cold War.","notes":"","epso":false,"ncaa":true,"eoc":true},{"id":"SS_UNITED_STATES_HISTORY_AND_GEOGRAPHY_HONORS","code":"G04H11","name":"United States History and Geography Honors","department":"Social Studies","level":"Honors","grades":[11],"credit":1,"satisfies":["ss.ushistory"],"prereqs":[],"description":"A more rigorous approach to learning is associated with this Honors level course. Students will be expected to think, read and write critically and analytically. Students enrolled in this Honors level course may be required to complete a portfolio as part of the course requirement. This course is the study of the fundamental concepts in civics, economics, and geography within the context of United States history.","notes":"Teacher recommendation required","epso":false,"ncaa":true,"eoc":true},{"id":"SS_UNITED_STATES_HISTORY_AP","code":"G04H21","name":"United States History AP","department":"Social Studies","level":"AP","grades":[11],"credit":1,"satisfies":["ss.ushistory","ss.gov"],"prereqs":[],"description":"Rigorous and challenging classwork with a strong emphasis on extensive reading, writing and research skills is associated with this college-level course. AP level classes require more independent practice and outside reading than Honors level classes. Coursework requirements are guided by the College Board; therefore, students enrolled in this course may take the College Board Advanced Placement Exam in May. In AP U.S. History, students investigate significant events, individuals, developments, and processes in nine historical periods from approximately 1491 to the present.","notes":"Teacher recommendation required","epso":true,"ncaa":true,"eoc":false},{"id":"SS_UNITED_STATES_GOVERNMENT_AND_CIVICS","code":"G04H12","name":"United States Government and Civics","department":"Social Studies","level":"Standard","grades":[12],"credit":0.5,"satisfies":["ss.gov"],"prereqs":[{"any":["SS_UNITED_STATES_HISTORY_AND_GEOGRAPHY"],"concurrent":false}],"description":"This semester course will focus on the study of the purposes, principles, and practices of American government as established by the United States Constitution. Students will also study our state’s government structure and the various local governments in Tennessee. Students will also learn about the rights and responsibilities of citizens as well as how to exercise these rights and responsibilities at the local, state, and national levels. The reading of primary source documents is a key feature of this course.","notes":"","epso":false,"ncaa":true,"eoc":false},{"id":"SS_UNITED_STATES_GOVERNMENT_AND_CIVICS_HONORS","code":"G04H12","name":"United States Government and Civics Honors","department":"Social Studies","level":"Honors","grades":[12],"credit":0.5,"satisfies":["ss.gov"],"prereqs":[{"any":["SS_UNITED_STATES_HISTORY_AND_GEOGRAPHY"],"concurrent":false}],"description":"A more rigorous approach to learning is associated with this course. Students will be expected to think, read and write critically, and analytically. Students enrolled in this Honors level course may be required to complete a portfolio as part of the course requirement. This is a semester course which focuses on the study of the purposes, principles, and practices of American government as established by the United States Constitution. Students will learn the structure and processes of the government of the state of Tennessee and local governments.","notes":"Teacher recommendation required","epso":false,"ncaa":true,"eoc":false},{"id":"SS_UNITED_STATES_GOVERNMENT_AND_POLITICS_AP","code":"G04H26","name":"United States Government and Politics AP","department":"Social Studies","level":"AP","grades":[12],"credit":0.5,"satisfies":["ss.gov"],"prereqs":[{"any":["SS_UNITED_STATES_HISTORY_AND_GEOGRAPHY"],"concurrent":false}],"description":"Rigorous and challenging classwork with a strong emphasis on extensive reading, writing and research skills is associated with this college-level course. AP level classes require more independent practice and outside reading than Honors level classes. Coursework requirements are guided by the College Board; therefore, students enrolled in this course may take the College Board Advanced Placement Exam in May. AP U.S.","notes":"Teacher recommendation required; Prerequisite as printed (not enforced): US History Honors or a minimum of one credit in a previous AP social studies class","epso":true,"ncaa":true,"eoc":false},{"id":"SS_ECONOMICS","code":"G04H13","name":"Economics","department":"Social Studies","level":"Standard","grades":[12],"credit":0.5,"satisfies":["ss.econ"],"prereqs":[{"any":["SS_UNITED_STATES_HISTORY_AND_GEOGRAPHY"],"concurrent":false}],"description":"This semester course examines the allocation of scarce resources and the economic reasoning used by government agencies and by people as consumers, producers, savers, investors, workers, and voters. Key elements of the course include the study of scarcity, supply and demand, market structures, the role of government, national income determination, money and the role of financial institutions, economic stabilization, and trade. Finally, students will examine key economic philosophies and economists who have and continue to influence economic decision making.","notes":"","epso":false,"ncaa":true,"eoc":false},{"id":"SS_ECONOMICS_HONORS","code":"G04H13","name":"Economics Honors","department":"Social Studies","level":"Honors","grades":[12],"credit":0.5,"satisfies":["ss.econ"],"prereqs":[{"any":["SS_UNITED_STATES_HISTORY_AND_GEOGRAPHY"],"concurrent":false}],"description":"A more rigorous approach to learning is associated with this course. Students will be expected to think, read and write critically and analytically. Students enrolled in this Honors level course may be required to complete a portfolio as part of the course requirement. This semester course examines the allocation of scarce resources and the economic reasoning used by government agencies and by people as consumers, producers, savers, investors, workers, and voters.","notes":"Teacher recommendation required","epso":false,"ncaa":true,"eoc":false},{"id":"SS_MICROECONOMICS_AP","code":"G04H24","name":"Microeconomics AP","department":"Social Studies","level":"AP","grades":[12],"credit":0.5,"satisfies":["ss.econ"],"prereqs":[{"any":["SS_EUROPEAN_HISTORY_AP","SS_UNITED_STATES_HISTORY_AP","SS_WORLD_HISTORY_AP"],"concurrent":false}],"description":"Rigorous and challenging classwork with a strong emphasis on extensive reading, writing and research skills is associated with this college-level course. AP level classes require more independent practice and outside reading than Honors level classes. Coursework requirements are guided by the College Board; therefore, students enrolled in this course may take the College Board Advanced Placement Exam in May. Microeconomics AP introduces students to the principles of economics that apply to the functions of individual economic decision-makers.","notes":"Teacher recommendation required","epso":true,"ncaa":true,"eoc":false},{"id":"SS_MACROECONOMICS_AP","code":"G04H25","name":"Macroeconomics AP","department":"Social Studies","level":"AP","grades":[12],"credit":0.5,"satisfies":["ss.econ"],"prereqs":[{"any":["SS_EUROPEAN_HISTORY_AP","SS_UNITED_STATES_HISTORY_AP","SS_WORLD_HISTORY_AP"],"concurrent":false}],"description":"Rigorous and challenging classwork with a strong emphasis on extensive reading, writing and research skills is associated with this college-level course. AP level classes require more independent practice and outside reading than Honors level classes. Coursework requirements are guided by the College Board; therefore, students enrolled in this course may take the College Board Advanced Placement Exam in May. Macroeconomics AP introduces students to the principles that apply to an economic system.","notes":"Teacher recommendation required","epso":true,"ncaa":true,"eoc":false},{"id":"SS_PERSONAL_FINANCE","code":"G04H36","name":"Personal Finance","department":"Social Studies","level":"Standard","grades":[10,11,12],"credit":0.5,"satisfies":["finance"],"prereqs":[],"description":"This course is recommended for juniors or seniors. It is a semester-long course designed to help students understand the impact of individual choices on career goals and future earnings potential. The curriculum covers essential topics such as financial responsibility and decision-making, educational pathways and career planning, budgeting and money management, credit and debt, risk management (including insurance and identity theft), and saving and investing.","notes":"","epso":false,"ncaa":false,"eoc":false},{"id":"SS_PSYCHOLOGY","code":"G04H15","name":"Psychology","department":"Social Studies","level":"Standard","grades":[10,11,12],"credit":0.5,"satisfies":["electivefocus"],"prereqs":[],"description":"Students will study the development of scientific attitudes and skills, including critical thinking, problem solving, and scientific methodology. Students will also examine the structure and function of the nervous system in humans, the processes of sensation and perception, lifespan development, and memory, including encoding, storage, and the retrieval of memory. Students will look at perspectives of abnormal behavior and categories of psychological disorders, including treatment thereof.","notes":"","epso":false,"ncaa":true,"eoc":false},{"id":"SS_PSYCHOLOGY_AP","code":"G04H28","name":"Psychology AP","department":"Social Studies","level":"AP","grades":[10,11,12],"credit":1,"satisfies":["electivefocus"],"prereqs":[],"description":"Rigorous and challenging classwork with a strong emphasis on extensive reading, writing and research skills is associated with this college-level course. AP level classes require more independent practice and outside reading than Honors level classes. Coursework requirements are guided by the College Board; therefore, students enrolled in this course may take the College Board Advanced Placement Exam in May. Psychology AP introduces students to the systematic and scientific study of human behavior and mental processes.","notes":"Teacher recommendation required","epso":true,"ncaa":true,"eoc":false},{"id":"SS_CONTEMPORARY_ISSUES","code":"G04H17","name":"Contemporary Issues","department":"Social Studies","level":"Standard","grades":[9,10,11,12],"credit":0.5,"satisfies":["electivefocus"],"prereqs":[],"description":"Students will use inquiry skills to examine the issues that impact the contemporary world. Included in the course will be analysis of the historical, cultural, economic, and geographic factors that have raised certain issues to levels of concern in our nation and around the globe. Students will engage in research and problem solving to better understand and assess significant current issues. Elective credit.","notes":"Credit may be up to 1","epso":false,"ncaa":true,"eoc":false},{"id":"SS_SOCIOLOGY","code":"G04H14","name":"Sociology","department":"Social Studies","level":"Standard","grades":[10,11,12],"credit":0.5,"satisfies":["electivefocus"],"prereqs":[],"description":"Students will explore the ways sociologists view society, and how they study the social world. In addition, students will examine culture, socialization, deviance and the structure and impact of institutions and organizations. Also, students will study selected social problems and how change impacts individuals and societies. Elective credit.","notes":"","epso":false,"ncaa":true,"eoc":false},{"id":"WL_FRENCH_I","code":"G24H21","name":"French I","department":"World Language","level":"Standard","grades":[9,10,11,12],"credit":1,"satisfies":["worldlang"],"prereqs":[],"description":"This course’s ACTFL Performance Goal of Novice High means that by the end of the course students will understand and express themselves in simple conversations on very familiar topics using a variety of words, phrases, very simple sentences and questions that have been highly practiced and memorized. Students will be able to handle very brief social interactions in everyday situations by asking and answering simple questions. Students will recognize pieces of information from texts and sometimes understand the main topic of what is read or said.","notes":"","epso":false,"ncaa":true,"eoc":false},{"id":"WL_FRENCH_I_HONORS","code":"G24H21","name":"French I Honors","department":"World Language","level":"Honors","grades":[9,10,11,12],"credit":1,"satisfies":["worldlang"],"prereqs":[],"description":"This course’s ACTFL Performance Goal of Intermediate Low means that by the end of the course students will understand and express herself and participate in simple​ 45 conversations on a few familiar topics using short sentences. Students will be able to handle brief social interactions in everyday situations by asking and answering simple questions. Students will begin to communicate about self, others, and everyday life in familiar situations. Students will recognize the main idea from texts and understand the main topic of what is read or said.","notes":"Teacher recommendation required","epso":false,"ncaa":true,"eoc":false},{"id":"WL_FRENCH_II","code":"G24H22","name":"French II","department":"World Language","level":"Standard","grades":[9,10,11,12],"credit":1,"satisfies":["worldlang"],"prereqs":[{"any":["WL_FRENCH_I","WL_FRENCH_I_HONORS"],"concurrent":false}],"description":"This course’s ACTFL Performance Goal of Intermediate Low means that by the end of the course students will likely understand the main idea and possibly some supporting facts in short passages on very familiar topics. Students will often need to read/hear the passage more than once and will usually need visual cues, context clues, and prior knowledge to help students understand what they read/hear. Students will be able to have a conversation about themselves and their lives.","notes":"","epso":false,"ncaa":true,"eoc":false},{"id":"WL_FRENCH_II_HONORS","code":"G24H22","name":"French II Honors","department":"World Language","level":"Honors","grades":[9,10,11,12],"credit":1,"satisfies":["worldlang"],"prereqs":[{"any":["WL_FRENCH_I","WL_FRENCH_I_HONORS"],"concurrent":false}],"description":"This course’s ACTFL Performance Goal of Intermediate Mid means that by the end of the course students will understand main ideas and supporting facts in short passages on familiar topics, though students may need to read/hear complex passages more than once. Students will rely on context clues or prior knowledge to help them understand what they read/hear. Students will be able to maintain conversations about themselves and their lives. Students will also use language to express their own thoughts and get the things that they need while being able to connect some longer sentences together.","notes":"Teacher recommendation required","epso":false,"ncaa":true,"eoc":false},{"id":"WL_FRENCH_III_HONORS","code":"G24H23","name":"French III Honors","department":"World Language","level":"Honors","grades":[10,11,12],"credit":1,"satisfies":["worldlang"],"prereqs":[{"any":["WL_FRENCH_II","WL_FRENCH_II_HONORS"],"concurrent":false}],"description":"This course’s ACTFL Performance Goal of Intermediate Mid means that by the end of the course students will be able to successfully handle a variety of uncomplicated communicative tasks in straightforward social situations. Conversation is limited to those predictable and concrete exchanges necessary for survival in the target culture. Students will be able to express personal meaning by creating with the language, in part by combining and recombining known elements and conversational input to produce responses typically consisting of sentences and some strings of sentences.","notes":"Teacher recommendation required","epso":false,"ncaa":true,"eoc":false},{"id":"WL_FRENCH_IV_HONORS","code":"G24H24","name":"French IV Honors","department":"World Language","level":"Honors","grades":[11,12],"credit":1,"satisfies":["worldlang"],"prereqs":[{"any":["WL_FRENCH_III_HONORS"],"concurrent":false}],"description":"This course’s ACTFL Performance Goal of Intermediate High means that by the end of the course students will be able to generally be understood by native speakers unaccustomed to dealing with non-natives. Intermediate High speakers can narrate and describe in all major time frames using connected discourse of paragraph length, but not all the time. Students will be able to successfully handle uncomplicated tasks and social situations requiring an exchange of basic information related to their work, school, recreation, particular interests, and areas of competence.","notes":"Teacher recommendation required","epso":false,"ncaa":true,"eoc":false},{"id":"WL_SPANISH_I","code":"G24H04","name":"Spanish I","department":"World Language","level":"Standard","grades":[9,10,11,12],"credit":1,"satisfies":["worldlang"],"prereqs":[],"description":"This course’s ACTFL Performance Goal of Novice High means that by the end of the course students will understand and express themselves in simple conversations on very familiar topics using a variety of words, phrases, very simple sentences and questions that have been highly practiced and memorized. Students will be able to handle very brief social interactions in everyday situations by asking and answering simple questions. Students will recognize pieces of information from texts and sometimes understand the main topic of what is read or said.","notes":"","epso":false,"ncaa":true,"eoc":false},{"id":"WL_SPANISH_I_HONORS","code":"G24H04","name":"Spanish I Honors","department":"World Language","level":"Honors","grades":[9,10,11,12],"credit":1,"satisfies":["worldlang"],"prereqs":[],"description":"This course’s ACTFL Performance Goal of Intermediate Low means that by the end of the course students will understand and express herself and participate in simple conversations on several familiar topics using short sentences. Students will be able to handle brief social interactions in everyday situations by asking and answering simple questions. Students will begin to communicate about self, others, and everyday life in familiar situations. Students will recognize the main idea from texts and understand the main topic of what is read or said.","notes":"Teacher recommendation required","epso":false,"ncaa":true,"eoc":false},{"id":"WL_SPANISH_FOR_HERITAGE_SPEAKERS_I","code":"G24H60","name":"Spanish for Heritage Speakers I","department":"World Language","level":"Standard","grades":[9,10,11,12],"credit":1,"satisfies":["worldlang"],"prereqs":[],"description":"Esta clase está diseñada para estudiantes cuya lengua materna es el español. El estudiante desarrollará su aptitud del hablar, el escuchar, la lectura y la escritura en español a través del estudio de la historia, cultura y literatura de los países latinos. Esta clase le da la oportunidad de estudiar el idioma español en la misma manera que los anglohablantes estudian inglés. This class is designed for the student whose first language is Spanish.","notes":"","epso":false,"ncaa":true,"eoc":false},{"id":"WL_SPANISH_II","code":"G24H05","name":"Spanish II","department":"World Language","level":"Standard","grades":[9,10,11,12],"credit":1,"satisfies":["worldlang"],"prereqs":[{"any":["WL_SPANISH_I","WL_SPANISH_I_HONORS"],"concurrent":false}],"description":"This course’s ACTFL Performance Goal of Intermediate Low means that by the end of the course students will likely understand the main idea and possibly some supporting facts in short passages on very familiar topics. Students will often need to read/hear the passage more than once and will usually need visual cues, context clues, and prior knowledge to help students understand what they read/hear.","notes":"","epso":false,"ncaa":true,"eoc":false},{"id":"WL_SPANISH_II_HONORS","code":"G24H05","name":"Spanish II Honors","department":"World Language","level":"Honors","grades":[9,10,11,12],"credit":1,"satisfies":["worldlang"],"prereqs":[{"any":["WL_SPANISH_I","WL_SPANISH_I_HONORS"],"concurrent":false}],"description":"This course’s ACTFL Performance Goal of Intermediate Mid means that by the end of the course students will understand main ideas and supporting facts in short passages on familiar topics, though students may need to read/hear complex passages more than once. Students will rely on context clues or prior knowledge to help them understand what they read/hear. Students will be able to maintain conversations about themselves and their lives. Students will also use language to express their own thoughts and get the things that they need while being able to connect some longer sentences together.","notes":"Teacher recommendation required","epso":false,"ncaa":true,"eoc":false},{"id":"WL_SPANISH_FOR_HERITAGE_SPEAKERS_II","code":"G24H61","name":"Spanish for Heritage Speakers II","department":"World Language","level":"Standard","grades":[9,10,11,12],"credit":1,"satisfies":["worldlang"],"prereqs":[{"any":["WL_SPANISH_FOR_HERITAGE_SPEAKERS_I"],"concurrent":false}],"description":"Esta clase está diseñada para estudiantes cuya lengua materna es el español. El estudiante desarrollará una aplicación y práctica más profunda y elaborada del hablar, el escuchar, la lectura y la escritura en español a través del estudio de la historia, cultura y literatura de los países latinos. Esta clase le da la oportunidad de estudiar el idioma español en la misma manera que los anglohablantes estudian inglés. This class is designed for the student whose first language is Spanish.","notes":"","epso":false,"ncaa":true,"eoc":false},{"id":"WL_SPANISH_III_HONORS","code":"G24H06","name":"Spanish III Honors","department":"World Language","level":"Honors","grades":[10,11,12],"credit":1,"satisfies":["worldlang"],"prereqs":[{"any":["WL_SPANISH_II","WL_SPANISH_II_HONORS"],"concurrent":false}],"description":"This course’s ACTFL Performance Goal of Intermediate Mid means that by the end of the course students will be able to successfully handle a variety of uncomplicated communicative tasks in straightforward social situations. Conversation is limited to those predictable and concrete exchanges necessary for survival in the target culture. Students will be able to express personal meaning by creating with the language, in part by combining and recombining known elements and conversational input to produce responses typically consisting of sentences and some strings of sentences.","notes":"Teacher recommendation required","epso":false,"ncaa":true,"eoc":false},{"id":"WL_SPANISH_IV_HONORS","code":"G24H07","name":"Spanish IV Honors","department":"World Language","level":"Honors","grades":[11,12],"credit":1,"satisfies":["worldlang"],"prereqs":[{"any":["WL_SPANISH_III","WL_SPANISH_III_HONORS"],"concurrent":false}],"description":"This course’s ACTFL Performance Goal of Intermediate High means that by the end of the course students will be able to generally be understood by native speakers unaccustomed to dealing with non-natives. Intermediate High speakers can narrate and describe in all major time frames using connected discourse of paragraph length, but not all the time. Students will be able to successfully handle uncomplicated tasks and social situations requiring an exchange of basic information related to their work, school, recreation, particular interests, and areas of competence.","notes":"Teacher recommendation required","epso":false,"ncaa":true,"eoc":false},{"id":"WL_SPANISH_LANGUAGE_AND_CULTURE_AP","code":"G24H08","name":"Spanish Language and Culture AP","department":"World Language","level":"AP","grades":[11,12],"credit":1,"satisfies":["worldlang"],"prereqs":[{"any":["WL_SPANISH_III","WL_SPANISH_III_HONORS","WL_SPANISH_IV_HONORS"],"concurrent":false}],"description":"Spanish Language and Culture AP is a college level course designed for students who have demonstrated a mastery of advanced conversation and language concepts. Students engage in activities that encourage the development of all four language skills (listening, speaking, reading and writing) through exposure to a variety of authentic text and audio sources based on the themes dictated by the College Board. All students will take the AP Exam. Students will participate in regular performance assessments.","notes":"Teacher recommendation required","epso":true,"ncaa":true,"eoc":false},{"id":"PE_LIFETIME_WELLNESS","code":"G08H02","name":"Lifetime Wellness","department":"Physical Education","level":"Standard","grades":[9,10,11,12],"credit":1,"satisfies":["wellness"],"prereqs":[],"description":"This course is required for graduation and recommended for grade 9. Lifetime Wellness is a course that develops positive concepts toward an active, healthy lifestyle. Physical fitness activities such as aerobics, line-dancing, volleyball, badminton, table tennis, basketball, indoor/outdoor fitness games, etc. comprise units in the class structure. Classroom units covering disease prevention, mental health, stress management, nutrition, drug/alcohol/ tobacco prevention, first aid/CPR, and human growth and development are included in this course.","notes":"Confirm which PE/Wellness requirement this meets (guide allows 3 PE/Wellness credits total)","epso":false,"ncaa":false,"eoc":false},{"id":"PE_PHYSICAL_EDUCATION_I","code":"G08H00","name":"Physical Education I","department":"Physical Education","level":"Standard","grades":[9,10,11,12],"credit":1,"satisfies":["pe"],"prereqs":[],"description":"This course is designed to introduce the students to the fundamentals of specific individual and team sports which include skills, rules, and game strategy. There will also be noncompetitive, educational gymnastics, dance, weightlifting, aerobics, and anaerobic training.","notes":"Confirm which PE/Wellness requirement this meets (guide allows 3 PE/Wellness credits total)","epso":false,"ncaa":false,"eoc":false},{"id":"PE_WEIGHTS_AND_KINESIOLOGY_I","code":"Y08H11","name":"Weights and Kinesiology I","department":"Physical Education","level":"Standard","grades":[9,10,11,12],"credit":0.5,"satisfies":["pe"],"prereqs":[],"description":"The course includes intense weight training at a high tempo that will progressively increase difficulty. Included in this class will be power training exercises, stretching, calisthenics, running for speed development, stations to develop quickness, and plyometrics. Proper techniques and safety will be emphasized to prevent injuries. The course will also teach the location and movement provided by the major muscle groups.","notes":"Credit may be up to 1; Confirm which PE/Wellness requirement this meets (guide allows 3 PE/Wellness credits total)","epso":false,"ncaa":false,"eoc":false},{"id":"FA_INTRODUCTION_TO_DANCE_TECHNIQUES","code":"G05H20","name":"Introduction to Dance Techniques","department":"Fine Arts","level":"Standard","grades":[9,10,11,12],"credit":0.5,"satisfies":["finearts","electivefocus"],"prereqs":[],"description":"This course is an initial exploration of techniques and theoretical concepts used in various dance styles. It includes developing and/or increasing awareness of proper body alignment, balance and coordination within the context of various musical meters. Basic positions and fundamental barre exercises are emphasized. The dance vocabulary is used for a thorough understanding of all terms and positions of the body. Basic step combinations in the center of the floor are introduced. After-school and/or evening rehearsals and performances may be required.","notes":"Credit may be up to 1","epso":false,"ncaa":false,"eoc":false},{"id":"FA_INTERMEDIATE_DANCE","code":"G05H21","name":"Intermediate Dance","department":"Fine Arts","level":"Standard","grades":[9,10,11,12],"credit":0.5,"satisfies":["finearts","electivefocus"],"prereqs":[],"description":"This class is a continuing exploration of techniques and theoretical concepts of various dance styles, with emphasis on precision of line and exactness of movement. Introduction of pointe work is introduced, if appropriate. After- school and/or evening rehearsals and performances may be required.","notes":"Teacher recommendation required; Credit may be up to 3; Prerequisite as printed (not enforced): Introduction to Dance or audition","epso":false,"ncaa":false,"eoc":false},{"id":"FA_VISUAL_ART_II_2D","code":"G05H09","name":"Visual Art II: 2D","department":"Fine Arts","level":"Standard","grades":[9,10,11,12],"credit":1,"satisfies":["finearts","electivefocus"],"prereqs":[],"description":"Students will focus their art studies on 2-dimensional media, most specifically observational drawing and painting. Projects will also include printmaking and mixed media. Art History, note of a portfolio by the teacher) Teacher Recommendation Needed: No Minimum Credit: 1.0 Maximum Credit:1.0 NCAA Approved: No","notes":"","epso":false,"ncaa":false,"eoc":false},{"id":"FA_VISUAL_ART_II_3D","code":"G05H09","name":"Visual Art II: 3D","department":"Fine Arts","level":"Standard","grades":[9,10,11,12],"credit":1,"satisfies":["finearts","electivefocus"],"prereqs":[{"any":["FA_VISUAL_ART_I"],"concurrent":false}],"description":"Students will focus their art studies on 3-dimensional media. Students will create both functional and decorative pieces. Projects may also include (but are not limited to) ceramics, plaster, plaster craft, wire, assemblage, kinetic sculpture, recycled materials, mosaic, wood carving, and relief sculpture. Art History, note taking, reading, writing, art criticism, and maintaining a productive sketchbook are also part of the curriculum.","notes":"","epso":false,"ncaa":false,"eoc":false},{"id":"FA_VISUAL_ART_III_2D","code":"G05H10","name":"Visual Art III: 2D","department":"Fine Arts","level":"Standard","grades":[10,11,12],"credit":1,"satisfies":["finearts","electivefocus"],"prereqs":[{"any":["FA_VISUAL_ART_I"],"concurrent":false},{"any":["FA_VISUAL_ART_II_2D"],"concurrent":false}],"description":"Students will continue their study of and refine their skills in observational drawing and painting, while also creating prints and mixed media works. Independent study will become more critical during the second semester, as students prepare for AP Studio Art. Art History, note taking, reading writing, art criticism, and maintaining a productive sketchbook are also part of the curriculum.","notes":"","epso":false,"ncaa":false,"eoc":false},{"id":"FA_STUDIO_ART_DRAWING_AP","code":"G05H24","name":"Studio Art Drawing AP","department":"Fine Arts","level":"AP","grades":[11,12],"credit":1,"satisfies":["finearts","electivefocus"],"prereqs":[{"any":["FA_VISUAL_ART_I"],"concurrent":false},{"any":["FA_VISUAL_ART_III_2D","FA_VISUAL_ART_III_2D_HONORS"],"concurrent":false}],"description":"The AP Studio Art program is for highly motivated students who are ready for the challenge of college-level work. Pencil, charcoal, conté, colored pencil, oil pastel, ink, and paint are some examples of media which may be explored. As part of the curriculum, extra studio hours outside of the school day are required. Students must complete a portfolio of work with no less than 24 high quality pieces. This portfolio is evaluated and scored by national AP examiners in May. The scope of the course follows the topics listed in the College Board Advanced Placement Course Description.","notes":"Teacher recommendation required","epso":true,"ncaa":false,"eoc":false},{"id":"FA_MULTI_AGE_INSTRUMENTAL_MUSIC_BAND_ORCHESTRA","code":"G05X14","name":"Multi-Age Instrumental Music (Band/Orchestra)","department":"Fine Arts","level":"Standard","grades":[9,10,11,12],"credit":1,"satisfies":["finearts","electivefocus"],"prereqs":[],"description":"Multi-age instrumental music classes are band, strings and orchestra classes offered in 9th-12th grade. Students will learn technical skills on a selected instrument, music theory and history as well as participating in public performances throughout the year. Specific courses vary from school to school based on student enrollment. Examples include, but are not limited to symphonic band, concert band, wind ensemble, percussion, orchestra, guitar and piano. Some classes may include a prerequisite, teacher recommendation and/or audition.","notes":"Credit may be up to 4; Prerequisite as printed (not enforced): Course Dependent","epso":false,"ncaa":false,"eoc":false},{"id":"FA_MULTI_AGE_INSTRUMENTAL_MUSIC_BAND_ORCHESTRA_HONORS","code":"G05X14","name":"Multi-Age Instrumental Music (Band/Orchestra) Honors","department":"Fine Arts","level":"Honors","grades":[9,10,11,12],"credit":1,"satisfies":["finearts","electivefocus"],"prereqs":[],"description":"Honors instrumental music classes, top performing band, strings, and orchestra classes are offered in 9th-12th grade. Students will study traditional band or orchestra instruments at a high level. They will learn music theory and history as applied to the music being studied as well as participating in several public performances throughout the year. Students will be expected to perform in large and small ensembles. Students will be expected to learn chamber or solo music independently. Expect commitment outside of class time to practice and performance.","notes":"Credit may be up to 4; Prerequisite as printed (not enforced): Course Dependent","epso":false,"ncaa":false,"eoc":false},{"id":"FA_MUSIC_THEORY","code":"G05H44","name":"Music Theory","department":"Fine Arts","level":"Standard","grades":[9,10,11,12],"credit":0.5,"satisfies":["finearts","electivefocus"],"prereqs":[],"description":"This course is for students with a particular interest and aptitude in music. Emphasis is on an in-depth study of music fundamentals through ear training and reading and writing music. Musical analysis as well as simple rhythmic, melodic, and harmonic dictation will be explored.","notes":"Credit may be up to 1","epso":false,"ncaa":false,"eoc":false},{"id":"FA_MUSIC_THEORY_AP","code":"G05H26","name":"Music Theory AP","department":"Fine Arts","level":"AP","grades":[11,12],"credit":1,"satisfies":["finearts","electivefocus"],"prereqs":[],"description":"This course is designed for music students who are interested in pursuing a career in music and/or majoring in music. The course will include the study of music vocabulary, chord structure, key signatures, harmony, complex rhythms and other music reading skills in preparation for college music theory. This music theory course will also emphasize the students’ development in the areas of sight singing and ear training. Students will be learning skills that are taught at a college freshman level of music theory.","notes":"Teacher recommendation required","epso":true,"ncaa":false,"eoc":false},{"id":"FA_MULTI_AGE_VOCAL_MUSIC_CHORUS_CHOIR","code":"G05X12","name":"Multi-Age Vocal Music (Chorus/Choir)","department":"Fine Arts","level":"Standard","grades":[9,10,11,12],"credit":1,"satisfies":["finearts","electivefocus"],"prereqs":[],"description":"Multi-age vocal music classes are traditional choral ensembles offered in 9th-12th grade. Students will study proper vocal techniques and choral singing, music theory and history as well as participating in public performances throughout the year. Specific courses vary from school to school based on student enrollment. Examples include, but are not limited to: Concert Choir, Men’s Choir, Women’s Choir, Chamber Choir and Jazz Choir. Some classes may include a prerequisite, teacher recommendation, and/or audition.","notes":"Credit may be up to 4; Prerequisite as printed (not enforced): Course Dependent","epso":false,"ncaa":false,"eoc":false},{"id":"FA_THEATER_ARTS_I","code":"G05H16","name":"Theater Arts I","department":"Fine Arts","level":"Standard","grades":[9,10,11,12],"credit":1,"satisfies":["finearts","electivefocus"],"prereqs":[],"description":"This course is an overview of all aspects of theatre. Students will study both performance and non-performance facets of theatre including theater terminology, introductory theatre history, fundamentals of acting, and acting styles. Students will gain experience in speaking and acting. Time outside of class is required to fulfill the obligations of this course.","notes":"","epso":false,"ncaa":false,"eoc":false},{"id":"FA_THEATER_ARTS_II","code":"G05H17","name":"Theater Arts II","department":"Fine Arts","level":"Standard","grades":[10,11,12],"credit":1,"satisfies":["finearts","electivefocus"],"prereqs":[{"any":["FA_THEATER_ARTS_I"],"concurrent":false}],"description":"In this course, students will focus on the history of theatre and a more in-depth acting experience. They will study and perform one-act plays, as well as various scenes from the different historical genres. The course will emphasize the process of acting: auditions, rehearsals, relaxation techniques, dialogue, character analysis, and the production process. Time outside of class is required to fulfill the obligations of this course.","notes":"Teacher recommendation required","epso":false,"ncaa":false,"eoc":false},{"id":"FA_THEATER_ARTS_III_HONORS","code":"G05H18","name":"Theater Arts III Honors","department":"Fine Arts","level":"Honors","grades":[11,12],"credit":1,"satisfies":["finearts","electivefocus"],"prereqs":[{"any":["FA_THEATER_ARTS_I"],"concurrent":false},{"any":["FA_THEATER_ARTS_II"],"concurrent":false}],"description":"In this course, students will study more in depth the various acting techniques and exercises available to professional actors. Students will take a more involved role in production with attention to directing, theatre safety, polishing acting skills, resumes, and all of the other aspects of theatre that support a full-scale performance. Considerable time outside of class is required to fulfill the obligations of this course.","notes":"Teacher recommendation required","epso":false,"ncaa":false,"eoc":false},{"id":"FA_THEATER_IV_HONORS","code":"G05H19","name":"Theater IV Honors","department":"Fine Arts","level":"Honors","grades":[12],"credit":1,"satisfies":["finearts","electivefocus"],"prereqs":[{"any":["FA_THEATER_ARTS_I"],"concurrent":false},{"any":["FA_THEATER_ARTS_II"],"concurrent":false},{"any":["FA_THEATER_ARTS_III_HONORS"],"concurrent":false}],"description":"Theatre IV is designed as preparation for students who are seriously considering a post- secondary study of theatre or a career involving theatre. Students will have intense training in play analysis and do in-depth study of theatre. They will assume leadership in directing and responsibility for technical and production aspects of theatre in presentations. Considerable time outside of class is required to fulfill the obligations of this course.","notes":"Teacher recommendation required","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_DIGITAL_ARTS_AND_DESIGN_I","code":"C11H06","name":"Digital Arts and Design I","department":"CTE","level":"Standard","grades":[9,10,11,12],"credit":1,"satisfies":["finearts"],"prereqs":[],"description":"Digital Arts and Design I is an introductory course for students interested in digital art, photography and design professions. Students will develop a strong understanding of the principles and elements of design and the design process. Hands-on projects provide extensive opportunities that focus on actual design and photography assignments. A state-of-the-art computer lab is provided with iMacs using Adobe software. There is an emphasis on employability skills, leadership, teamwork, and problem-solving skills that encourage higher-order thinking.","notes":"Career cluster: Arts, A/V Technology & Communications; Counts toward a graduation requirement by WCS/TSBE 3.103 CTE substitution; a course approved for more than one requirement may be used for only one","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_DIGITAL_ARTS_AND_DESIGN_II","code":"C11H05","name":"Digital Arts and Design II","department":"CTE","level":"Standard","grades":[10,11,12],"credit":1,"satisfies":["electivefocus"],"prereqs":[{"any":["CTE_DIGITAL_ARTS_AND_DESIGN_I"],"concurrent":false}],"description":"Digital Arts and Design II is a course that further develops skills and knowledge acquired in the introductory Digital Arts and Design I course. Upon completion of this course, proficient students will be able to perform more advanced software operations to create photographs, illustrations, and various types of designs of increasing complexity. With increasing knowledge and skill, students work toward developing a professional portfolio, which they will carry with them throughout the full sequence of courses.","notes":"Career cluster: Arts, A/V Technology & Communications","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_DIGITAL_ARTS_AND_DESIGN_III","code":"C11H16","name":"Digital Arts and Design III","department":"CTE","level":"Standard","grades":[10,11,12],"credit":1,"satisfies":["electivefocus"],"prereqs":[{"any":["CTE_DIGITAL_ARTS_AND_DESIGN_I"],"concurrent":false},{"any":["CTE_DIGITAL_ARTS_AND_DESIGN_II"],"concurrent":false}],"description":"Digital Arts and Design III is the third course in the Digital Arts and Design program of study. Students at this level may choose to focus on photography or a particular field in design. Applying design skills developed in prior courses, students will expand their creative and critical thinking skills to create comprehensive projects in design, photography, illustration, interactive design, multimedia and three-dimensional design. Students will utilize research techniques to plan and enhance project outcomes.","notes":"Credit may be up to 2; Career cluster: Arts, A/V Technology & Communications","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_A_V_PRODUCTION_I","code":"C11H01","name":"A/V Production I","department":"CTE","level":"Standard","grades":[9,10,11,12],"credit":1,"satisfies":["electivefocus"],"prereqs":[],"description":"Students learn to safely and appropriately produce professional programming for film, television, and news media; work in teams with professional cameras, audio, lighting and switching equipment; learn the editing software that is used to make movies, television shows, commercials, movie trailers and web programs; produce original programming and cover live events for county television and websites. A lab fee is requested.","notes":"Career cluster: Arts, A/V Technology & Communications","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_A_V_PRODUCTION_II","code":"C11H02","name":"A/V Production II","department":"CTE","level":"Standard","grades":[10,11,12],"credit":1,"satisfies":["electivefocus"],"prereqs":[],"description":"Students work with classmates to form a studio team that extends programming artistically and technically, work in self-directed teams to create and produce original content, build on knowledge and skills from Television and Film Production I, produce original programming and cover live events for the school, county television and websites. Potential opportunities exist to compete for summer internships in media production and opportunities to apply for Governor’s School for the Arts. A lab fee is requested.","notes":"Teacher recommendation required; Prerequisite as printed (not enforced): Television and Film Production/AV Production I; Career cluster: Arts, A/V Technology & Communications","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_A_V_PRODUCTION_III","code":"C11H03","name":"A/V Production III","department":"CTE","level":"Standard","grades":[11,12],"credit":1,"satisfies":["electivefocus"],"prereqs":[],"description":"Students manage all aspects of the studio workflow and TV/Film production teams; lead “development through completion‟ of original programming and live event coverage for the school, county television and websites; build on knowledge and skills from Television and Film Production II; and develop a portfolio and demo reel/ resume for educational or career opportunities. Potential opportunities exist to compete for summer internships in media production. A lab fee is requested.","notes":"Teacher recommendation required; Credit may be up to 2; Prerequisite as printed (not enforced): Television and Film Production/AV Production I and II; Career cluster: Arts, A/V Technology & Communications","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_ACCOUNTING_I","code":"C29H00","name":"Accounting I","department":"CTE","level":"Standard","grades":[9,10,11,12],"credit":0.5,"satisfies":["electivefocus"],"prereqs":[],"description":"Accounting I introduces concepts and principles based on a double-entry system of maintaining the electronic and/or manual financial records for a sole proprietorship, partnership, and corporation. It includes analyzing business transactions, journalizing, posting, and preparing worksheets and financial statements. Accounting I provides college-bound students with an excellent foundation for business related majors.","notes":"Credit may be up to 1; Career cluster: Business Management & Administration (also listed under: Finance)","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_INTRODUCTION_TO_BUSINESS_MARKETING","code":"C12H26","name":"Introduction to Business & Marketing","department":"CTE","level":"Standard","grades":[9,10],"credit":0.5,"satisfies":["electivefocus"],"prereqs":[],"description":"This course is designed to develop computer technology skills. Students will use a variety of computer software and hardware tools and features of an electronic information network. Students will explore the social, business, and ethical issues of using computer technology. The students will develop skills that will assist them with efficient production of word processing documents, spreadsheets, databases, and presentations.","notes":"Credit may be up to 1; Career cluster: Business Management & Administration (also listed under: Finance)","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_EARLY_CHILDHOOD_EDUCATION_CAREERS_I","code":"C32H06","name":"Early Childhood Education Careers I","department":"CTE","level":"Standard","grades":[9,10,11,12],"credit":1,"satisfies":["electivefocus"],"prereqs":[],"description":"This class prepares students for gainful employment and/or entry into post-secondary education. Content provides students with a foundation in the concepts of child development theory and affords them the opportunity to integrate knowledge, skills, and practices required for careers in early childhood education and related services.","notes":"Career cluster: Education & Training","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_EARLY_CHILDHOOD_EDUCATION_CAREERS_II","code":"C32H07","name":"Early Childhood Education Careers II","department":"CTE","level":"Standard","grades":[10,11,12],"credit":1,"satisfies":["electivefocus"],"prereqs":[{"any":["CTE_EARLY_CHILDHOOD_EDUCATION_CAREERS_I"],"concurrent":false}],"description":"This course prepares students for gainful employment and/or entry into post-secondary education. The content provides students with the opportunity to apply child development theory, develop and implement learning activities for young children, and integrate knowledge, skills, and practices required for careers in early childhood education and related services. Laboratory experiences offer school-based learning opportunities.","notes":"Credit may be up to 2; Career cluster: Education & Training","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_EARLY_CHILDHOOD_EDUCATION_CAREERS_III","code":"C32H08","name":"Early Childhood Education Careers III","department":"CTE","level":"Standard","grades":[11,12],"credit":1,"satisfies":["electivefocus"],"prereqs":[{"any":["CTE_EARLY_CHILDHOOD_EDUCATION_CAREERS_I"],"concurrent":false},{"any":["CTE_EARLY_CHILDHOOD_EDUCATION_CAREERS_II"],"concurrent":false}],"description":"Early Childhood Education Careers III (ECEC) serves as a capstone course and further prepares students for employment and/or entry into postsecondary education in the early childhood education and services industry. Students will obtain knowledge and skills in administration and management. They will explore areas related to instruction and services for children with special needs. Students will apply the early childhood education knowledge and skills, including recommended participation in a cooperative education experience.","notes":"Credit may be up to 2; Career cluster: Education & Training","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_CULINARY_ARTS_I","code":"C16H06","name":"Culinary Arts I","department":"CTE","level":"Standard","grades":[9,10,11],"credit":1,"satisfies":["electivefocus"],"prereqs":[],"description":"Culinary Arts I is an introductory program of study designed to provide students with a fundamental knowledge of professional food service. Objectives focus on safety and sanitation competencies, manual knife skills, quantity, food preparation and storage requirements, weights, measures, conversions, nutrition, menu planning, business math, controlling food costs and workability skills. Additionally, students will gain experience working in a professional kitchen environment while preparing a variety of food products.","notes":"Career cluster: Hospitality & Tourism","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_CULINARY_ARTS_II","code":"C16H07","name":"Culinary Arts II","department":"CTE","level":"Standard","grades":[10,11],"credit":1,"satisfies":["electivefocus"],"prereqs":[{"any":["CTE_CULINARY_ARTS_I"],"concurrent":false}],"description":"Culinary Arts II is a 2-hour course that is an extension of Culinary Arts I, and students will continue to follow guidelines and apply skills as they relate to standards set by the foodservice industry. As students explore the culinary history, food service trends, the art of service, hospitality, lodging and tourism industries, menu design, marketing, purchasing, inventory control, basic accounting practices and cuisines of the world. Students will prepare a full range of items on the menu that include potatoes and grains, meat, poultry, seafood, stocks, soups, sauces and advanced desserts.","notes":"Credit may be up to 2; Career cluster: Hospitality & Tourism","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_CULINARY_ARTS_III","code":"C16H08","name":"Culinary Arts III","department":"CTE","level":"Standard","grades":[11,12],"credit":1,"satisfies":["electivefocus"],"prereqs":[{"any":["CTE_CULINARY_ARTS_I"],"concurrent":false},{"any":["CTE_CULINARY_ARTS_II"],"concurrent":false}],"description":"Culinary Arts III is the third level of Culinary Arts and it serves as a capstone course. It, too, prepares students for gainful employment and/or entry into post-secondary education in the food production and service industry. Content provides students with the opportunity to apply the marketable culinary arts skills that they have acquired by assuming increasingly responsible positions, including participation in the school's in-house restaurant and local cooperative education internships.","notes":"Credit may be up to 2; Career cluster: Hospitality & Tourism","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_COMPUTER_SCIENCE","code":"G10H06","name":"Computer Science","department":"CTE","level":"Standard","grades":[9,10,11,12],"credit":1,"satisfies":["compsci","science.lab","math.fourth"],"prereqs":[],"description":"Computer Science introduces students to essential computational thinking skills and digital literacy required for success in the modern workforce. Students explore fundamental programming concepts, algorithm design, data analysis, and problem-solving strategies using various technological tools. The course emphasizes practical applications across multiple subject areas, helping students understand how computer science enhances learning and real-world problem solving.","notes":"Career cluster: Information Technology","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_COMPUTER_SCIENCE_AP_COMP_SCI_A","code":"G02H45","name":"Computer Science AP Comp Sci A","department":"CTE","level":"AP","grades":[11,12],"credit":1,"satisfies":["math.fourth","compsci","science.lab"],"prereqs":[],"description":"Computer Science AP emphasizes object-oriented programming methodology with an emphasis on problem solving and algorithm development and is meant to be the equivalent of a first-semester course in computer science at the college level. It also includes the study of data structures and abstraction. Students need to have a good foundation in programming and/or have been successful in a higher-level math class. Prior enrollment in Programming and Logic I and II is recommended for students who plan to complete an Information Technology program of studies.","notes":"Career cluster: Information Technology; Counts toward a graduation requirement by WCS/TSBE 3.103 CTE substitution; a course approved for more than one requirement may be used for only one","epso":true,"ncaa":false,"eoc":false},{"id":"CTE_MARKETING_AND_MANAGEMENT_I_PRINCIPLES","code":"C31H00","name":"Marketing and Management I: Principles","department":"CTE","level":"Standard","grades":[9,10,11,12],"credit":1,"satisfies":["ss.econ"],"prereqs":[],"description":"Marketing and Management Principles I focuses on the study of marketing concepts and their practical application. Students will examine the risks and challenges marketers face to establish a competitive edge. Subject matters include economics, marketing foundations/functions and human resource leadership development. Skills in communication, mathematics, economics, and psychology are reinforced in this course. DECA membership is required.","notes":"Career cluster: Marketing; Counts toward a graduation requirement by WCS/TSBE 3.103 CTE substitution; a course approved for more than one requirement may be used for only one","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_MARKETING_AND_MANAGEMENT_II","code":"C31H01","name":"Marketing and Management II","department":"CTE","level":"Standard","grades":[10,11,12],"credit":1,"satisfies":["electivefocus"],"prereqs":[{"any":["CTE_MARKETING_AND_MANAGEMENT_I_PRINCIPLES"],"concurrent":false}],"description":"Advanced Strategies - This course is a study of marketing concepts and principles used in management. Students will examine challenges, responsibilities and risks managers face in today's workplace. Subject matters include finance, entrepreneurship, risk management, marketing information systems, purchasing, human resource skills, and leadership development.","notes":"Career cluster: Marketing","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_ENTREPRENEURSHIP","code":"C31H05","name":"Entrepreneurship","department":"CTE","level":"Standard","grades":[11,12],"credit":1,"satisfies":["ss.econ","finance"],"prereqs":[{"any":["CTE_MARKETING_AND_MANAGEMENT_I_PRINCIPLES"],"concurrent":false}],"description":"Entrepreneurship is an applied knowledge course that begins with the discovery process of generating new business ideas. Students research local, national, and international social and economic trends and analyze the feasibility of their own proposed businesses, both from a market demand and revenue-producing standpoint. Based on their entrepreneurial endeavors, students will prepare, write, and revise a business plan.","notes":"Career cluster: Marketing; Counts toward a graduation requirement by WCS/TSBE 3.103 CTE substitution; a course approved for more than one requirement may be used for only one","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_EVENT_PLANNING_AND_MANAGEMENT","code":"C16H12","name":"Event Planning and Management","department":"CTE","level":"Standard","grades":[11,12],"credit":1,"satisfies":["electivefocus"],"prereqs":[{"any":["CTE_MARKETING_AND_MANAGEMENT_I_PRINCIPLES"],"concurrent":false}],"description":"Event Planning and Management is designed to be a project based, capstone experience in which students research, prepare, deliver, and reflect upon an original event for a community organization, business, or non-profit. Upon completion of this course, proficient students will further refine leadership, teamwork, and management skills acquired in previous courses and apply them through application in a practicum setting.","notes":"Career cluster: Marketing","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_HEALTH_SCIENCE_EDUCATION","code":"C14H14","name":"Health Science Education","department":"CTE","level":"Standard","grades":[9,10],"credit":1,"satisfies":["electivefocus"],"prereqs":[],"description":"Health Science Education introduces students to health careers, career success, safety measures, growth and development, body systems, basic anatomy and physiology, CPR/first aid, and environmental and community health. This overview is designed to help students look at health care from a provider perspective and to help students choose a specific area of focus. This course serves as a foundation for all health science courses.","notes":"Career cluster: Health Science","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_REHABILITATION_CAREERS_HONORS","code":"C14H08","name":"Rehabilitation Careers Honors","department":"CTE","level":"Honors","grades":[10,11,12],"credit":1,"satisfies":["electivefocus"],"prereqs":[{"any":["CTE_HEALTH_SCIENCE_EDUCATION"],"concurrent":false}],"description":"This course will focus on enabling the person to live to the fullest capacity possible. Units will include sports medicine, physical therapy, occupational therapy, speech / language therapy, art, music, dance therapy, and others.","notes":"Career cluster: Health Science","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_EXERCISE_SCIENCE","code":"C14H22","name":"Exercise Science","department":"CTE","level":"Standard","grades":[11,12],"credit":1,"satisfies":["electivefocus"],"prereqs":[{"any":["CTE_REHABILITATION_CAREERS_HONORS"],"concurrent":false}],"description":"Exercise Science is an applied course designed to prepare students to pursue careers in kinesiology and exercise physiology services. Upon completion of this course, proficient students will be able to apply concepts of anatomy and physiology, physics, chemistry, bioenergetics, and kinesiology to specific exercise science contexts. Through these connections students will understand the importance that exercise, nutrition, and rehabilitation play in athletes or patients with debilitating or acute metabolic, orthopedic, neurological, psychological, and cardiovascular disorders.","notes":"Career cluster: Health Science","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_PRINCIPLES_OF_ENGINEERING_TECHNOLOGY","code":"C21H04","name":"Principles of Engineering Technology","department":"CTE","level":"Standard","grades":[9,10],"credit":1,"satisfies":["science.lab"],"prereqs":[],"description":"Principles of Engineering Technology is a foundational course in the STEM cluster for students interested in learning more about careers in engineering and technology. This course covers basic skills required for engineering and technology fields of study. Upon completion of this course, proficient students can identify and explain the steps in the engineering design process.","notes":"Career cluster: Health Science; Counts toward a graduation requirement by WCS/TSBE 3.103 CTE substitution; a course approved for more than one requirement may be used for only one","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_ENGINEERING_DESIGN_I","code":"C21H05","name":"Engineering Design I","department":"CTE","level":"Standard","grades":[9,10],"credit":1,"satisfies":["science.lab"],"prereqs":[],"description":"Engineering Design I is a fundamental course in the STEM cluster for students interested in developing their skills in preparation for careers in engineering and technology. The course covers essential knowledge, skills, and concepts required for postsecondary engineering and technology fields of study. Upon completion of this course, proficient students can describe various engineering disciplines, as well as admissions requirements for postsecondary engineering and engineering technology programs in Tennessee.","notes":"Career cluster: Health Science; Counts toward a graduation requirement by WCS/TSBE 3.103 CTE substitution; a course approved for more than one requirement may be used for only one","epso":false,"ncaa":false,"eoc":false},{"id":"CTE_ENGINEERING_DESIGN_II","code":"C21H06","name":"Engineering Design II","department":"CTE","level":"Standard","grades":[10,11,12],"credit":1,"satisfies":["science.lab"],"prereqs":[{"any":["CTE_ENGINEERING_DESIGN_I"],"concurrent":false}],"description":"Engineering Design II is an applied course in the STEM career cluster for students interested in further developing their skills as future engineers. This course covers knowledge, skills, and concepts required for postsecondary engineering and technology fields of study.","notes":"Career cluster: Health Science; Counts toward a graduation requirement by WCS/TSBE 3.103 CTE substitution; a course approved for more than one requirement may be used for only one","epso":false,"ncaa":false,"eoc":false},{"id":"FA_VISUAL_ART_I","code":"TBD","name":"Visual Art I","department":"Fine Arts","level":"Standard","grades":[9,10,11,12],"credit":1,"satisfies":["finearts","electivefocus"],"prereqs":[],"description":"Introduction to the visual arts: ","notes":"","epso":false,"ncaa":false,"eoc":false}]};
+
+/* ---------- WCS Student Planner ---------- */
+var CFG = window.__CONFIG__;
+var COURSES = CFG.courses;
+var REQS = CFG.requirements;
+var CBY = {}; COURSES.forEach(function(c){CBY[c.id]=c;});
+var LEVELN = {Standard:"Standard",Honors:"Honors",AP:"AP",DualEnrollment:"Dual Enrollment"};
+var GRADE_LABEL = {9:"Grade 9",10:"Grade 10",11:"Grade 11",12:"Grade 12"};
+var STATUS_GRADE = {Freshman:9,Sophomore:10,Junior:11,Senior:12};
+var NEXT_STATUS = {Freshman:"Sophomore",Sophomore:"Junior",Junior:"Senior",Senior:null};
+var STORE = "wcs_student_plan";
+
+var plan = load() || {name:"",status:"",gradYear:(CFG.gradYears[0]||null),taken:[],future:{9:[],10:[],11:[],12:[]},assign:{}};
+plan.assign = plan.assign || {};
+plan.status = plan.status || "";
+plan.future = plan.future || {};
+[9,10,11,12].forEach(function(g){ if(!plan.future[g]) plan.future[g]=[]; });
+
+// The single grade the Future Classes tab plans for = the year AFTER the student's current status.
+function planGrade(){ return plan.status ? STATUS_GRADE[plan.status]+1 : null; }
+
+function load(){try{return JSON.parse(localStorage.getItem(STORE));}catch(e){return null;}}
+function save(){try{localStorage.setItem(STORE,JSON.stringify(plan));}catch(e){}}
+function esc(s){return String(s==null?"":s).replace(/[&<>]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;"}[c];});}
+function $(s,r){return (r||document).querySelector(s);}
+function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+
+/* ----- header + nav ----- */
+$("#hName").textContent = (CFG.schoolName? CFG.schoolName+" ":"") + "4-Year Course Planner";
+$("#hSub").textContent = CFG.districtName || "";
+if(CFG.logo){var L=$("#hLogo");L.src=CFG.logo;L.hidden=false;}
+document.documentElement.style.setProperty("--primary",CFG.colors.primary);
+document.documentElement.style.setProperty("--secondary",CFG.colors.secondary);
+$all("#pnav button").forEach(function(b){b.onclick=function(){
+  $all("#pnav button").forEach(function(x){x.classList.remove("active");});
+  b.classList.add("active");
+  $all("main > section").forEach(function(s){s.classList.remove("active");});
+  $("#p-"+b.dataset.tab).classList.add("active");
+  renderAll();
+};});
+
+/* ----- dept + year selectors ----- */
+var DEPTS = []; COURSES.forEach(function(c){if(DEPTS.indexOf(c.department)<0)DEPTS.push(c.department);});
+DEPTS.sort();
+[["#sDept"]].forEach(function(x){DEPTS.forEach(function(d){var o=document.createElement("option");o.textContent=d;$(x[0]).appendChild(o);});});
+CFG.gradYears.forEach(function(y){
+  [ "#dYear","#pkYear" ].forEach(function(sel){var o=document.createElement("option");o.value=y;o.textContent=y;$(sel).appendChild(o);});
+});
+$("#dName").value = plan.name||"";
+$("#dYear").value = plan.gradYear||CFG.gradYears[0];
+$("#dStatus").value = plan.status||"";
+$("#dName").oninput=function(){plan.name=this.value;save();};
+$("#dYear").onchange=function(){plan.gradYear=+this.value;save();renderAll();};
+$("#dStatus").onchange=function(){plan.status=this.value;save();renderAll();};
+
+/* ----- requirement engine ----- */
+function allPlanned(){
+  var out=[];
+  plan.taken.forEach(function(t){out.push({id:t.id,year:t.year,when:"taken"});});
+  [9,10,11,12].forEach(function(g){plan.future[g].forEach(function(id){out.push({id:id,year:g,when:"planned"});});});
+  return out;
+}
+function evaluate(){
+  var items = allPlanned().filter(function(it){return CBY[it.id];});
+  // Courses with fewer possible requirements get first claim on a slot, so a
+  // dedicated course fills its requirement before a multi-purpose substitute does.
+  items.sort(function(a,b){
+    var an=(CBY[a.id].satisfies||[]).length||99, bn=(CBY[b.id].satisfies||[]).length||99;
+    if(an!==bn) return an-bn;
+    if((a.when==="taken")!==(b.when==="taken")) return a.when==="taken"?-1:1;
+    return a.year-b.year;
+  });
+  // priority: specific slots first (as ordered), catchalls last
+  var slots = REQS.map(function(r,i){return {r:r,i:i,need:r.credits,earned:0,planned:0,courses:[]};});
+  function tier(r){ return r.kind==="catchall"?2 : (r.kind==="flex"?1:0); }
+  var order = slots.slice().sort(function(a,b){
+    return tier(a.r)-tier(b.r) || a.i-b.i;
+  });
+  var used = {};
+  // honor the student's explicit choice first (e.g. Physics C set to count as math)
+  items.forEach(function(it){
+    var forced = plan.assign && plan.assign[it.id];
+    if(!forced) return;
+    var c=CBY[it.id];
+    if((c.satisfies||[]).indexOf(forced)<0) return;
+    var sl = slots.filter(function(s){return s.r.key===forced;})[0];
+    if(!sl) return;
+    assign(sl,it,c); used[itKey(it)]=true;
+  });
+  // assign specific/explicit matches
+  order.forEach(function(sl){
+    items.forEach(function(it){
+      if(used[itKey(it)]) return;
+      var c=CBY[it.id];
+      var sat=c.satisfies||[];
+      var match = sat.indexOf(sl.r.key)>=0;
+      if(!match) return;
+      if(sl.earned+sl.planned >= sl.need) return;
+      assign(sl,it,c); used[itKey(it)]=true;
+    });
+  });
+  // leftover credits flow into the elective-focus catchall
+  var ef = slots.filter(function(s){return s.r.key==="electivefocus";})[0];
+  if(ef){
+    items.forEach(function(it){
+      if(used[itKey(it)]) return;
+      var c=CBY[it.id];
+      assign(ef,it,c); used[itKey(it)]=true;
+    });
+  }
+  slots.forEach(function(sl){
+    var tot=sl.earned+sl.planned;
+    sl.status = sl.earned>=sl.need ? "met" : (tot>=sl.need? "ontrack":"gap");
+    sl.remaining = Math.max(0, sl.need - tot);
+  });
+  return slots;
+  function itKey(it){return it.id+"@"+it.year+"@"+it.when;}
+  function assign(sl,it,c){
+    var cr = c.credit||1;
+    if(it.when==="taken") sl.earned+=cr; else sl.planned+=cr;
+    sl.courses.push({id:it.id,name:c.name,level:c.level,year:it.year,when:it.when});
+  }
+}
+function creditTotals(){
+  var e=0,p=0;
+  plan.taken.forEach(function(t){var c=CBY[t.id];if(c)e+=c.credit||1;});
+  [9,10,11,12].forEach(function(g){plan.future[g].forEach(function(id){var c=CBY[id];if(c)p+=c.credit||1;});});
+  return {earned:e,planned:p};
+}
+function warnings(){
+  var w=[];
+  if(!plan.status) w.push("Set your current high school status on the Dashboard so the Future Classes tab shows the correct school year.");
+  // 7th course
+  [9,10,11,12].forEach(function(g){
+    if(plan.future[g].length>=7) w.push("Grade "+g+": "+plan.future[g].length+" courses planned. This leaves no study hall and requires a signed parent request form, granted only if the master schedule permits.");
+  });
+  // math in >=3 of 4 years (future only, informational)
+  var mathYears=0;
+  [9,10,11,12].forEach(function(g){
+    var has = plan.future[g].some(function(id){return CBY[id]&&CBY[id].department==="Math";})
+           || plan.taken.some(function(t){return t.year===g&&CBY[t.id]&&CBY[t.id].department==="Math";});
+    if(has) mathYears++;
+  });
+  if(mathYears<3) w.push("Math is scheduled in only "+mathYears+" of 4 years. Students must take a math course in at least 3 of the 4 years of high school.");
+  // prereqs
+  allPlanned().forEach(function(it){
+    var c=CBY[it.id]; if(!c||!c.prereqs||!c.prereqs.length) return;
+    var miss = unmetPrereqs(c, it.year, it.when);
+    if(miss.length) w.push(c.name+" (Grade "+it.year+"): prerequisite not met - "+miss.join("; ")+".");
+  });
+  // Physical Science must come before Chemistry or Physics, never after
+  var cg=coursesWithGrades();
+  var psConflict = cg.some(function(ps){
+    return isPhysicalScience(ps.c) && cg.some(function(cp){ return isChemOrPhysics(cp.c) && cp.year < ps.year; });
+  });
+  if(psConflict){
+    w.push("Your plan has Physical Science in a year after a Chemistry or Physics course. Physical Science must be taken before Chemistry or Physics (any level) - move or remove Physical Science.");
+  }
+  // ACT/SAT
+  w.push("Reminder: every student must take the ACT or SAT in grade 11 to earn a diploma (TCA 49-6-6001).");
+  return w;
+}
+function priorCourseIds(year, when){
+  // ids completed/planned strictly before `year`, plus same year if concurrent allowed
+  var before={}, sameyear={};
+  plan.taken.forEach(function(t){ if(t.year<year) before[t.id]=1; if(t.year===year) sameyear[t.id]=1; });
+  [9,10,11,12].forEach(function(g){ plan.future[g].forEach(function(id){ if(g<year) before[id]=1; if(g===year) sameyear[id]=1; }); });
+  return {before:before,sameyear:sameyear};
+}
+function unmetPrereqs(course, year, when){
+  var ctx = priorCourseIds(year, when);
+  var miss=[];
+  (course.prereqs||[]).forEach(function(cl){
+    var ok = (cl.any||[]).some(function(id){
+      if(ctx.before[id]) return true;
+      if(cl.concurrent && ctx.sameyear[id]) return true;
+      return false;
+    });
+    if(!ok && (cl.any||[]).length){
+      var names=(cl.any||[]).map(function(id){return CBY[id]?CBY[id].name:id;});
+      miss.push((cl.concurrent?"(before or with) ":"")+names.join(" or "));
+    }
+  });
+  return miss;
+}
+
+/* ----- renders ----- */
+function renderAll(){ renderDash(); renderTaken(); renderFuture(); renderTracker(); renderSearch(); }
+
+function renderDash(){
+  var t=creditTotals(); var target=CFG.creditTarget||23;
+  $("#dCredits").innerHTML = "<b>"+t.earned+"</b> credits earned &nbsp; + &nbsp; <b>"+t.planned+"</b> planned &nbsp; = &nbsp; <b>"+(t.earned+t.planned)+"</b> of "+target+" target";
+  $("#dBar").style.width = Math.min(100, (t.earned+t.planned)/target*100)+"%";
+  var w=warnings();
+  $("#dWarn").innerHTML = w.length? w.map(function(x){return '<div class="warnbox">'+esc(x)+'</div>';}).join("") : '<p class="muted">No warnings.</p>';
+  var slots=evaluate();
+  $("#dReq").innerHTML = groupRows(slots).map(function(g){
+    return "<div style='margin-bottom:4px'><b>"+esc(g.group)+"</b>: "+g.cells.map(function(s){
+      return '<span class="status '+s.status+'" style="margin-right:4px">'+esc(s.r.label)+"</span>";
+    }).join(" ")+"</div>";
+  }).join("");
+}
+function groupRows(slots){
+  var groups=[], byg={};
+  slots.forEach(function(s){ if(!byg[s.r.group]){byg[s.r.group]={group:s.r.group,cells:[]};groups.push(byg[s.r.group]);} byg[s.r.group].cells.push(s); });
+  return groups;
+}
+
+function renderTaken(){
+  var host=$("#takenList");
+  if(!plan.taken.length){ host.innerHTML='<p class="muted">No completed classes added yet.</p>'; return; }
+  var byYear={};
+  plan.taken.forEach(function(t,idx){ (byYear[t.year]=byYear[t.year]||[]).push({t:t,idx:idx}); });
+  host.innerHTML = [9,10,11,12].filter(function(g){return byYear[g];}).map(function(g){
+    return "<h3>"+GRADE_LABEL[g]+"</h3>"+byYear[g].map(function(o){
+      var c=CBY[o.t.id]; if(!c) return "";
+      return '<div class="coursechip" data-open="'+c.id+'">'+esc(c.name)+' <span class="lv">'+LEVELN[c.level]+" &middot; "+(c.credit||1)+' cr</span> <button class="mini" data-del="'+o.idx+'">Remove</button></div>';
+    }).join("");
+  }).join("");
+  wireChips(host);
+  $all("[data-del]",host).forEach(function(b){b.onclick=function(e){
+    e.stopPropagation();
+    var idx=+b.dataset.del, t=plan.taken[idx], c=t&&CBY[t.id];
+    askConfirm("Remove "+(c?c.name:"this class")+" from your completed classes? You can add it back later.", function(){
+      plan.taken.splice(idx,1); save(); renderAll();
+    });
+  };});
+}
+
+/* ----- confirmation dialog ----- */
+var confirmModal=$("#confirmModal"), confirmCb=null;
+function askConfirm(msg, cb){ askConfirmYN(msg, "Remove", "Cancel", cb, "Remove this class?"); }
+function askConfirmYN(msg, yesLabel, noLabel, cb, title){
+  $("#confirmTitle").textContent = title || "Please confirm";
+  $("#confirmMsg").textContent = msg;
+  $("#confirmYes").textContent = yesLabel || "Yes";
+  $("#confirmNo").textContent = noLabel || "Cancel";
+  confirmCb = cb;
+  confirmModal.showModal();
+}
+$("#confirmNo").onclick=function(){ confirmModal.close(); confirmCb=null; };
+$("#confirmYes").onclick=function(){ confirmModal.close(); var f=confirmCb; confirmCb=null; if(f) f(); };
+
+function renderFuture(){
+  var head=$("#futHead"), host=$("#futureList");
+  if(!plan.status){
+    head.innerHTML='<div class="infobox"><strong>Set your current status first.</strong> Go to the <strong>Dashboard</strong> tab and choose your current high school status (Freshman, Sophomore, Junior, or Senior). This page then shows the classes to plan for your next school year.</div>';
+    host.innerHTML=""; return;
+  }
+  var g=planGrade();
+  if(g>12){
+    head.innerHTML='<div class="infobox"><strong>You selected Senior.</strong> There is no next school year to plan here. Review the <strong>Requirement Tracker</strong> tab with your counselor.</div>';
+    host.innerHTML=""; return;
+  }
+  var ns=NEXT_STATUS[plan.status];
+  var ids=plan.future[g]||[];
+  var cr=ids.reduce(function(a,id){return a+(CBY[id]?(CBY[id].credit||1):0);},0);
+  head.innerHTML='<div class="infobox">These are the classes you plan to take next year, your <strong>'+esc(ns)+' year</strong>. You set your current status ('+esc(plan.status)+') on the Dashboard tab. A normal load is 6 courses plus a study hall; a 7th course removes the study hall and needs a signed parent request form.</div>'+
+    '<div class="toolbar"><button class="act" id="btnAddFuture">Find a class to add</button><span class="muted">Opens Class Search so you can read the course description and prerequisites, then add it.</span></div>'+
+    '<div class="toolbar"><span class="muted">'+ids.length+' courses, '+cr+' credits planned for '+esc(ns)+' year</span></div>'+
+    (ids.length>=7?'<div class="warnbox">You have '+ids.length+' courses planned. That leaves no study hall and needs a signed parent request form, granted only if the master schedule permits.</div>':"");
+  $("#btnAddFuture").onclick=function(){ gotoSearch(); };
+
+  var slots=evaluate();
+  host.innerHTML = ids.length ? ids.map(function(id){
+    var c=CBY[id]; if(!c) return "";
+    var assignedKey=null;
+    slots.forEach(function(sl){ sl.courses.forEach(function(cc){ if(cc.id===id && cc.year===g && cc.when==="planned" && !assignedKey) assignedKey=sl.r.key; }); });
+    var sat=c.satisfies||[];
+    var right;
+    if(sat.length>1){
+      right='<div class="muted" style="margin-bottom:3px">This class can count toward more than one requirement. Choose one:</div>'+
+        sat.map(function(k){
+          var checked = plan.assign[id] ? plan.assign[id]===k : assignedKey===k;
+          return '<label class="opt"><input type="radio" name="asg_'+esc(id)+'" value="'+esc(k)+'"'+(checked?" checked":"")+'> '+esc(reqLabel(k))+'</label>';
+        }).join("");
+    } else if(sat.length===1){
+      right='Counts toward: <strong>'+esc(reqLabel(sat[0]))+'</strong>';
+      if(assignedKey==="electivefocus" && sat[0]!=="electivefocus") right+='<div class="muted">That requirement is already met, so this class is counting as elective credit.</div>';
+    } else {
+      right='<span class="muted">Elective credit</span>';
+    }
+    return '<div class="futrow"><div class="fleft"><div class="fname">'+esc(c.name)+'</div>'+
+      '<div class="muted">'+esc(c.department)+', '+LEVELN[c.level]+', '+(c.credit||1)+' credit</div>'+
+      '<button class="mini" data-remfut="'+esc(id)+'" style="margin-top:6px">Remove</button></div>'+
+      '<div class="fright">'+right+'</div></div>';
+  }).join("") : '<p class="muted">No classes added yet. Use the button above to add classes for '+esc(ns)+' year.</p>';
+
+  $all("[data-remfut]",host).forEach(function(b){b.onclick=function(){
+    var arr=plan.future[g]; var i=arr.indexOf(b.dataset.remfut); if(i>=0)arr.splice(i,1);
+    delete plan.assign[b.dataset.remfut]; save(); renderAll();
+  };});
+  $all('input[type=radio]',host).forEach(function(r){r.onchange=function(){
+    plan.assign[r.name.slice(4)] = r.value; save(); renderAll();
+  };});
+}
+
+function renderTracker(){
+  var slots=evaluate();
+  var groups=groupRows(slots);
+  $("#trackerList").innerHTML = groups.map(function(g){
+    return "<h3>"+esc(g.group)+"</h3>"+g.cells.map(function(s){
+      var lab = s.status==="met"?"Met":(s.status==="ontrack"?"On track":"Still needed");
+      var list = s.courses.length? "<ul>"+s.courses.map(function(cc){
+          return "<li>"+esc(cc.name)+" ("+LEVELN[cc.level]+", grade "+cc.year+", "+(cc.when==="taken"?"completed":"planned")+")</li>";
+        }).join("")+"</ul>" : '<p class="muted">No classes applied yet.</p>';
+      var eligible = COURSES.filter(function(c){return (c.satisfies||[]).indexOf(s.r.key)>=0;}).length;
+      return '<details class="reqrow"><summary><span>'+esc(s.r.label)+'</span>'+
+        '<span><span class="muted">'+s.earned+" earned / "+s.planned+" planned / "+s.need+' needed</span> &nbsp; <span class="status '+s.status+'">'+lab+"</span></span></summary>"+
+        '<div class="body">'+list+
+        (s.remaining>0?'<p class="muted">Still need '+s.remaining+" credit(s).</p>":"")+
+        (eligible?'<p><button class="mini" data-allreq="'+esc(s.r.key)+'">Show all '+eligible+' class'+(eligible===1?"":"es")+' that can meet this</button></p>':"")+
+        "</div></details>";
+    }).join("");
+  }).join("");
+  $all("[data-allreq]",$("#trackerList")).forEach(function(b){b.onclick=function(){ gotoSearchReq(b.dataset.allreq); };});
+}
+function gotoSearchReq(key){
+  $all("#pnav button").forEach(function(x){x.classList.remove("active");});
+  $('#pnav button[data-tab="search"]').classList.add("active");
+  $all("main > section").forEach(function(x){x.classList.remove("active");});
+  $("#p-search").classList.add("active");
+  $("#sReq").value=key; $("#sText").value=""; $("#sDept").value=""; $("#sLevel").value="";
+  renderSearch(); window.scrollTo(0,0);
+}
+function gotoSearch(){
+  $all("#pnav button").forEach(function(x){x.classList.remove("active");});
+  $('#pnav button[data-tab="search"]').classList.add("active");
+  $all("main > section").forEach(function(x){x.classList.remove("active");});
+  $("#p-search").classList.add("active");
+  $("#sReq").value=""; $("#sDept").value=""; $("#sLevel").value=""; $("#sText").value="";
+  renderSearch(); window.scrollTo(0,0);
+  var t=$("#sText"); if(t) t.focus();
+}
+
+(function(){
+  var sr=$("#sReq");
+  REQS.forEach(function(r){ var o=document.createElement("option"); o.value=r.key; o.textContent="Meets: "+r.group+" - "+r.label; sr.appendChild(o); });
+})();
+function renderSearch(){
+  var q=($("#sText").value||"").toLowerCase(), d=$("#sDept").value, lv=$("#sLevel").value, rq=$("#sReq").value;
+  var list=COURSES.filter(function(c){
+    if(d&&c.department!==d) return false;
+    if(lv&&c.level!==lv) return false;
+    if(rq && (c.satisfies||[]).indexOf(rq)<0) return false;
+    if(q && (c.name+" "+(c.code||"")).toLowerCase().indexOf(q)<0) return false;
+    return true;
+  });
+  var reqNote = rq ? " that can meet "+(REQS.filter(function(r){return r.key===rq;})[0]||{}).label : "";
+  $("#sCount").textContent = list.length+" course"+(list.length===1?"":"s")+reqNote;
+  var tk=takenIds();
+  $("#searchList").innerHTML = list.map(function(c){
+    var meets = rq ? "" : (c.satisfies||[]).map(function(k){var r=REQS.filter(function(x){return x.key===k;})[0];return r?r.label:k;}).join(", ");
+    var tag = tk[c.id] ? ' <span class="pill">Completed</span>' : (futureAddBlockReason(c.id) ? ' <span class="pill">Not available</span>' : "");
+    return '<div class="coursechip" data-open="'+c.id+'"><b>'+esc(c.name)+'</b>'+tag+' <span class="lv">'+esc(c.department)+" &middot; "+LEVELN[c.level]+" &middot; "+(c.credit||1)+' cr</span>'+
+      (meets?'<div class="lv">Can satisfy: '+esc(meets)+'</div>':"")+'</div>';
+  }).join("") || '<p class="muted">No matches.</p>';
+  wireChips($("#searchList"));
+}
+$("#sText").oninput=renderSearch; $("#sDept").onchange=renderSearch; $("#sLevel").onchange=renderSearch; $("#sReq").onchange=renderSearch;
+
+function wireChips(host){
+  $all("[data-open]",host).forEach(function(el){
+    el.onclick=function(){ openCourse(el.dataset.open); };
+  });
+}
+
+/* ----- course modal ----- */
+var courseModal=$("#courseModal");
+function reqLabel(key){var r=REQS.filter(function(x){return x.key===key;})[0];return r?r.label:key;}
+function openCourse(id){
+  var c=CBY[id]; if(!c) return;
+  $("#cmTitle").textContent = c.name;
+  var sat=(c.satisfies||[]).map(reqLabel);
+  var pre=(c.prereqs||[]).map(function(cl){
+    var names=(cl.any||[]).map(function(x){return CBY[x]?CBY[x].name:x;});
+    return names.join(" or ")+(cl.concurrent?" (may be taken at the same time)":"");
+  });
+  // where would it land?
+  var landing = projectedRequirement(c);
+  $("#cmBody").innerHTML =
+    '<p class="kv"><b>'+esc(c.department)+" &middot; "+LEVELN[c.level]+" &middot; "+(c.credit||1)+" credit</b>"+(c.code?' <span class="muted">('+esc(c.code)+")</span>":"")+"</p>"+
+    '<p class="kv">Grades: '+((c.grades||[]).join(", ")||"-")+
+      (c.epso?' &nbsp; <span class="pill">EPSO</span>':"")+(c.ncaa?' <span class="pill">NCAA</span>':"")+(c.eoc?' <span class="pill">EOC exam</span>':"")+"</p>"+
+    "<p>"+esc(c.description||"No description provided.")+"</p>"+
+    (c.notes?'<p class="muted">'+esc(c.notes)+"</p>":"")+
+    "<p class='kv'><b>Prerequisites:</b> "+(pre.length?esc(pre.join("; ")):"None")+"</p>"+
+    "<p class='kv'><b>Can satisfy:</b> "+(sat.length?esc(sat.join("; ")):"Elective credit only")+"</p>"+
+    "<p class='kv'><b>In your plan this would count as:</b> "+esc(landing)+"</p>";
+  var foot=$("#cmFoot"); foot.innerHTML="";
+  var ns = (plan.status && NEXT_STATUS[plan.status]) ? NEXT_STATUS[plan.status] : null;
+  var alreadyFut = plan.status && planGrade()<=12 && (plan.future[planGrade()]||[]).indexOf(c.id)>=0;
+  var blockReason = futureAddBlockReason(c.id);
+  var isTaken = !!takenIds()[c.id];
+  if(blockReason) $("#cmBody").innerHTML += '<p class="warnbox">'+esc(blockReason)+'</p>';
+  var addBtn=document.createElement("button"); addBtn.className="act";
+  addBtn.textContent = isTaken ? "Already completed" : (blockReason ? "Not available" : (alreadyFut ? "Already in your plan" : (ns ? ("Add to my "+ns+"-year plan") : "Add to my plan")));
+  addBtn.disabled = !!(alreadyFut || blockReason);
+  addBtn.onclick=function(){
+    if(addFuture(c.id)){ addBtn.textContent = "Added to your "+(ns?ns+"-year ":"")+"plan"; addBtn.disabled=true; }
+  };
+  var takenBtn=document.createElement("button"); takenBtn.className="act ghost"; takenBtn.textContent="I already took this";
+  takenBtn.disabled = isTaken;
+  takenBtn.onclick=function(){ courseModal.close(); openGrade(c); };
+  var close=document.createElement("button"); close.className="act ghost"; close.textContent="Close"; close.onclick=function(){courseModal.close();};
+  foot.appendChild(takenBtn); foot.appendChild(addBtn); foot.appendChild(close);
+  courseModal.showModal();
+}
+function projectedRequirement(c){
+  // simulate adding c as a planned course in its lowest grade, see which slot it fills
+  var slots=evaluate();
+  var open = slots.filter(function(s){return s.remaining>0 && (c.satisfies||[]).indexOf(s.r.key)>=0;});
+  if(open.length) return open[0].r.label + (open[0].r.group!==open[0].r.label? " ("+open[0].r.group+")":"");
+  if((c.satisfies||[]).length) return "a requirement that is already satisfied - it would count toward Elective Focus";
+  return "Elective Focus / elective credit";
+}
+
+/* ----- eligibility rules ----- */
+function isChemOrPhysics(c){ return !!c && c.department==="Science" && /(chemistry|physics)/i.test(c.name); }
+function isPhysicalScience(c){ return !!c && /physical science/i.test(c.name); }
+function takenIds(){ var m={}; plan.taken.forEach(function(t){m[t.id]=1;}); return m; }
+function coursesWithGrades(){
+  var out=[];
+  plan.taken.forEach(function(t){ if(CBY[t.id]) out.push({id:t.id,year:t.year,c:CBY[t.id]}); });
+  [9,10,11,12].forEach(function(g){ (plan.future[g]||[]).forEach(function(id){ if(CBY[id]) out.push({id:id,year:g,c:CBY[id]}); }); });
+  return out;
+}
+// true if a Chemistry or Physics course sits in an EARLIER year than `year`
+function chemOrPhysicsBefore(year){
+  return coursesWithGrades().some(function(x){ return isChemOrPhysics(x.c) && x.year < year; });
+}
+// Returns a reason string if this course may NOT be added to the future plan, else "".
+function futureAddBlockReason(id){
+  var c=CBY[id]; if(!c) return "";
+  if(takenIds()[id]) return "You have already completed "+c.name+", so it cannot be added as a future class.";
+  if(isPhysicalScience(c)){
+    var g=planGrade();
+    if(g && chemOrPhysicsBefore(g)) return "Physical Science cannot be added because you have already taken Chemistry or Physics (any level, including Honors and AP) in an earlier year. Physical Science must come before Chemistry or Physics, not after.";
+  }
+  return "";
+}
+
+/* ----- add a future class (goes to the single planning year) ----- */
+function addFuture(id, silent){
+  var g=planGrade();
+  if(!g){ if(!silent) alert("First choose your current high school status on the Dashboard tab."); return false; }
+  if(g>12){ if(!silent) alert("You selected Senior. There is no next school year to plan."); return false; }
+  var reason=futureAddBlockReason(id);
+  if(reason){ if(!silent) alert(reason); return false; }
+  if((plan.future[g]||[]).indexOf(id)<0) plan.future[g].push(id);
+  save(); if(!silent) renderAll();
+  return true;
+}
+
+/* ----- grade chooser (for completed classes) ----- */
+var pickModal=$("#pickModal"), gradeCourse=null;
+function openGrade(c){
+  gradeCourse=c;
+  $("#pkCourse").textContent = c.name+" ("+LEVELN[c.level]+")";
+  var sel=$("#pkYear"); sel.innerHTML="";
+  var grades = (c.grades&&c.grades.length)?c.grades:[9,10,11,12];
+  grades.forEach(function(g){var o=document.createElement("option");o.value=g;o.textContent=GRADE_LABEL[g]+" (completed)";sel.appendChild(o);});
+  updateGradeWarn(); sel.onchange=updateGradeWarn;
+  pickModal.showModal();
+}
+function updateGradeWarn(){
+  var g=+$("#pkYear").value;
+  var miss=unmetPrereqs(gradeCourse,g,"taken");
+  $("#pkWarn").innerHTML = miss.length ? '<div class="warnbox">You have not met the prerequisite for this class: '+esc(miss.join("; "))+'. You can still add it.</div>' : "";
+}
+$("#pkCancel").onclick=function(){ pickModal.close(); };
+$("#pkAdd").onclick=function(){
+  var g=+$("#pkYear").value;
+  plan.taken.push({id:gradeCourse.id, year:g});
+  save(); pickModal.close();
+  if(pickerModal.open) renderPickerChosen(); else renderAll();
+};
+
+/* ----- split picker modal (browse + add many) ----- */
+var pickerModal=$("#pickerModal"), pickerMode=null, pickerBaseTaken=0, pickerBaseFuture=[];
+function openPicker(mode){
+  pickerMode=mode;
+  if(mode==="future"){
+    if(!plan.status){ alert("First choose your current high school status on the Dashboard tab."); return; }
+    if(planGrade()>12){ alert("You selected Senior. There is no next school year to plan."); return; }
+    var ns=NEXT_STATUS[plan.status];
+    $("#pkrTitle").textContent = "Add classes for "+ns+" year";
+    $("#pkrRightTitle").textContent = "Classes you are adding now";
+    pickerBaseFuture = (plan.future[planGrade()]||[]).slice();
+  } else {
+    $("#pkrTitle").textContent = "Add completed classes";
+    $("#pkrRightTitle").textContent = "Classes you are adding now";
+    pickerBaseTaken = plan.taken.length;
+  }
+  var ds=$("#pkrDept");
+  if(ds.children.length<=1){ DEPTS.forEach(function(d){var o=document.createElement("option");o.textContent=d;ds.appendChild(o);}); }
+  ds.value=""; $("#pkrSearch").value="";
+  renderPickerList(); renderPickerChosen();
+  pickerModal.showModal();
+}
+function renderPickerList(){
+  var q=($("#pkrSearch").value||"").toLowerCase(), d=$("#pkrDept").value;
+  var list=COURSES.filter(function(c){
+    if(d && c.department!==d) return false;
+    if(q && (c.name+" "+(c.code||"")).toLowerCase().indexOf(q)<0) return false;
+    return true;
+  });
+  $("#pkrList").innerHTML = list.length ? list.map(function(c){
+    return '<div class="pickitem"><span><strong>'+esc(c.name)+'</strong><br><span class="meta">'+esc(c.department)+' &middot; '+LEVELN[c.level]+' &middot; '+(c.credit||1)+' cr</span></span>'+
+      (inPlanAlready(c) ? '<span class="meta">Added</span>' : '<button class="mini" data-pick="'+esc(c.id)+'">+ Add</button>')+'</div>';
+  }).join("") : '<p class="muted" style="padding:10px">No matches.</p>';
+  $all("[data-pick]",$("#pkrList")).forEach(function(b){b.onclick=function(){
+    var c=CBY[b.dataset.pick];
+    if(pickerMode==="future"){ if(addFuture(c.id,true)){ renderPickerChosen(); } }
+    else { openGrade(c); }
+  };});
+}
+function inPlanAlready(c){
+  if(pickerMode==="future"){ return (plan.future[planGrade()]||[]).indexOf(c.id)>=0; }
+  return plan.taken.some(function(t){return t.id===c.id;});
+}
+function renderPickerChosen(){
+  var host=$("#pkrChosen");
+  if(pickerMode==="future"){
+    var g=planGrade();
+    var ids=(plan.future[g]||[]).filter(function(id){return pickerBaseFuture.indexOf(id)<0;});
+    host.innerHTML = ids.length ? ids.map(function(id){var c=CBY[id]; if(!c) return "";
+      return '<div class="chosenitem"><span>'+esc(c.name)+'<br><span class="meta">'+LEVELN[c.level]+'</span></span><button class="mini" data-x="'+esc(id)+'">Remove</button></div>';
+    }).join("") : '<p class="muted">Nothing added yet in this window.</p>';
+    $all("[data-x]",host).forEach(function(b){b.onclick=function(){
+      var arr=plan.future[g]; var i=arr.indexOf(b.dataset.x); if(i>=0)arr.splice(i,1);
+      delete plan.assign[b.dataset.x]; save(); renderPickerChosen(); renderPickerList();
+    };});
+  } else {
+    var added=plan.taken.slice(pickerBaseTaken);
+    host.innerHTML = added.length ? added.map(function(t,i){var c=CBY[t.id]; if(!c) return "";
+      return '<div class="chosenitem"><span>'+esc(c.name)+'<br><span class="meta">'+LEVELN[c.level]+' &middot; grade '+t.year+'</span></span><button class="mini" data-xt="'+(pickerBaseTaken+i)+'">Remove</button></div>';
+    }).join("") : '<p class="muted">Nothing added yet in this window.</p>';
+    $all("[data-xt]",host).forEach(function(b){b.onclick=function(){ plan.taken.splice(+b.dataset.xt,1); save(); renderPickerChosen(); renderPickerList(); };});
+  }
+}
+$("#pkrSearch").oninput=renderPickerList;
+$("#pkrDept").onchange=renderPickerList;
+$("#pkrDone").onclick=function(){ pickerModal.close(); save(); renderAll(); };
+$("#btnAddTaken").onclick=function(){ openPicker("taken"); };
+
+/* ----- PDF export / import (self-contained, no libraries) ----- */
+$("#btnExport").onclick=exportPDF;
+$("#btnImport").onclick=function(){$("#impFile").click();};
+$("#impFile").onchange=function(e){ var f=e.target.files[0]; if(f) importPDF(f); e.target.value=""; };
+
+function planPayload(){ return {v:1,name:plan.name,status:plan.status,gradYear:plan.gradYear,taken:plan.taken,future:plan.future,assign:plan.assign}; }
+
+function exportPDF(){
+  var lines=[];
+  var RED=[0.69,0,0.13];
+  function L(txt,size,bold,color){ lines.push({txt:String(txt),size:size||10,bold:!!bold,color:color||null}); }
+  L("*** NOT AN OFFICIAL DOCUMENT ***",13,true,RED);
+  L("This is a planning tool only. It does not guarantee graduation, course availability,",9,false,RED);
+  L("or placement. You must meet with your school counselor to finalize your schedule",9,false,RED);
+  L("and confirm your graduation requirements.",9,false,RED);
+  L(" ",6);
+  L((CFG.schoolName?CFG.schoolName+" - ":"")+"4-Year Course Plan",18,true);
+  L((plan.name||"(no name)")+"   Class of "+(plan.gradYear||""),12,false);
+  L("Current status: "+(plan.status||"not set")+"     Generated "+new Date().toLocaleDateString(),9,false);
+  L(" ",6);
+  var t=creditTotals();
+  L("Credits: "+t.earned+" earned + "+t.planned+" planned = "+(t.earned+t.planned)+" of "+(CFG.creditTarget||23),11);
+  L(" ",4);
+  L("REQUIREMENTS",13,true);
+  evaluate().forEach(function(s){
+    var lab = s.status==="met"?"MET":(s.status==="ontrack"?"ON TRACK":"NEEDED");
+    L(" - "+s.r.group+": "+s.r.label+"  ["+lab+"]  "+(s.earned+s.planned)+"/"+s.need,10);
+  });
+  L(" ",4);
+  L("CLASSES TAKEN",13,true);
+  if(!plan.taken.length) L("  (none)",10);
+  plan.taken.forEach(function(x){var c=CBY[x.id];L("  Grade "+x.year+": "+(c?c.name:x.id)+(c?" ("+LEVELN[c.level]+")":""),10);});
+  L(" ",4);
+  L("PLANNED CLASSES",13,true);
+  [9,10,11,12].forEach(function(g){
+    L("  Grade "+g+":",10);
+    if(!plan.future[g].length) L("    (none)",10);
+    plan.future[g].forEach(function(id){var c=CBY[id];L("    "+(c?c.name:id)+(c?" ("+LEVELN[c.level]+")":""),10);});
+  });
+  var payload = "WCSPLANv1:"+btoa(unescape(encodeURIComponent(JSON.stringify(planPayload()))));
+  var bytes = buildPDF(lines, payload);
+  var blob = new Blob([bytes],{type:"application/pdf"});
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download = "WCS-Plan-"+(plan.name||"student").replace(/[^A-Za-z0-9]+/g,"_")+"-"+(plan.gradYear||"")+".pdf";
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+function importPDF(file){
+  var fr=new FileReader();
+  fr.onload=function(){
+    var s=new Uint8Array(fr.result), str="";
+    for(var i=0;i<s.length;i++) str+=String.fromCharCode(s[i]);
+    var m = str.match(/WCSPLANv1:([A-Za-z0-9+\/=]+)/);
+    if(!m){ alert("Could not find plan data in that PDF. Make sure it is the PDF this planner exported."); return; }
+    try{
+      var obj=JSON.parse(decodeURIComponent(escape(atob(m[1]))));
+      plan.name=obj.name||plan.name; plan.gradYear=obj.gradYear||plan.gradYear;
+      plan.status=obj.status||plan.status||"";
+      plan.taken=obj.taken||[]; plan.future=obj.future||{9:[],10:[],11:[],12:[]};
+      plan.assign=obj.assign||{};
+      [9,10,11,12].forEach(function(g){ if(!plan.future[g]) plan.future[g]=[]; });
+      save();
+      $("#dName").value=plan.name||""; if(plan.gradYear)$("#dYear").value=plan.gradYear;
+      $("#dStatus").value=plan.status||"";
+      renderAll();
+      afterImport();
+    }catch(e){ alert("The plan data in that PDF could not be read."); }
+  };
+  fr.readAsArrayBuffer(file);
+}
+
+/* ----- after a successful import: ask whether planned classes are now done ----- */
+var importModal=$("#importModal");
+function goDash(){
+  $all("#pnav button").forEach(function(x){x.classList.remove("active");});
+  $('#pnav button[data-tab="dash"]').classList.add("active");
+  $all("main > section").forEach(function(x){x.classList.remove("active");});
+  $("#p-dash").classList.add("active");
+  window.scrollTo(0,0);
+}
+function afterImport(){
+  var futCount=0; [9,10,11,12].forEach(function(g){ futCount += (plan.future[g]||[]).length; });
+  if(!futCount){
+    $("#importQ").textContent = "";
+    $("#importYes").style.display = "none";
+    $("#importNo").textContent = "OK";
+  } else {
+    $("#importYes").style.display = "";
+    $("#importNo").textContent = "No, keep them as planned classes";
+    $("#importQ").textContent = "This plan has "+futCount+" class"+(futCount===1?"":"es")+" you had planned for a future year. Have you already completed those classes (for example, you are opening this a year later)? Choosing Yes moves them to your Classes Taken list.";
+  }
+  importModal.showModal();
+}
+$("#importNo").onclick=function(){ importModal.close(); save(); renderAll(); goDash(); };
+$("#importYes").onclick=function(){
+  importModal.close();
+  var have={}; plan.taken.forEach(function(t){ have[t.id]=1; });
+  [9,10,11,12].forEach(function(g){
+    (plan.future[g]||[]).forEach(function(id){ if(!have[id]){ plan.taken.push({id:id,year:g}); have[id]=1; } });
+  });
+  plan.future={9:[],10:[],11:[],12:[]};
+  plan.assign={};
+  save(); renderAll(); goDash();
+  var s=plan.status, ns=s?NEXT_STATUS[s]:null;
+  if(s && ns){
+    askConfirmYN(
+      "You were a "+s+" in that plan. Since you finished those classes, update your status to "+ns+"?",
+      "Yes, I am a "+ns+" now", "No, leave it as "+s,
+      function(){ plan.status=ns; $("#dStatus").value=ns; save(); renderAll(); },
+      "Update your status?"
+    );
+  } else if(s==="Senior"){
+    alert("Those classes are now in your Classes Taken list. You are marked as a Senior - review the Requirement Tracker with your counselor.");
+  }
+};
+
+/* minimal text PDF writer with Helvetica, payload stored in /Keywords */
+function pdfStr(s){ return String(s==null?"":s).replace(/\\/g,"\\\\").replace(/\(/g,"\\(").replace(/\)/g,"\\)").replace(/[\r\n\t]/g," ").replace(/[^\x20-\x7E]/g,"?"); }
+function buildPDF(lines, keywords){
+  var pageW=612, pageH=792, margin=54, lead=1.6;
+  var pages=[[]], y=pageH-margin;
+  lines.forEach(function(ln){
+    var size=ln.size||10;
+    if(y - size*lead < margin){ pages.push([]); y=pageH-margin; }
+    pages[pages.length-1].push({txt:String(ln.txt==null?"":ln.txt),size:size,bold:!!ln.bold,color:ln.color||null,y:y});
+    y -= size*lead;
+  });
+
+  var objs=[];                       // objs[i] is body of PDF object number i+1
+  function put(body){ objs.push(body); return objs.length; }
+
+  var oCatalog = put("");            // 1  (filled below)
+  var oPages   = put("");            // 2  (filled below)
+  var oFont    = put("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>");       // 3
+  var oFontB   = put("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>");  // 4
+  var oInfo    = put("<< /Title (WCS 4-Year Course Plan) /Producer (WCS Planner) /Keywords ("+pdfStr(keywords)+") >>"); // 5
+
+  var pageNums=[];
+  pages.forEach(function(pg){
+    var stream="BT\n";
+    pg.forEach(function(it){
+      var col = it.color ? it.color.map(function(n){return (+n).toFixed(3);}).join(" ")+" rg\n" : "";
+      var reset = it.color ? "0 0 0 rg\n" : "";
+      stream += col+(it.bold?"/F2 ":"/F1 ")+it.size+" Tf\n1 0 0 1 "+margin.toFixed(2)+" "+it.y.toFixed(2)+" Tm\n("+pdfStr(it.txt)+") Tj\n"+reset;
+    });
+    stream+="ET";
+    var oContent = put("<< /Length "+stream.length+" >>\nstream\n"+stream+"\nendstream");
+    var oPage = put("<< /Type /Page /Parent "+oPages+" 0 R /MediaBox [0 0 "+pageW+" "+pageH+"]"+
+      " /Resources << /Font << /F1 "+oFont+" 0 R /F2 "+oFontB+" 0 R >> >> /Contents "+oContent+" 0 R >>");
+    pageNums.push(oPage);
+  });
+
+  objs[oCatalog-1] = "<< /Type /Catalog /Pages "+oPages+" 0 R >>";
+  objs[oPages-1]   = "<< /Type /Pages /Count "+pageNums.length+" /Kids ["+pageNums.map(function(n){return n+" 0 R";}).join(" ")+"] >>";
+
+  var full="%PDF-1.4\n%\xE2\xE3\xCF\xD3\n";
+  var offsets=[];
+  for(var i=0;i<objs.length;i++){
+    offsets.push(full.length);
+    full += (i+1)+" 0 obj\n"+objs[i]+"\nendobj\n";
+  }
+  var xrefPos=full.length;
+  full += "xref\n0 "+(objs.length+1)+"\n0000000000 65535 f \n";
+  offsets.forEach(function(off){ full += ("0000000000"+off).slice(-10)+" 00000 n \n"; });
+  full += "trailer\n<< /Size "+(objs.length+1)+" /Root "+oCatalog+" 0 R /Info "+oInfo+" 0 R >>\nstartxref\n"+xrefPos+"\n%%EOF";
+
+  var arr=new Uint8Array(full.length);
+  for(var j=0;j<full.length;j++) arr[j]=full.charCodeAt(j)&0xff;
+  return arr;
+}
+
+renderAll();
+
+</script>
+</body>
+</html>

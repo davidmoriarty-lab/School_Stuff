@@ -233,7 +233,7 @@ dialog#pickerModal{width:min(940px,96vw)}
       <div><label style="font-size:13px;font-weight:700;display:block">Fall Semester Grade</label><select id="pkFall"></select></div>
       <div><label style="font-size:13px;font-weight:700;display:block">Spring Semester Grade</label><select id="pkSpring"></select></div>
     </div>
-    <p class="muted" style="margin:8px 0 0">Leave a grade blank if you do not have it yet, for example a class you are taking this year.</p>
+    <p class="muted" style="margin:8px 0 0">Leave a grade blank if you do not have it yet, for example a class you are taking this year. A semester with an F does not count toward your graduation requirements.</p>
   </div>
   <div class="dlg-foot">
     <button class="act ghost" id="pkCancel">Cancel</button>
@@ -263,6 +263,13 @@ var GRADE_LABEL = {8:"Middle School",9:"Grade 9",10:"Grade 10",11:"Grade 11",12:
 var GR_OPTS = ["A","B","C","D","F","P"];            // semester grades a student can enter
 var MS_DEPTS = ["Math","World Language"];            // departments that can be taken for credit in middle school
 function yearText(y){ return y===8 ? "middle school" : "grade "+y; }
+// Share of a completed class's credit that was earned. A semester with an F earns nothing:
+// a full-year class loses half its credit per F; a one-semester class loses all of it.
+function earnedFactor(f,s,credit){
+  var fails=(f==="F"?1:0)+(s==="F"?1:0);
+  if((credit||1)<1) return fails?0:1;
+  return 1-fails/2;
+}
 var STATUS_GRADE = {Freshman:9,Sophomore:10,Junior:11,Senior:12};
 var NEXT_STATUS = {Freshman:"Sophomore",Sophomore:"Junior",Junior:"Senior",Senior:null};
 var STORE = "wcs_student_plan";
@@ -313,12 +320,12 @@ $("#dStatus").onchange=function(){plan.status=this.value;save();renderAll();};
 /* ----- requirement engine ----- */
 function allPlanned(){
   var out=[];
-  plan.taken.forEach(function(t){out.push({id:t.id,year:t.year,when:"taken"});});
+  plan.taken.forEach(function(t){out.push({id:t.id,year:t.year,when:"taken",f:t.f,s:t.s});});
   [9,10,11,12].forEach(function(g){plan.future[g].forEach(function(id){out.push({id:id,year:g,when:"planned"});});});
   return out;
 }
 function evaluate(){
-  var items = allPlanned().filter(function(it){return CBY[it.id];});
+  var items = allPlanned().filter(function(it){return CBY[it.id] && !(it.when==="taken" && earnedFactor(it.f,it.s,CBY[it.id].credit)===0);});
   // Courses with fewer possible requirements get first claim on a slot, so a
   // dedicated course fills its requirement before a multi-purpose substitute does.
   items.sort(function(a,b){
@@ -374,13 +381,13 @@ function evaluate(){
   function itKey(it){return it.id+"@"+it.year+"@"+it.when;}
   function assign(sl,it,c){
     var cr = c.credit||1;
-    if(it.when==="taken") sl.earned+=cr; else sl.planned+=cr;
-    sl.courses.push({id:it.id,name:c.name,level:c.level,year:it.year,when:it.when});
+    if(it.when==="taken"){ sl.earned+=cr*earnedFactor(it.f,it.s,c.credit); } else sl.planned+=cr;
+    sl.courses.push({id:it.id,name:c.name,level:c.level,year:it.year,when:it.when,f:it.f,s:it.s});
   }
 }
 function creditTotals(){
   var e=0,p=0;
-  plan.taken.forEach(function(t){var c=CBY[t.id];if(c)e+=c.credit||1;});
+  plan.taken.forEach(function(t){var c=CBY[t.id];if(c)e+=(c.credit||1)*earnedFactor(t.f,t.s,c.credit);});
   [9,10,11,12].forEach(function(g){plan.future[g].forEach(function(id){var c=CBY[id];if(c)p+=c.credit||1;});});
   return {earned:e,planned:p};
 }
@@ -413,6 +420,12 @@ function warnings(){
   if(psConflict){
     w.push("Your plan has Physical Science in a year after a Chemistry or Physics course. Physical Science must be taken before Chemistry or Physics (any level) - move or remove Physical Science.");
   }
+  // semester grades of F earn no credit
+  plan.taken.forEach(function(t){
+    var c=CBY[t.id]; if(!c) return;
+    var sem=[]; if(t.f==="F") sem.push("Fall"); if(t.s==="F") sem.push("Spring");
+    if(sem.length) w.push(c.name+": a grade of F in the "+sem.join(" and ")+" semester"+(sem.length>1?"s":"")+" does not count toward graduation. That credit must be made up (retake or credit recovery) - talk with your counselor.");
+  });
   // ACT/SAT
   w.push("Reminder: every student must take the ACT or SAT in grade 11 to earn a diploma (TCA 49-6-6001).");
   return w;
@@ -465,7 +478,9 @@ function groupRows(slots){
 
 function gradesText(t){
   var f=t.f||"", s=t.s||"";
-  return (f||s) ? "Fall Semester: "+esc(f||"-")+" &middot; Spring Semester: "+esc(s||"-") : "No grades entered yet";
+  var base=(f||s) ? "Fall Semester: "+esc(f||"-")+" &middot; Spring Semester: "+esc(s||"-") : "No grades entered yet";
+  if(f==="F"||s==="F") base+=' &middot; <strong style="color:var(--gap)">An F does not count toward graduation</strong>';
+  return base;
 }
 function renderTaken(){
   var host=$("#takenList");
@@ -965,7 +980,8 @@ function drawPlanOfStudy(){
     var u=[]; if(!slot) return u;
     slot.courses.slice().sort(function(a,b){return a.year-b.year;}).forEach(function(cc){
       var cr=(CBY[cc.id]&&CBY[cc.id].credit)||1, n=Math.max(1,Math.ceil(cr));
-      for(var i=0;i<n;i++) u.push({name:cc.name,f:true,s:cr>=1});
+      var failF=(cc.when==="taken"&&cc.f==="F"), failS=(cc.when==="taken"&&cc.s==="F");
+      for(var i=0;i<n;i++) u.push(cr>=1 ? {name:cc.name,f:!failF,s:!failS} : {name:cc.name,f:!(failF||failS),s:false});
     });
     return u;
   }
@@ -981,7 +997,7 @@ function drawPlanOfStudy(){
     var x=units(SL[key])[0];
     return x ? {text:x.name,f:x.f,s:x.s} : {text:label,f:false,s:false};
   }
-  var msRows=plan.taken.filter(function(t){return t.year===8&&CBY[t.id];}).map(function(t){return {text:CBY[t.id].name,f:true,s:false};});
+  var msRows=plan.taken.filter(function(t){return t.year===8&&CBY[t.id]&&earnedFactor(t.f,t.s,CBY[t.id].credit)>0;}).map(function(t){return {text:CBY[t.id].name,f:true,s:false};});
   while(msRows.length<2) msRows.push({text:"",f:false,s:false});
   var govU=units(SL["ss.gov"])[0], ecoU=units(SL["ss.econ"])[0];
   var govEco={text:(govU||ecoU)?[govU&&govU.name,ecoU&&ecoU.name].filter(Boolean).join(" / "):"US Government / Economics",f:!!govU,s:!!ecoU};

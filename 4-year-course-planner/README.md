@@ -30,6 +30,7 @@ The builder is the source of truth for course data. Regenerate the planner from 
 | **Save / Load** | PDF export and import, with reminders to keep the file. |
 
 ### Rules and warnings built in
+- **Grades of F:** a semester with an F does not count toward graduation. A full-year class with one F earns half its credit; two Fs earn none (and the class drops out of the requirement tables). The Dashboard warns and the exported form leaves that semester's X blank.
 - Prerequisite warnings (some can be taken "before or with" the course).
 - Physical Science must come before Chemistry or Physics (any level); adding it afterward is blocked.
 - A completed class cannot be added as a future class.

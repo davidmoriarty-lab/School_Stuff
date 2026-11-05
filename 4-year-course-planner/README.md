@@ -53,7 +53,7 @@ Each course lists which requirements it can satisfy. The `evaluate()` function a
 | File | Purpose |
 |---|---|
 | `courses.csv` | The catalog (one row per course; `Offered`, prerequisites, `Satisfies` keys, flags). |
-| `school.json` | School name, district, colors, logo, credit target (23), graduating classes (2027 to 2031). |
+| `school.json` | School name, district, colors, logo, credit target (23), graduating classes (2028 to 2031; the planner is for students who need the Computer Science credit). |
 | `master-schedule-mapping.csv` | Maps Master Schedule labels to catalog course IDs. |
 | `counselor-answers.md` | Counselor answers about Elective Focus and the rules still to be built. |
 | `README.md` | Column-by-column guide to the config files and the `Satisfies` keys. |

@@ -135,7 +135,7 @@
       </div>
       <div class="row" style="margin-top:12px">
         <div><label>Diploma credit target</label><input type="number" id="sCredit" step="0.5"></div>
-        <div><label>Graduating class years (comma separated)</label><input type="text" id="sYears" placeholder="2027,2028,2029,2030,2031"></div>
+        <div><label>Graduating class years (comma separated)</label><input type="text" id="sYears" placeholder="2028,2029,2030,2031"></div>
       </div>
       <div style="margin-top:12px">
         <label>Logo image (optional) - PNG or JPG, shown in the planner header and PDF</label>
@@ -1983,7 +1983,7 @@ DEFAULT_COURSES.forEach(function(c){ c.offered = SCHEDULE_OFFERED_2026_27.indexO
 var DEFAULT_SETTINGS={
   schoolName:"", districtName:"Williamson County Schools",
   colors:{primary:"#03244D",secondary:"#DD550C"},
-  logo:"", creditTarget:23, gradYears:[2027,2028,2029,2030,2031]
+  logo:"", creditTarget:23, gradYears:[2028,2029,2030,2031]
 };
 
 /* ---- project state ---- */
@@ -2344,7 +2344,7 @@ $("#btnGenerate").onclick=function(){
     colors:project.settings.colors,
     logo:project.settings.logo||"",
     creditTarget:project.settings.creditTarget||23,
-    gradYears:(project.settings.gradYears&&project.settings.gradYears.length?project.settings.gradYears:[2027,2028,2029,2030,2031]),
+    gradYears:(project.settings.gradYears&&project.settings.gradYears.length?project.settings.gradYears:[2028,2029,2030,2031]),
     requirements:REQUIREMENTS,
     courses:offered.map(function(c){return {
       id:c.id,code:c.code,name:c.name,department:c.department,level:c.level,grades:c.grades,

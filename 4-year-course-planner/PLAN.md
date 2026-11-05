@@ -334,7 +334,7 @@ course that is not in the guide, add a new row and fill every column.
   },
   "logoFile": "config/logo.png",        // Spartan head logo, added later; optional until then
   "creditTarget": 23,                   // Traditional Diploma total
-  "gradYears": [2027, 2028, 2029, 2030, 2031]
+  "gradYears": [2028, 2029, 2030, 2031]
 }
 ```
 

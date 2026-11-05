@@ -42,7 +42,8 @@ Each course lists which requirements it can satisfy. The `evaluate()` function a
 
 ### Saving
 - Auto-save in the browser's `localStorage`.
-- The exported PDF is hand-built (no libraries) with the plan data hidden in its metadata. Import only works on PDFs this planner made.
+- The exported PDF is a one-page landscape **4 Year Plan of Study** form (layout from `reference/Export Format.pdf`): a 9th to 12th grade grid of courses (Study Hall in the 7th row) with blank F/S (fall/spring grade) boxes, then requirement tables (Elective Focus, Science, Fine Arts / Computer Science, English, Social Studies, PE / Wellness, Math, World Language, Middle School credits) with X marks for fall/spring credit. Student name, class year, a notes line and the NOT AN OFFICIAL DOCUMENT banner are included. School logos are not yet on the form.
+- The PDF is hand-built (no libraries) with the plan data hidden in its metadata. Import only works on PDFs this planner made.
 
 ## Course catalog
 `config/courses.csv` holds **269 courses** across Math, Science, English, Social Studies, World Language, PE, Fine Arts, JROTC and CTE. Levels: Standard, Honors, AP, Dual Enrollment. IB courses are omitted. **124 are marked Offered (`Y`)**, matching the 2026-27 Master Schedule; only those appear in the app.

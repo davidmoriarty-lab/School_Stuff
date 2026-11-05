@@ -1004,44 +1004,184 @@ $("#impFile").onchange=function(e){ var f=e.target.files[0]; if(f) importPDF(f);
 function planPayload(){ return {v:1,name:plan.name,status:plan.status,gradYear:plan.gradYear,taken:plan.taken,future:plan.future,assign:plan.assign}; }
 
 function exportPDF(){
-  var lines=[];
-  var RED=[0.69,0,0.13];
-  function L(txt,size,bold,color){ lines.push({txt:String(txt),size:size||10,bold:!!bold,color:color||null}); }
-  L("*** NOT AN OFFICIAL DOCUMENT ***",13,true,RED);
-  L("This is a planning tool only. It does not guarantee graduation, course availability,",9,false,RED);
-  L("or placement. You must meet with your school counselor to finalize your schedule",9,false,RED);
-  L("and confirm your graduation requirements.",9,false,RED);
-  L(" ",6);
-  L((CFG.schoolName?CFG.schoolName+" - ":"")+"4-Year Course Plan",18,true);
-  L((plan.name||"(no name)")+"   Class of "+(plan.gradYear||""),12,false);
-  L("Current status: "+(plan.status||"not set")+"     Generated "+new Date().toLocaleDateString(),9,false);
-  L(" ",6);
-  var t=creditTotals();
-  L("Credits: "+t.earned+" earned + "+t.planned+" planned = "+(t.earned+t.planned)+" of "+(CFG.creditTarget||23),11);
-  L(" ",4);
-  L("REQUIREMENTS",13,true);
-  evaluate().forEach(function(s){
-    var lab = s.status==="met"?"MET":(s.status==="ontrack"?"ON TRACK":"NEEDED");
-    L(" - "+s.r.group+": "+s.r.label+"  ["+lab+"]  "+(s.earned+s.planned)+"/"+s.need,10);
-  });
-  L(" ",4);
-  L("CLASSES TAKEN",13,true);
-  if(!plan.taken.length) L("  (none)",10);
-  plan.taken.forEach(function(x){var c=CBY[x.id];L("  Grade "+x.year+": "+(c?c.name:x.id)+(c?" ("+LEVELN[c.level]+")":""),10);});
-  L(" ",4);
-  L("PLANNED CLASSES",13,true);
-  [9,10,11,12].forEach(function(g){
-    L("  Grade "+g+":",10);
-    if(!plan.future[g].length) L("    (none)",10);
-    plan.future[g].forEach(function(id){var c=CBY[id];L("    "+(c?c.name:id)+(c?" ("+LEVELN[c.level]+")":""),10);});
-  });
+  var stream = drawPlanOfStudy();
   var payload = "WCSPLANv1:"+btoa(unescape(encodeURIComponent(JSON.stringify(planPayload()))));
-  var bytes = buildPDF(lines, payload);
+  var bytes = buildPDF(stream, payload);
   var blob = new Blob([bytes],{type:"application/pdf"});
   var a=document.createElement("a");
   a.href=URL.createObjectURL(blob);
   a.download = "WCS-Plan-"+(plan.name||"student").replace(/[^A-Za-z0-9]+/g,"_")+"-"+(plan.gradYear||"")+".pdf";
   document.body.appendChild(a); a.click(); a.remove();
+}
+
+/* ----- "4 Year Plan of Study" form (landscape letter), drawn with raw PDF operators ----- */
+// Helvetica character widths (per 1000 em) for ASCII 32-126, used to wrap and center text.
+var HELV_W=[278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,278,278,584,584,584,556,1015,667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,944,667,667,611,278,278,278,469,556,333,556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,278,556,500,722,500,500,500,334,260,334,584];
+function textW(s,size,bold){
+  var w=0; s=String(s);
+  for(var i=0;i<s.length;i++){ var c=s.charCodeAt(i); w += (c>=32&&c<=126)?HELV_W[c-32]:556; }
+  return w*size/1000*(bold?1.07:1);
+}
+function hexRGB(h,fallback){
+  var m=/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(h||"");
+  return m ? [parseInt(m[1],16)/255,parseInt(m[2],16)/255,parseInt(m[3],16)/255] : fallback;
+}
+// Break text into at most maxLines lines that fit maxW; the last line ends in "..." if cut off.
+function wrapText(s,size,maxW,maxLines){
+  var words=String(s).split(/\s+/), lines=[], cur="";
+  for(var i=0;i<words.length;i++){
+    var t = cur ? cur+" "+words[i] : words[i];
+    if(textW(t,size)<=maxW || !cur){ cur=t; }
+    else { lines.push(cur); cur=words[i]; }
+  }
+  if(cur) lines.push(cur);
+  if(lines.length>maxLines){
+    lines=lines.slice(0,maxLines);
+    var last=lines[maxLines-1];
+    while(last.length>1 && textW(last+"...",size)>maxW) last=last.slice(0,-1);
+    lines[maxLines-1]=last+"...";
+  }
+  return lines.map(function(l){
+    while(l.length>1 && textW(l,size)>maxW) l=l.slice(0,-1);
+    return l;
+  });
+}
+
+function drawPlanOfStudy(){
+  var PW=792, PH=612, M=24, FW=PW-2*M;
+  var NAVY=hexRGB(CFG.colors&&CFG.colors.primary,[0.01,0.14,0.30]);
+  var RED=[0.69,0,0.13], GRAY=[0.85,0.85,0.85];
+  var out=[];
+  function col(c){ return c[0].toFixed(3)+" "+c[1].toFixed(3)+" "+c[2].toFixed(3); }
+  function T(txt,x,y,size,bold,color,align){
+    txt=String(txt); if(!txt) return;
+    var w=textW(txt,size,bold);
+    if(align==="center") x-=w/2; else if(align==="right") x-=w;
+    out.push(col(color||[0,0,0])+" rg BT "+(bold?"/F2 ":"/F1 ")+size+" Tf "+x.toFixed(2)+" "+y.toFixed(2)+" Td ("+pdfStr(txt)+") Tj ET");
+  }
+  function box(x,y,w,h,fill){            // y is the BOTTOM of the box
+    if(fill) out.push(col(fill)+" rg "+x.toFixed(2)+" "+y.toFixed(2)+" "+w.toFixed(2)+" "+h.toFixed(2)+" re f");
+    out.push("0 G 0.6 w "+x.toFixed(2)+" "+y.toFixed(2)+" "+w.toFixed(2)+" "+h.toFixed(2)+" re S");
+  }
+  function hline(x1,x2,y){ out.push("0 G 0.6 w "+x1.toFixed(2)+" "+y.toFixed(2)+" m "+x2.toFixed(2)+" "+y.toFixed(2)+" l S"); }
+
+  var slots=evaluate(), SL={};
+  slots.forEach(function(s){ SL[s.r.key]=s; });
+
+  /* --- top banner, title, student line --- */
+  T("NOT AN OFFICIAL DOCUMENT. Planning tool only: it does not guarantee graduation, course availability, or placement. Meet with your school counselor to finalize your schedule.",PW/2,PH-16,6.8,true,RED,"center");
+  T((CFG.schoolName||"School")+" 4 Year Plan of Study",PW/2,PH-46,20,true,NAVY,"center");
+  var infoY=PH-70;
+  T("Student Name: "+(plan.name||""),M+4,infoY,9.5,false);
+  T("Elective Focus: ",PW/2-60,infoY,9.5,false);
+  hline(PW/2-60+textW("Elective Focus: ",9.5),PW/2+90,infoY-2);
+  T("Class of: "+(plan.gradYear||""),PW-M-4,infoY,9.5,false,null,"right");
+
+  /* --- main grid: 4 grades x (course, F, S) --- */
+  var gridTop=infoY-10, hdrH=16, colW=FW/4, nameW=colW-36, fsW=18;
+  var perGrade={}, maxN=0;
+  [9,10,11,12].forEach(function(g){
+    var names=[];
+    plan.taken.forEach(function(t){ if(t.year===g){ var c=CBY[t.id]; names.push(c?c.name:t.id); } });
+    (plan.future[g]||[]).forEach(function(id){ var c=CBY[id]; names.push(c?c.name:id); });
+    perGrade[g]=names; if(names.length>maxN) maxN=names.length;
+  });
+  var rows=Math.max(7,maxN), rowH=Math.min(26,182/rows);
+  var ord={9:"9th",10:"10th",11:"11th",12:"12th"};
+  [9,10,11,12].forEach(function(g,gi){
+    var x=M+gi*colW;
+    box(x,gridTop-hdrH,nameW,hdrH); box(x+nameW,gridTop-hdrH,fsW,hdrH); box(x+nameW+fsW,gridTop-hdrH,fsW,hdrH);
+    T(ord[g]+" Grade",x+4,gridTop-11.5,10,false);
+    T("F",x+nameW+fsW/2,gridTop-11.5,9,false,null,"center");
+    T("S",x+nameW+fsW*1.5,gridTop-11.5,9,false,null,"center");
+    var list=perGrade[g].slice();
+    if(list.length && list.length<7){ while(list.length<6) list.push(""); list.push("Study Hall"); }
+    for(var r=0;r<rows;r++){
+      var top=gridTop-hdrH-r*rowH;
+      box(x,top-rowH,nameW,rowH); box(x+nameW,top-rowH,fsW,rowH); box(x+nameW+fsW,top-rowH,fsW,rowH);
+      var nm=list[r]||"";
+      if(nm){
+        var ls=wrapText(nm,8.5,nameW-8,rowH>=22?2:1);
+        ls.forEach(function(l,li){ T(l,x+4,top-9-li*9.5,8.5,false); });
+      }
+    }
+  });
+  var gridBottom=gridTop-hdrH-rows*rowH;
+
+  /* --- requirement tables --- */
+  // a "unit" is one credit of one course; a unit shows its course name and marks F (and S if a full credit)
+  function units(slot){
+    var u=[]; if(!slot) return u;
+    slot.courses.slice().sort(function(a,b){return a.year-b.year;}).forEach(function(cc){
+      var cr=(CBY[cc.id]&&CBY[cc.id].credit)||1, n=Math.max(1,Math.ceil(cr));
+      for(var i=0;i<n;i++) u.push({name:cc.name,f:true,s:cr>=1});
+    });
+    return u;
+  }
+  function seqRows(key,n,labels,prefix){
+    var u=units(SL[key]), rs=[];
+    for(var i=0;i<n;i++){
+      var x=u[i];
+      rs.push(x ? {text:(prefix?prefix[i]+": ":"")+x.name,f:x.f,s:x.s} : {text:labels[i],f:false,s:false});
+    }
+    return rs;
+  }
+  function singleRow(key,label){
+    var x=units(SL[key])[0];
+    return x ? {text:x.name,f:x.f,s:x.s} : {text:label,f:false,s:false};
+  }
+  var govU=units(SL["ss.gov"])[0], ecoU=units(SL["ss.econ"])[0];
+  var govEco={text:(govU||ecoU)?[govU&&govU.name,ecoU&&ecoU.name].filter(Boolean).join(" / "):"US Government / Economics",f:!!govU,s:!!ecoU};
+  var ROM=["I","II","III","IV"];
+  var tables=[
+    {title:"Elective Focus (3 credits)",rows:seqRows("electivefocus",3,["Focus I","Focus II","Focus III"],null)},
+    {title:"Science (3 credits)",rows:[singleRow("science.biology","Biology"),singleRow("science.chemphys","Chemistry or Physics"),singleRow("science.lab","3rd lab science")]},
+    {title:"Fine Arts / Computer Science (2 credits)",rows:[singleRow("finearts","Fine Arts (1 credit)"),singleRow("compsci","Computer Science (1 credit)")]},
+    {title:"English (4 credits)",rows:seqRows("english",4,["English I","English II","English III","English IV"],null)},
+    {title:"Social Studies (3.5 credits)",rows:[singleRow("ss.world","World History / Geography"),singleRow("ss.ushistory","US History"),govEco,singleRow("finance","Personal Finance")]},
+    {title:"PE / Wellness (1.5 credits)",rows:[singleRow("wellness","Lifetime Wellness"),singleRow("pe","Physical Education")]},
+    {title:"Math (4 credits)",rows:[singleRow("math.algebra1","Math I: Algebra I"),singleRow("math.geometry","Math II: Geometry"),singleRow("math.algebra2","Math III: Algebra II"),singleRow("math.fourth","Math IV: beyond Algebra II")]},
+    {title:"World Language (2 credits)**",rows:seqRows("worldlang",2,["World Language I","World Language II"],null),note:"**Must be in the same language"},
+    {title:"Credits Earned in Middle School",single:true,rows:[{text:"",f:false,s:false},{text:"",f:false,s:false}]}
+  ];
+  var tGap=14, tW=(FW-2*tGap)/3, tRowH=14, tFS=26, tTop=gridBottom-12;
+  var tableRowTops=[];
+  for(var tr=0;tr<3;tr++){
+    var maxRows=1;
+    for(var tc=0;tc<3;tc++){ var tb=tables[tr*3+tc]; if(tb.rows.length+1>maxRows) maxRows=tb.rows.length+1; }
+    tableRowTops.push(tTop);
+    for(var tc2=0;tc2<3;tc2++){
+      var T9=tables[tr*3+tc2], tx=M+tc2*(tW+tGap), cols=T9.single?1:2, tNameW=tW-(T9.single?tFS+8:2*tFS);
+      box(tx,tTop-tRowH,tNameW,tRowH,GRAY);
+      T(T9.title,tx+4,tTop-10,7.5,true);
+      if(T9.single){ box(tx+tNameW,tTop-tRowH,tW-tNameW,tRowH,GRAY); T("Credit",tx+tNameW+(tW-tNameW)/2,tTop-10,7.5,true,null,"center"); }
+      else {
+        box(tx+tNameW,tTop-tRowH,tFS,tRowH,GRAY); box(tx+tNameW+tFS,tTop-tRowH,tFS,tRowH,GRAY);
+        T("F",tx+tNameW+tFS/2,tTop-10,7.5,true,null,"center"); T("S",tx+tNameW+tFS*1.5,tTop-10,7.5,true,null,"center");
+      }
+      T9.rows.forEach(function(rw,ri){
+        var ry=tTop-tRowH*(ri+2);
+        box(tx,ry,tNameW,tRowH);
+        var txt=wrapText(rw.text,7,tNameW-8,1)[0]||"";
+        T(txt,tx+4,ry+4.5,7,false,rw.f||rw.s?null:[0.45,0.45,0.45]);
+        if(T9.single){ box(tx+tNameW,ry,tW-tNameW,tRowH); }
+        else {
+          box(tx+tNameW,ry,tFS,tRowH); box(tx+tNameW+tFS,ry,tFS,tRowH);
+          if(rw.f) T("X",tx+tNameW+tFS/2,ry+4.5,7,false,null,"center");
+          if(rw.s) T("X",tx+tNameW+tFS*1.5,ry+4.5,7,false,null,"center");
+        }
+      });
+      if(T9.note) T(T9.note,tx+4,tTop-tRowH*(T9.rows.length+2)-1,6.5,false);
+    }
+    tTop -= maxRows*tRowH+14;
+  }
+
+  /* --- notes + summary --- */
+  var tot=creditTotals();
+  T("Notes:",M+4,tTop-2,9,false);
+  hline(M+36,PW-M,tTop-4);
+  T("Credits: "+tot.earned+" earned + "+tot.planned+" planned = "+(tot.earned+tot.planned)+" of "+(CFG.creditTarget||23)+".   Current status: "+(plan.status||"not set")+".   Generated "+new Date().toLocaleDateString()+".",M+4,M-4,7,false,[0.35,0.35,0.35]);
+  return out.join("\n");
 }
 
 function importPDF(file){
@@ -1115,42 +1255,22 @@ $("#importYes").onclick=function(){
 
 /* minimal text PDF writer with Helvetica, payload stored in /Keywords */
 function pdfStr(s){ return String(s==null?"":s).replace(/\\/g,"\\\\").replace(/\(/g,"\\(").replace(/\)/g,"\\)").replace(/[\r\n\t]/g," ").replace(/[^\x20-\x7E]/g,"?"); }
-function buildPDF(lines, keywords){
-  var pageW=612, pageH=792, margin=54, lead=1.6;
-  var pages=[[]], y=pageH-margin;
-  lines.forEach(function(ln){
-    var size=ln.size||10;
-    if(y - size*lead < margin){ pages.push([]); y=pageH-margin; }
-    pages[pages.length-1].push({txt:String(ln.txt==null?"":ln.txt),size:size,bold:!!ln.bold,color:ln.color||null,y:y});
-    y -= size*lead;
-  });
-
-  var objs=[];                       // objs[i] is body of PDF object number i+1
+function buildPDF(stream, keywords){
+  var pageW=792, pageH=612;           // US Letter, landscape
+  var objs=[];                        // objs[i] is body of PDF object number i+1
   function put(body){ objs.push(body); return objs.length; }
 
-  var oCatalog = put("");            // 1  (filled below)
-  var oPages   = put("");            // 2  (filled below)
-  var oFont    = put("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>");       // 3
-  var oFontB   = put("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>");  // 4
+  var oCatalog = put("");             // 1  (filled below)
+  var oPages   = put("");             // 2  (filled below)
+  var oFont    = put("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>");       // 3
+  var oFontB   = put("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>");  // 4
   var oInfo    = put("<< /Title (WCS 4-Year Course Plan) /Producer (WCS Planner) /Keywords ("+pdfStr(keywords)+") >>"); // 5
-
-  var pageNums=[];
-  pages.forEach(function(pg){
-    var stream="BT\n";
-    pg.forEach(function(it){
-      var col = it.color ? it.color.map(function(n){return (+n).toFixed(3);}).join(" ")+" rg\n" : "";
-      var reset = it.color ? "0 0 0 rg\n" : "";
-      stream += col+(it.bold?"/F2 ":"/F1 ")+it.size+" Tf\n1 0 0 1 "+margin.toFixed(2)+" "+it.y.toFixed(2)+" Tm\n("+pdfStr(it.txt)+") Tj\n"+reset;
-    });
-    stream+="ET";
-    var oContent = put("<< /Length "+stream.length+" >>\nstream\n"+stream+"\nendstream");
-    var oPage = put("<< /Type /Page /Parent "+oPages+" 0 R /MediaBox [0 0 "+pageW+" "+pageH+"]"+
-      " /Resources << /Font << /F1 "+oFont+" 0 R /F2 "+oFontB+" 0 R >> >> /Contents "+oContent+" 0 R >>");
-    pageNums.push(oPage);
-  });
+  var oContent = put("<< /Length "+stream.length+" >>\nstream\n"+stream+"\nendstream");
+  var oPage    = put("<< /Type /Page /Parent "+oPages+" 0 R /MediaBox [0 0 "+pageW+" "+pageH+"]"+
+    " /Resources << /Font << /F1 "+oFont+" 0 R /F2 "+oFontB+" 0 R >> >> /Contents "+oContent+" 0 R >>");
 
   objs[oCatalog-1] = "<< /Type /Catalog /Pages "+oPages+" 0 R >>";
-  objs[oPages-1]   = "<< /Type /Pages /Count "+pageNums.length+" /Kids ["+pageNums.map(function(n){return n+" 0 R";}).join(" ")+"] >>";
+  objs[oPages-1]   = "<< /Type /Pages /Count 1 /Kids ["+oPage+" 0 R] >>";
 
   var full="%PDF-1.4\n%\xE2\xE3\xCF\xD3\n";
   var offsets=[];

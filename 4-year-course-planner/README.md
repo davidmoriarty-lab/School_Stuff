@@ -1,3 +1,5 @@
+# **TEST THE PLANNER: [https://davidmoriarty-lab.github.io/School_Stuff/4-year-course-planner/wcs-planner.html](https://davidmoriarty-lab.github.io/School_Stuff/4-year-course-planner/wcs-planner.html)**
+
 # 4-Year Course Planner
 
 A tool for students at Summit High School (Williamson County Schools, Tennessee) to plan their high school career. It is two self-contained HTML files that run in a browser with no server and no install.

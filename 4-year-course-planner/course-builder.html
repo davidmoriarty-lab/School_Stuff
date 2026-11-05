@@ -335,7 +335,7 @@ dialog#pickerModal{width:min(940px,96vw)}
 
   <section id="p-taken">
     <h2>Classes Taken</h2>
-    <p class="muted">Add classes you have already completed. Use the same steps as Future Classes: find the course, choose the year you took it.</p>
+    <p class="muted">Add classes you have already completed. Find the course, choose the year you took it, and enter your Fall Semester Grade and Spring Semester Grade. Took Algebra I, Geometry, or a World Language in middle school? Choose <strong>Middle School</strong> as the year.</p>
     <div class="infobox">
       <strong>Already have last year's plan?</strong> If you saved a PDF from this planner last year, go to the <strong>Save / Load</strong> tab and choose <strong>Import a PDF</strong>. Your completed classes will load in automatically, so you do not have to add them one by one. The PDF must have been created by this same planner - a school transcript or any other PDF will not work.
     </div>
@@ -436,17 +436,31 @@ dialog#pickerModal{width:min(940px,96vw)}
 </dialog>
 
 <dialog id="pickModal">
-  <div class="dlg-head">Which year did you take this?</div>
+  <div class="dlg-head">When did you take this class?</div>
   <div class="dlg-body">
     <p class="kv"><b id="pkCourse"></b></p>
     <label style="font-size:13px;font-weight:700;display:block">Year completed</label>
     <select id="pkYear"></select>
     <div id="pkWarn" style="margin-top:10px"></div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:12px">
+      <div><label style="font-size:13px;font-weight:700;display:block">Fall Semester Grade</label><select id="pkFall"></select></div>
+      <div><label style="font-size:13px;font-weight:700;display:block">Spring Semester Grade</label><select id="pkSpring"></select></div>
+    </div>
+    <p class="muted" style="margin:8px 0 0">Leave a grade blank if you do not have it yet, for example a class you are taking this year.</p>
   </div>
   <div class="dlg-foot">
     <button class="act ghost" id="pkCancel">Cancel</button>
     <button class="act" id="pkAdd">Add class</button>
   </div>
+</dialog>
+
+<dialog id="gradesModal">
+  <div class="dlg-head" id="gmTitle">Enter your grades</div>
+  <div class="dlg-body">
+    <p class="kv" id="gmIntro"></p>
+    <div id="gmRows" style="max-height:52vh;overflow:auto"></div>
+  </div>
+  <div class="dlg-foot"><button class="act" id="gmDone">Done</button></div>
 </dialog>
 </script>
 
@@ -457,7 +471,10 @@ var COURSES = CFG.courses;
 var REQS = CFG.requirements;
 var CBY = {}; COURSES.forEach(function(c){CBY[c.id]=c;});
 var LEVELN = {Standard:"Standard",Honors:"Honors",AP:"AP",DualEnrollment:"Dual Enrollment"};
-var GRADE_LABEL = {9:"Grade 9",10:"Grade 10",11:"Grade 11",12:"Grade 12"};
+var GRADE_LABEL = {8:"Middle School",9:"Grade 9",10:"Grade 10",11:"Grade 11",12:"Grade 12"};
+var GR_OPTS = ["A","B","C","D","F","P"];            // semester grades a student can enter
+var MS_DEPTS = ["Math","World Language"];            // departments that can be taken for credit in middle school
+function yearText(y){ return y===8 ? "middle school" : "grade "+y; }
 var STATUS_GRADE = {Freshman:9,Sophomore:10,Junior:11,Senior:12};
 var NEXT_STATUS = {Freshman:"Sophomore",Sophomore:"Junior",Junior:"Senior",Senior:null};
 var STORE = "wcs_student_plan";
@@ -598,7 +615,7 @@ function warnings(){
   allPlanned().forEach(function(it){
     var c=CBY[it.id]; if(!c||!c.prereqs||!c.prereqs.length) return;
     var miss = unmetPrereqs(c, it.year, it.when);
-    if(miss.length) w.push(c.name+" (Grade "+it.year+"): prerequisite not met - "+miss.join("; ")+".");
+    if(miss.length) w.push(c.name+" ("+(it.year===8?"Middle School":"Grade "+it.year)+"): prerequisite not met - "+miss.join("; ")+".");
   });
   // Physical Science must come before Chemistry or Physics, never after
   var cg=coursesWithGrades();
@@ -658,18 +675,28 @@ function groupRows(slots){
   return groups;
 }
 
+function gradesText(t){
+  var f=t.f||"", s=t.s||"";
+  return (f||s) ? "Fall Semester: "+esc(f||"-")+" &middot; Spring Semester: "+esc(s||"-") : "No grades entered yet";
+}
 function renderTaken(){
   var host=$("#takenList");
   if(!plan.taken.length){ host.innerHTML='<p class="muted">No completed classes added yet.</p>'; return; }
   var byYear={};
   plan.taken.forEach(function(t,idx){ (byYear[t.year]=byYear[t.year]||[]).push({t:t,idx:idx}); });
-  host.innerHTML = [9,10,11,12].filter(function(g){return byYear[g];}).map(function(g){
+  host.innerHTML = [8,9,10,11,12].filter(function(g){return byYear[g];}).map(function(g){
     return "<h3>"+GRADE_LABEL[g]+"</h3>"+byYear[g].map(function(o){
       var c=CBY[o.t.id]; if(!c) return "";
-      return '<div class="coursechip" data-open="'+c.id+'">'+esc(c.name)+' <span class="lv">'+LEVELN[c.level]+" &middot; "+(c.credit||1)+' cr</span> <button class="mini" data-del="'+o.idx+'">Remove</button></div>';
+      return '<div class="coursechip" data-open="'+c.id+'">'+esc(c.name)+' <span class="lv">'+LEVELN[c.level]+" &middot; "+(c.credit||1)+' cr</span> '+
+        '<button class="mini" data-grades="'+o.idx+'">Edit grades</button> <button class="mini" data-del="'+o.idx+'">Remove</button>'+
+        '<div class="lv">'+gradesText(o.t)+'</div></div>';
     }).join("");
   }).join("");
   wireChips(host);
+  $all("[data-grades]",host).forEach(function(b){b.onclick=function(e){
+    e.stopPropagation();
+    openGradesModal([+b.dataset.grades],"Edit grades","Choose your Fall Semester Grade and Spring Semester Grade. Leave a grade blank if you do not have it yet.",null);
+  };});
   $all("[data-del]",host).forEach(function(b){b.onclick=function(e){
     e.stopPropagation();
     var idx=+b.dataset.del, t=plan.taken[idx], c=t&&CBY[t.id];
@@ -678,6 +705,36 @@ function renderTaken(){
     });
   };});
 }
+
+/* ----- grades dialog: enter Fall / Spring semester grades for one or more completed classes ----- */
+var gradesModal=$("#gradesModal"), gmCb=null;
+function gradeOptions(sel,val){
+  sel.innerHTML="";
+  [["", "Select..."]].concat(GR_OPTS.map(function(g){return [g,g];})).forEach(function(p){
+    var o=document.createElement("option"); o.value=p[0]; o.textContent=p[1]; sel.appendChild(o);
+  });
+  sel.value=val||"";
+}
+function openGradesModal(idxs,title,intro,cb){
+  $("#gmTitle").textContent=title; $("#gmIntro").textContent=intro; gmCb=cb||null;
+  var host=$("#gmRows"); host.innerHTML="";
+  idxs.forEach(function(i){
+    var t=plan.taken[i], c=t&&CBY[t.id]; if(!c) return;
+    var row=document.createElement("div"); row.className="futrow";
+    row.innerHTML='<div class="fleft"><div class="fname">'+esc(c.name)+'</div><div class="muted">'+esc(GRADE_LABEL[t.year]||"")+'</div></div>'+
+      '<div class="fright" style="display:flex;gap:12px;flex-wrap:wrap">'+
+      '<div><label style="font-size:13px;font-weight:700;display:block">Fall Semester Grade</label><select data-k="f"></select></div>'+
+      '<div><label style="font-size:13px;font-weight:700;display:block">Spring Semester Grade</label><select data-k="s"></select></div></div>';
+    $all("select",row).forEach(function(sel){
+      var k=sel.dataset.k; gradeOptions(sel,t[k]);
+      sel.onchange=function(){ t[k]=sel.value; save(); };
+    });
+    host.appendChild(row);
+  });
+  gradesModal.showModal();
+}
+$("#gmDone").onclick=function(){ gradesModal.close(); };
+gradesModal.addEventListener("close",function(){ var f=gmCb; gmCb=null; renderAll(); if(f) f(); });
 
 /* ----- confirmation dialog ----- */
 var confirmModal=$("#confirmModal"), confirmCb=null;
@@ -754,7 +811,7 @@ function renderTracker(){
     return "<h3>"+esc(g.group)+"</h3>"+g.cells.map(function(s){
       var lab = s.status==="met"?"Met":(s.status==="ontrack"?"On track":"Still needed");
       var list = s.courses.length? "<ul>"+s.courses.map(function(cc){
-          return "<li>"+esc(cc.name)+" ("+LEVELN[cc.level]+", grade "+cc.year+", "+(cc.when==="taken"?"completed":"planned")+")</li>";
+          return "<li>"+esc(cc.name)+" ("+LEVELN[cc.level]+", "+yearText(cc.year)+", "+(cc.when==="taken"?"completed":"planned")+")</li>";
         }).join("")+"</ul>" : '<p class="muted">No classes applied yet.</p>';
       var eligible = COURSES.filter(function(c){return (c.satisfies||[]).indexOf(s.r.key)>=0;}).length;
       return '<details class="reqrow"><summary><span>'+esc(s.r.label)+'</span>'+
@@ -910,8 +967,12 @@ function openGrade(c){
   gradeCourse=c;
   $("#pkCourse").textContent = c.name+" ("+LEVELN[c.level]+")";
   var sel=$("#pkYear"); sel.innerHTML="";
+  if(MS_DEPTS.indexOf(c.department)>=0){
+    var m=document.createElement("option"); m.value=8; m.textContent="Middle School (credit earned before 9th grade)"; sel.appendChild(m);
+  }
   var grades = (c.grades&&c.grades.length)?c.grades:[9,10,11,12];
   grades.forEach(function(g){var o=document.createElement("option");o.value=g;o.textContent=GRADE_LABEL[g]+" (completed)";sel.appendChild(o);});
+  gradeOptions($("#pkFall"),""); gradeOptions($("#pkSpring"),"");
   updateGradeWarn(); sel.onchange=updateGradeWarn;
   pickModal.showModal();
 }
@@ -923,7 +984,7 @@ function updateGradeWarn(){
 $("#pkCancel").onclick=function(){ pickModal.close(); };
 $("#pkAdd").onclick=function(){
   var g=+$("#pkYear").value;
-  plan.taken.push({id:gradeCourse.id, year:g});
+  plan.taken.push({id:gradeCourse.id, year:g, f:$("#pkFall").value, s:$("#pkSpring").value});
   save(); pickModal.close();
   if(pickerModal.open) renderPickerChosen(); else renderAll();
 };
@@ -986,7 +1047,7 @@ function renderPickerChosen(){
   } else {
     var added=plan.taken.slice(pickerBaseTaken);
     host.innerHTML = added.length ? added.map(function(t,i){var c=CBY[t.id]; if(!c) return "";
-      return '<div class="chosenitem"><span>'+esc(c.name)+'<br><span class="meta">'+LEVELN[c.level]+' &middot; grade '+t.year+'</span></span><button class="mini" data-xt="'+(pickerBaseTaken+i)+'">Remove</button></div>';
+      return '<div class="chosenitem"><span>'+esc(c.name)+'<br><span class="meta">'+LEVELN[c.level]+' &middot; '+yearText(t.year)+(t.f||t.s?' &middot; Fall '+esc(t.f||'-')+', Spring '+esc(t.s||'-'):'')+'</span></span><button class="mini" data-xt="'+(pickerBaseTaken+i)+'">Remove</button></div>';
     }).join("") : '<p class="muted">Nothing added yet in this window.</p>';
     $all("[data-xt]",host).forEach(function(b){b.onclick=function(){ plan.taken.splice(+b.dataset.xt,1); save(); renderPickerChosen(); renderPickerList(); };});
   }
@@ -1082,8 +1143,8 @@ function drawPlanOfStudy(){
   var perGrade={}, maxN=0;
   [9,10,11,12].forEach(function(g){
     var names=[];
-    plan.taken.forEach(function(t){ if(t.year===g){ var c=CBY[t.id]; names.push(c?c.name:t.id); } });
-    (plan.future[g]||[]).forEach(function(id){ var c=CBY[id]; names.push(c?c.name:id); });
+    plan.taken.forEach(function(t){ if(t.year===g){ var c=CBY[t.id]; names.push({n:c?c.name:t.id,f:t.f||"",s:t.s||""}); } });
+    (plan.future[g]||[]).forEach(function(id){ var c=CBY[id]; names.push({n:c?c.name:id,f:"",s:""}); });
     perGrade[g]=names; if(names.length>maxN) maxN=names.length;
   });
   var rows=Math.max(7,maxN), rowH=Math.min(26,182/rows);
@@ -1095,11 +1156,13 @@ function drawPlanOfStudy(){
     T("F",x+nameW+fsW/2,gridTop-11.5,9,false,null,"center");
     T("S",x+nameW+fsW*1.5,gridTop-11.5,9,false,null,"center");
     var list=perGrade[g].slice();
-    if(list.length && list.length<7){ while(list.length<6) list.push(""); list.push("Study Hall"); }
+    if(list.length && list.length<7){ while(list.length<6) list.push({n:"",f:"",s:""}); list.push({n:"Study Hall",f:"",s:""}); }
     for(var r=0;r<rows;r++){
       var top=gridTop-hdrH-r*rowH;
       box(x,top-rowH,nameW,rowH); box(x+nameW,top-rowH,fsW,rowH); box(x+nameW+fsW,top-rowH,fsW,rowH);
-      var nm=list[r]||"";
+      var it=list[r]||{n:"",f:"",s:""}, nm=it.n;
+      if(it.f) T(it.f,x+nameW+fsW/2,top-rowH/2-3,9,false,null,"center");
+      if(it.s) T(it.s,x+nameW+fsW*1.5,top-rowH/2-3,9,false,null,"center");
       if(nm){
         var ls=wrapText(nm,8.5,nameW-8,rowH>=22?2:1);
         ls.forEach(function(l,li){ T(l,x+4,top-9-li*9.5,8.5,false); });
@@ -1130,6 +1193,8 @@ function drawPlanOfStudy(){
     var x=units(SL[key])[0];
     return x ? {text:x.name,f:x.f,s:x.s} : {text:label,f:false,s:false};
   }
+  var msRows=plan.taken.filter(function(t){return t.year===8&&CBY[t.id];}).map(function(t){return {text:CBY[t.id].name,f:true,s:false};});
+  while(msRows.length<2) msRows.push({text:"",f:false,s:false});
   var govU=units(SL["ss.gov"])[0], ecoU=units(SL["ss.econ"])[0];
   var govEco={text:(govU||ecoU)?[govU&&govU.name,ecoU&&ecoU.name].filter(Boolean).join(" / "):"US Government / Economics",f:!!govU,s:!!ecoU};
   var ROM=["I","II","III","IV"];
@@ -1142,7 +1207,7 @@ function drawPlanOfStudy(){
     {title:"PE / Wellness (1.5 credits)",rows:[singleRow("wellness","Lifetime Wellness"),singleRow("pe","Physical Education")]},
     {title:"Math (4 credits)",rows:[singleRow("math.algebra1","Math I: Algebra I"),singleRow("math.geometry","Math II: Geometry"),singleRow("math.algebra2","Math III: Algebra II"),singleRow("math.fourth","Math IV: beyond Algebra II")]},
     {title:"World Language (2 credits)**",rows:seqRows("worldlang",2,["World Language I","World Language II"],null),note:"**Must be in the same language"},
-    {title:"Credits Earned in Middle School",single:true,rows:[{text:"",f:false,s:false},{text:"",f:false,s:false}]}
+    {title:"Credits Earned in Middle School",single:true,rows:msRows}
   ];
   var tGap=14, tW=(FW-2*tGap)/3, tRowH=14, tFS=26, tTop=gridBottom-12;
   var tableRowTops=[];
@@ -1164,7 +1229,7 @@ function drawPlanOfStudy(){
         box(tx,ry,tNameW,tRowH);
         var txt=wrapText(rw.text,7,tNameW-8,1)[0]||"";
         T(txt,tx+4,ry+4.5,7,false,rw.f||rw.s?null:[0.45,0.45,0.45]);
-        if(T9.single){ box(tx+tNameW,ry,tW-tNameW,tRowH); }
+        if(T9.single){ box(tx+tNameW,ry,tW-tNameW,tRowH); if(rw.f) T("X",tx+tNameW+(tW-tNameW)/2,ry+4.5,7,false,null,"center"); }
         else {
           box(tx+tNameW,ry,tFS,tRowH); box(tx+tNameW+tFS,ry,tFS,tRowH);
           if(rw.f) T("X",tx+tNameW+tFS/2,ry+4.5,7,false,null,"center");
@@ -1234,23 +1299,31 @@ $("#importNo").onclick=function(){ importModal.close(); save(); renderAll(); goD
 $("#importYes").onclick=function(){
   importModal.close();
   var have={}; plan.taken.forEach(function(t){ have[t.id]=1; });
+  var moved=[];
   [9,10,11,12].forEach(function(g){
-    (plan.future[g]||[]).forEach(function(id){ if(!have[id]){ plan.taken.push({id:id,year:g}); have[id]=1; } });
+    (plan.future[g]||[]).forEach(function(id){
+      if(!have[id]){ plan.taken.push({id:id,year:g,f:"",s:""}); moved.push(plan.taken.length-1); have[id]=1; }
+    });
   });
   plan.future={9:[],10:[],11:[],12:[]};
   plan.assign={};
   save(); renderAll(); goDash();
   var s=plan.status, ns=s?NEXT_STATUS[s]:null;
-  if(s && ns){
-    askConfirmYN(
-      "You were a "+s+" in that plan. Since you finished those classes, update your status to "+ns+"?",
-      "Yes, I am a "+ns+" now", "No, leave it as "+s,
-      function(){ plan.status=ns; $("#dStatus").value=ns; save(); renderAll(); },
-      "Update your status?"
-    );
-  } else if(s==="Senior"){
-    alert("Those classes are now in your Classes Taken list. You are marked as a Senior - review the Requirement Tracker with your counselor.");
+  function askStatus(){
+    if(s && ns){
+      askConfirmYN(
+        "You were a "+s+" in that plan. Since you finished those classes, update your status to "+ns+"?",
+        "Yes, I am a "+ns+" now", "No, leave it as "+s,
+        function(){ plan.status=ns; $("#dStatus").value=ns; save(); renderAll(); },
+        "Update your status?"
+      );
+    } else if(s==="Senior"){
+      alert("Those classes are now in your Classes Taken list. You are marked as a Senior - review the Requirement Tracker with your counselor.");
+    }
   }
+  if(moved.length){
+    openGradesModal(moved,"What grades did you earn?","You finished these classes, so enter your Fall Semester Grade and Spring Semester Grade for each one. Leave a grade blank if you do not have it.",askStatus);
+  } else { askStatus(); }
 };
 
 /* minimal text PDF writer with Helvetica, payload stored in /Keywords */

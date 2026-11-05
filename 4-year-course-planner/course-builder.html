@@ -748,41 +748,109 @@ function gradeOptions(sel,val){
   });
   sel.value=val||"";
 }
-function openGradesModal(idxs,title,intro,cb){
+var gmState={drop:{},orig:{},swap:{},allow:false};
+// "Family" of a class name with the level words removed, so AP / Honors / Standard versions match each other.
+function baseName(n){ return String(n).toLowerCase().replace(/\b(honors|advanced placement|dual enrollment|ap)\b/g," ").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim(); }
+function swapSelectHTML(orig,curId,query){
+  var have={}; plan.taken.forEach(function(t){ have[t.id]=1; });
+  var b=baseName(orig.name), w=b.split(" ")[0], q=(query||"").toLowerCase();
+  var rel=[], dept=[], rest={};
+  COURSES.forEach(function(x){
+    if(x.id===orig.id || (have[x.id] && x.id!==curId)) return;
+    if(q && (x.name+" "+x.department).toLowerCase().indexOf(q)<0) return;
+    var bn=baseName(x.name);
+    if(bn===b || bn.indexOf(b)>=0 || b.indexOf(bn)>=0) rel.push(x);
+    else if(x.department===orig.department) dept.push(x);
+    else (rest[x.department]=rest[x.department]||[]).push(x);
+  });
+  function opts(list){ return list.map(function(x){ return '<option value="'+esc(x.id)+'"'+(x.id===curId?" selected":"")+'>'+esc(x.name)+' ('+LEVELN[x.level]+')</option>'; }).join(""); }
+  var h='<option value="">Choose a class...</option>';
+  if(rel.length) h+='<optgroup label="Similar classes">'+opts(rel)+'</optgroup>';
+  if(dept.length) h+='<optgroup label="Other '+esc(orig.department)+' classes">'+opts(dept)+'</optgroup>';
+  Object.keys(rest).sort().forEach(function(d){ h+='<optgroup label="'+esc(d)+'">'+opts(rest[d])+'</optgroup>'; });
+  return h;
+}
+function openGradesModal(idxs,title,intro,cb,allowChange){
   $("#gmTitle").textContent=title; $("#gmIntro").textContent=intro; gmCb=cb||null;
+  gmState={drop:{},orig:{},swap:{},allow:!!allowChange};
   var host=$("#gmRows"); host.innerHTML="";
-  idxs.forEach(function(i){
-    var t=plan.taken[i], c=t&&CBY[t.id]; if(!c) return;
-    var row=document.createElement("div"); row.className="futrow";
-    var left='<div class="fleft"><div class="fname">'+esc(c.name)+'</div><div class="muted">'+esc(GRADE_LABEL[t.year]||"")+(isHalf(c)?" &middot; one semester":"")+'</div></div>';
+  idxs.forEach(function(i){ var t=plan.taken[i]; if(t&&CBY[t.id]){ gmState.orig[i]=t.id; host.appendChild(buildGradeRow(i)); } });
+  gradesModal.showModal();
+}
+function buildGradeRow(i){
+  var t=plan.taken[i], c=CBY[t.id], orig=CBY[gmState.orig[i]]||c, dropped=!!gmState.drop[i];
+  var row=document.createElement("div"); row.className="futrow";
+  var swapped = t.id!==gmState.orig[i];
+  var left='<div class="fleft"><div class="fname">'+esc(c.name)+' <span class="muted">('+LEVELN[c.level]+')</span></div><div class="muted">'+esc(GRADE_LABEL[t.year]||"")+(isHalf(c)?" &middot; one semester":"")+'</div>';
+  if(gmState.allow){
+    var act = dropped ? "drop" : ((swapped||gmState.swap[i]) ? "swap" : "took");
+    left+='<div style="margin-top:8px"><label style="font-size:13px;font-weight:700;display:block">What happened with this class?</label>'+
+      '<select data-act><option value="took"'+(act==="took"?" selected":"")+'>I took it as planned</option>'+
+      '<option value="swap"'+(act==="swap"?" selected":"")+'>I was switched to a different class (or level)</option>'+
+      '<option value="drop"'+(act==="drop"?" selected":"")+'>I dropped it</option></select></div>';
+    if(act==="swap"){
+      left+='<div style="margin-top:6px"><label style="font-size:13px;font-weight:700;display:block">Which class did you take instead?</label>'+
+        '<input type="text" data-find placeholder="Search any class" style="margin-bottom:4px"><br>'+
+        '<select data-swap style="max-width:100%">'+swapSelectHTML(orig,swapped?t.id:"","")+'</select></div>';
+    }
+    if(dropped) left+='<div class="muted" style="margin-top:6px">This class will be taken off your list when you click Done.</div>';
+  }
+  left+='</div>';
+  var right='';
+  if(!dropped){
     if(isHalf(c)){
       var cur = t.sem || ((t.f||t.s) ? semOf(t) : "");
-      row.innerHTML=left+'<div class="fright" style="display:flex;gap:14px;flex-wrap:wrap">'+
+      right='<div class="fright" style="display:flex;gap:14px;flex-wrap:wrap">'+
         '<div><label style="font-size:13px;font-weight:700;display:block">Which semester?</label>'+
         '<label style="margin-right:12px"><input type="radio" name="sem'+i+'" value="f"'+(cur==="f"?" checked":"")+'> Fall</label>'+
         '<label><input type="radio" name="sem'+i+'" value="s"'+(cur==="s"?" checked":"")+'> Spring</label></div>'+
         '<div><label style="font-size:13px;font-weight:700;display:block">Semester Grade</label><select data-one="1"></select></div></div>';
-      var sel=$("select",row), val=function(){ return cur==="s"?(t.s||""):(t.f||""); };
-      gradeOptions(sel,cur?val():""); sel.disabled=!cur;
-      $all("input[type=radio]",row).forEach(function(r){ r.onchange=function(){
-        cur=r.value; sel.disabled=false; setSemGrade(t,cur,sel.value); save();
-      };});
-      sel.onchange=function(){ if(cur){ setSemGrade(t,cur,sel.value); save(); } };
     } else {
-      row.innerHTML=left+'<div class="fright" style="display:flex;gap:12px;flex-wrap:wrap">'+
+      right='<div class="fright" style="display:flex;gap:12px;flex-wrap:wrap">'+
         '<div><label style="font-size:13px;font-weight:700;display:block">Fall Semester Grade</label><select data-k="f"></select></div>'+
         '<div><label style="font-size:13px;font-weight:700;display:block">Spring Semester Grade</label><select data-k="s"></select></div></div>';
-      $all("select",row).forEach(function(sel){
-        var k=sel.dataset.k; gradeOptions(sel,t[k]);
-        sel.onchange=function(){ t[k]=sel.value; save(); };
+    }
+  }
+  row.innerHTML=left+right;
+  function rebuild(){ var p=row.parentNode; if(p) p.replaceChild(buildGradeRow(i),row); }
+  var actSel=$("select[data-act]",row);
+  if(actSel) actSel.onchange=function(){
+    gmState.drop[i]=(actSel.value==="drop"); gmState.swap[i]=(actSel.value==="swap");
+    if(actSel.value!=="swap") t.id=gmState.orig[i];
+    save(); rebuild();
+  };
+  var swapSel=$("select[data-swap]",row), find=$("input[data-find]",row);
+  if(swapSel){
+    swapSel.onchange=function(){ if(swapSel.value){ t.id=swapSel.value; save(); rebuild(); } };
+    find.oninput=function(){ swapSel.innerHTML=swapSelectHTML(orig,swapped?t.id:"",find.value); };
+  }
+  if(!dropped){
+    if(isHalf(c)){
+      var cur2 = t.sem || ((t.f||t.s) ? semOf(t) : "");
+      var sel=$("select[data-one]",row), val=function(){ return cur2==="s"?(t.s||""):(t.f||""); };
+      gradeOptions(sel,cur2?val():""); sel.disabled=!cur2;
+      $all("input[type=radio]",row).forEach(function(r){ r.onchange=function(){
+        cur2=r.value; sel.disabled=false; setSemGrade(t,cur2,sel.value); save();
+      };});
+      sel.onchange=function(){ if(cur2){ setSemGrade(t,cur2,sel.value); save(); } };
+    } else {
+      $all("select[data-k]",row).forEach(function(s2){
+        var k=s2.dataset.k; gradeOptions(s2,t[k]);
+        s2.onchange=function(){ t[k]=s2.value; save(); };
       });
     }
-    host.appendChild(row);
-  });
-  gradesModal.showModal();
+  }
+  return row;
 }
 $("#gmDone").onclick=function(){ gradesModal.close(); };
-gradesModal.addEventListener("close",function(){ var f=gmCb; gmCb=null; renderAll(); if(f) f(); });
+gradesModal.addEventListener("close",function(){
+  // classes the student said they dropped come off the list (highest index first so the rest stay put)
+  var dr=Object.keys(gmState.drop).filter(function(k){return gmState.drop[k];}).map(Number).sort(function(a,b){return b-a;});
+  dr.forEach(function(k){ plan.taken.splice(k,1); });
+  if(dr.length) save();
+  gmState={drop:{},orig:{},swap:{},allow:false};
+  var f=gmCb; gmCb=null; renderAll(); if(f) f();
+});
 
 /* ----- confirmation dialog ----- */
 var confirmModal=$("#confirmModal"), confirmCb=null;
@@ -1399,7 +1467,7 @@ $("#importYes").onclick=function(){
     }
   }
   if(moved.length){
-    openGradesModal(moved,"What grades did you earn?","You finished these classes, so enter your Fall Semester Grade and Spring Semester Grade for each one. Leave a grade blank if you do not have it.",askStatus);
+    openGradesModal(moved,"Did anything change? What grades did you earn?","You finished these classes. For each one, tell us if you were switched to a different class or level (for example AP to Honors, or an entirely different class) or dropped it, then enter your Fall and Spring Semester Grades. Leave a grade blank if you do not have it.",askStatus,true);
   } else { askStatus(); }
 };
 

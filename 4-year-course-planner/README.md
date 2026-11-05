@@ -19,7 +19,7 @@ The builder is the source of truth for course data. Regenerate the planner from 
 2. They record classes already **taken** and the grade each was taken.
 3. They pick classes for **next school year** (the grade after their current status).
 4. The planner checks everything against the Traditional Diploma requirements and shows what is **met**, **on track**, or **still needed**.
-5. They **export a PDF** of the plan. Next year they **import that PDF** to restore everything. On import it asks whether the previously planned classes are now finished; Yes moves them to Classes Taken, asks for the Fall and Spring Semester Grade of each, then offers to advance the student's status one year.
+5. They **export a PDF** of the plan. Next year they **import that PDF** to restore everything. On import it asks whether the previously planned classes are now finished; Yes moves them to Classes Taken, asks whether each class was taken as planned, switched to a different class or level (any class in the catalog; similar classes such as AP to Honors are listed first), or dropped, asks for the Fall and Spring Semester Grade of each, then offers to advance the student's status one year.
 
 ### Tabs
 | Tab | Purpose |

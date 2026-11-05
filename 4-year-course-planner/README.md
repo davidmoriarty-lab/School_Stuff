@@ -17,13 +17,13 @@ The builder is the source of truth for course data. Regenerate the planner from 
 2. They record classes already **taken** and the grade each was taken.
 3. They pick classes for **next school year** (the grade after their current status).
 4. The planner checks everything against the Traditional Diploma requirements and shows what is **met**, **on track**, or **still needed**.
-5. They **export a PDF** of the plan. Next year they **import that PDF** to restore everything. On import it asks whether the previously planned classes are now finished; Yes moves them to Classes Taken and offers to advance the student's status one year.
+5. They **export a PDF** of the plan. Next year they **import that PDF** to restore everything. On import it asks whether the previously planned classes are now finished; Yes moves them to Classes Taken, asks for the Fall and Spring Semester Grade of each, then offers to advance the student's status one year.
 
 ### Tabs
 | Tab | Purpose |
 |---|---|
 | **Dashboard** | Name, status, graduating class; credits (earned + planned of 23) with a progress bar; warnings; requirements at a glance. |
-| **Classes Taken** | Add completed classes through a split picker (filters and search on the left, running list on the right), then choose the grade. Removing asks for confirmation. |
+| **Classes Taken** | Add completed classes through a split picker (filters and search on the left, running list on the right). For each class the student picks the year taken and enters a **Fall Semester Grade** and **Spring Semester Grade** (A, B, C, D, F or P; blank if not graded yet). Math and World Language classes can be taken as **Middle School** credit (for example Algebra I, Geometry, World Language I). An **Edit grades** button fixes grades later. Removing asks for confirmation. |
 | **Future Classes** | Shows only the one upcoming year. A course that can meet more than one requirement (for example AP Physics C as science or math) shows radio buttons so the student chooses. |
 | **Requirement Tracker** | Every requirement with a status badge; click to see the classes applied, or to list every class that could meet it. |
 | **Class Search** | Search by name or code; filter by department, level (Standard, Honors, AP, Dual Enrollment) and requirement met. |
@@ -42,7 +42,8 @@ Each course lists which requirements it can satisfy. The `evaluate()` function a
 
 ### Saving
 - Auto-save in the browser's `localStorage`.
-- The exported PDF is hand-built (no libraries) with the plan data hidden in its metadata. Import only works on PDFs this planner made.
+- The exported PDF is a one-page landscape **4 Year Plan of Study** form (layout from `reference/Export Format.pdf`): a 9th to 12th grade grid of courses (Study Hall in the 7th row) with the student's Fall (F) and Spring (S) grades in the boxes, then requirement tables (Elective Focus, Science, Fine Arts / Computer Science, English, Social Studies, PE / Wellness, Math, World Language, and Credits Earned in Middle School, filled from middle school classes) with X marks for fall/spring credit. Student name, class year, a notes line and the NOT AN OFFICIAL DOCUMENT banner are included. School logos are not yet on the form.
+- The PDF is hand-built (no libraries) with the plan data hidden in its metadata. Import only works on PDFs this planner made.
 
 ## Course catalog
 `config/courses.csv` holds **269 courses** across Math, Science, English, Social Studies, World Language, PE, Fine Arts, JROTC and CTE. Levels: Standard, Honors, AP, Dual Enrollment. IB courses are omitted. **124 are marked Offered (`Y`)**, matching the 2026-27 Master Schedule; only those appear in the app.

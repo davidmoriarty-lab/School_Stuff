@@ -440,7 +440,7 @@ dialog#pickerModal{width:min(940px,96vw)}
   <div class="dlg-body">
     <p class="kv"><b id="pkCourse"></b></p>
     <label style="font-size:13px;font-weight:700;display:block">Year completed</label>
-    <select id="pkYear"></select>
+    <div id="pkYears" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px"></div>
     <div id="pkWarn" style="margin-top:10px"></div>
     <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:12px">
       <div><label style="font-size:13px;font-weight:700;display:block">Fall Semester Grade</label><select id="pkFall"></select></div>
@@ -520,7 +520,7 @@ var DEPTS = []; COURSES.forEach(function(c){if(DEPTS.indexOf(c.department)<0)DEP
 DEPTS.sort();
 [["#sDept"]].forEach(function(x){DEPTS.forEach(function(d){var o=document.createElement("option");o.textContent=d;$(x[0]).appendChild(o);});});
 CFG.gradYears.forEach(function(y){
-  [ "#dYear","#pkYear" ].forEach(function(sel){var o=document.createElement("option");o.value=y;o.textContent=y;$(sel).appendChild(o);});
+  [ "#dYear" ].forEach(function(sel){var o=document.createElement("option");o.value=y;o.textContent=y;$(sel).appendChild(o);});
 });
 $("#dName").value = plan.name||"";
 $("#dYear").value = plan.gradYear||CFG.gradYears[0];
@@ -904,7 +904,7 @@ function openCourse(id){
   var landing = projectedRequirement(c);
   $("#cmBody").innerHTML =
     '<p class="kv"><b>'+esc(c.department)+" &middot; "+LEVELN[c.level]+" &middot; "+(c.credit||1)+" credit</b>"+(c.code?' <span class="muted">('+esc(c.code)+")</span>":"")+"</p>"+
-    '<p class="kv">Grades: '+((c.grades||[]).join(", ")||"-")+
+    '<p class="kv">Usually taken in grades: '+((c.grades||[]).join(", ")||"-")+
       (c.epso?' &nbsp; <span class="pill">EPSO</span>':"")+(c.ncaa?' <span class="pill">NCAA</span>':"")+(c.eoc?' <span class="pill">EOC exam</span>':"")+"</p>"+
     "<p>"+esc(c.description||"No description provided.")+"</p>"+
     (c.notes?'<p class="muted">'+esc(c.notes)+"</p>":"")+
@@ -978,27 +978,36 @@ function addFuture(id, silent){
 
 /* ----- grade chooser (for completed classes) ----- */
 var pickModal=$("#pickModal"), gradeCourse=null;
+function selectedYear(){ var r=$("#pkYears input:checked"); return r ? +r.value : 0; }
 function openGrade(c){
   gradeCourse=c;
   $("#pkCourse").textContent = c.name+" ("+LEVELN[c.level]+")";
-  var sel=$("#pkYear"); sel.innerHTML="";
-  if(MS_DEPTS.indexOf(c.department)>=0){
-    var m=document.createElement("option"); m.value=8; m.textContent="Middle School (credit earned before 9th grade)"; sel.appendChild(m);
-  }
-  var grades = (c.grades&&c.grades.length)?c.grades:[9,10,11,12];
-  grades.forEach(function(g){var o=document.createElement("option");o.value=g;o.textContent=GRADE_LABEL[g]+" (completed)";sel.appendChild(o);});
+  // every year is always available (accelerated students take upper-level classes early)
+  var host=$("#pkYears"); host.innerHTML="";
+  var opts=[];
+  if(MS_DEPTS.indexOf(c.department)>=0) opts.push([8,"Middle School"]);
+  [9,10,11,12].forEach(function(g){ opts.push([g,"Grade "+g]); });
+  opts.forEach(function(p){
+    var lb=document.createElement("label");
+    lb.style.cssText="display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:6px;padding:7px 12px;background:#faf9f6;cursor:pointer;font-size:16px";
+    lb.innerHTML='<input type="radio" name="pkyr" value="'+p[0]+'"> '+p[1];
+    host.appendChild(lb);
+  });
+  $all("input",host).forEach(function(r){ r.onchange=updateGradeWarn; });
   gradeOptions($("#pkFall"),""); gradeOptions($("#pkSpring"),"");
-  updateGradeWarn(); sel.onchange=updateGradeWarn;
+  updateGradeWarn();
   pickModal.showModal();
 }
 function updateGradeWarn(){
-  var g=+$("#pkYear").value;
+  var g=selectedYear();
+  $("#pkAdd").disabled = !g;
+  if(!g){ $("#pkWarn").innerHTML='<div class="muted">Choose the year you took this class.</div>'; return; }
   var miss=unmetPrereqs(gradeCourse,g,"taken");
   $("#pkWarn").innerHTML = miss.length ? '<div class="warnbox">You have not met the prerequisite for this class: '+esc(miss.join("; "))+'. You can still add it.</div>' : "";
 }
 $("#pkCancel").onclick=function(){ pickModal.close(); };
 $("#pkAdd").onclick=function(){
-  var g=+$("#pkYear").value;
+  var g=selectedYear(); if(!g) return;
   plan.taken.push({id:gradeCourse.id, year:g, f:$("#pkFall").value, s:$("#pkSpring").value});
   save(); pickModal.close();
   if(pickerModal.open) renderPickerChosen(); else renderAll();

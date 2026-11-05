@@ -229,9 +229,13 @@ dialog#pickerModal{width:min(940px,96vw)}
     <label style="font-size:13px;font-weight:700;display:block">Year completed</label>
     <div id="pkYears" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px"></div>
     <div id="pkWarn" style="margin-top:10px"></div>
+    <div id="pkSemWrap" style="display:none;margin-top:12px">
+      <label style="font-size:13px;font-weight:700;display:block">This is a one-semester class. Which semester did you take it?</label>
+      <div id="pkSems" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px"></div>
+    </div>
     <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:12px">
-      <div><label style="font-size:13px;font-weight:700;display:block">Fall Semester Grade</label><select id="pkFall"></select></div>
-      <div><label style="font-size:13px;font-weight:700;display:block">Spring Semester Grade</label><select id="pkSpring"></select></div>
+      <div id="pkFallBox"><label id="pkFallLbl" style="font-size:13px;font-weight:700;display:block">Fall Semester Grade</label><select id="pkFall"></select></div>
+      <div id="pkSpringBox"><label id="pkSpringLbl" style="font-size:13px;font-weight:700;display:block">Spring Semester Grade</label><select id="pkSpring"></select></div>
     </div>
     <p class="muted" style="margin:8px 0 0">Leave a grade blank if you do not have it yet, for example a class you are taking this year. A semester with an F does not count toward your graduation requirements.</p>
   </div>
@@ -262,6 +266,15 @@ var LEVELN = {Standard:"Standard",Honors:"Honors",AP:"AP",DualEnrollment:"Dual E
 var GRADE_LABEL = {8:"Middle School",9:"Grade 9",10:"Grade 10",11:"Grade 11",12:"Grade 12"};
 var GR_OPTS = ["A","B","C","D","F","P"];            // semester grades a student can enter
 var MS_DEPTS = ["Math","World Language"];            // departments that can be taken for credit in middle school
+// A one-semester class (credit under 1) is taken in either the Fall or the Spring semester, so it has one grade.
+function isHalf(c){ return !!c && (c.credit||1)<1; }
+function semOf(t){ return t.sem || (t.s && !t.f ? "s" : "f"); }          // "f" or "s"
+function setSemGrade(t,sem,grade){ t.sem=sem; t.f = sem==="f" ? grade : ""; t.s = sem==="s" ? grade : ""; }
+function gradeShort(t){
+  var c=CBY[t.id], f=t.f||"", s=t.s||"";
+  if(isHalf(c)){ var sm=semOf(t), g=sm==="s"?s:f; return (sm==="s"?"Spring ":"Fall ")+(g||"-"); }
+  return (f||s) ? "Fall "+f+", Spring "+s : "";
+}
 function yearText(y){ return y===8 ? "middle school" : "grade "+y; }
 // Share of a completed class's credit that was earned. A semester with an F earns nothing:
 // a full-year class loses half its credit per F; a one-semester class loses all of it.
@@ -320,7 +333,7 @@ $("#dStatus").onchange=function(){plan.status=this.value;save();renderAll();};
 /* ----- requirement engine ----- */
 function allPlanned(){
   var out=[];
-  plan.taken.forEach(function(t){out.push({id:t.id,year:t.year,when:"taken",f:t.f,s:t.s});});
+  plan.taken.forEach(function(t){out.push({id:t.id,year:t.year,when:"taken",f:t.f,s:t.s,sem:t.sem});});
   [9,10,11,12].forEach(function(g){plan.future[g].forEach(function(id){out.push({id:id,year:g,when:"planned"});});});
   return out;
 }
@@ -382,7 +395,7 @@ function evaluate(){
   function assign(sl,it,c){
     var cr = c.credit||1;
     if(it.when==="taken"){ sl.earned+=cr*earnedFactor(it.f,it.s,c.credit); } else sl.planned+=cr;
-    sl.courses.push({id:it.id,name:c.name,level:c.level,year:it.year,when:it.when,f:it.f,s:it.s});
+    sl.courses.push({id:it.id,name:c.name,level:c.level,year:it.year,when:it.when,f:it.f,s:it.s,sem:it.sem});
   }
 }
 function creditTotals(){
@@ -477,8 +490,13 @@ function groupRows(slots){
 }
 
 function gradesText(t){
-  var f=t.f||"", s=t.s||"";
-  var base=(f||s) ? "Fall Semester: "+esc(f||"-")+" &middot; Spring Semester: "+esc(s||"-") : "No grades entered yet";
+  var f=t.f||"", s=t.s||"", c=CBY[t.id], base;
+  if(isHalf(c)){
+    var sm=semOf(t), g=sm==="s"?s:f;
+    base = (t.sem||f||s) ? (sm==="s"?"Spring":"Fall")+" Semester only: "+esc(g||"no grade yet") : "Semester not chosen yet";
+  } else {
+    base=(f||s) ? "Fall Semester: "+esc(f||"-")+" &middot; Spring Semester: "+esc(s||"-") : "No grades entered yet";
+  }
   if(f==="F"||s==="F") base+=' &middot; <strong style="color:var(--gap)">An F does not count toward graduation</strong>';
   return base;
 }
@@ -524,14 +542,29 @@ function openGradesModal(idxs,title,intro,cb){
   idxs.forEach(function(i){
     var t=plan.taken[i], c=t&&CBY[t.id]; if(!c) return;
     var row=document.createElement("div"); row.className="futrow";
-    row.innerHTML='<div class="fleft"><div class="fname">'+esc(c.name)+'</div><div class="muted">'+esc(GRADE_LABEL[t.year]||"")+'</div></div>'+
-      '<div class="fright" style="display:flex;gap:12px;flex-wrap:wrap">'+
-      '<div><label style="font-size:13px;font-weight:700;display:block">Fall Semester Grade</label><select data-k="f"></select></div>'+
-      '<div><label style="font-size:13px;font-weight:700;display:block">Spring Semester Grade</label><select data-k="s"></select></div></div>';
-    $all("select",row).forEach(function(sel){
-      var k=sel.dataset.k; gradeOptions(sel,t[k]);
-      sel.onchange=function(){ t[k]=sel.value; save(); };
-    });
+    var left='<div class="fleft"><div class="fname">'+esc(c.name)+'</div><div class="muted">'+esc(GRADE_LABEL[t.year]||"")+(isHalf(c)?" &middot; one semester":"")+'</div></div>';
+    if(isHalf(c)){
+      var cur = t.sem || ((t.f||t.s) ? semOf(t) : "");
+      row.innerHTML=left+'<div class="fright" style="display:flex;gap:14px;flex-wrap:wrap">'+
+        '<div><label style="font-size:13px;font-weight:700;display:block">Which semester?</label>'+
+        '<label style="margin-right:12px"><input type="radio" name="sem'+i+'" value="f"'+(cur==="f"?" checked":"")+'> Fall</label>'+
+        '<label><input type="radio" name="sem'+i+'" value="s"'+(cur==="s"?" checked":"")+'> Spring</label></div>'+
+        '<div><label style="font-size:13px;font-weight:700;display:block">Semester Grade</label><select data-one="1"></select></div></div>';
+      var sel=$("select",row), val=function(){ return cur==="s"?(t.s||""):(t.f||""); };
+      gradeOptions(sel,cur?val():""); sel.disabled=!cur;
+      $all("input[type=radio]",row).forEach(function(r){ r.onchange=function(){
+        cur=r.value; sel.disabled=false; setSemGrade(t,cur,sel.value); save();
+      };});
+      sel.onchange=function(){ if(cur){ setSemGrade(t,cur,sel.value); save(); } };
+    } else {
+      row.innerHTML=left+'<div class="fright" style="display:flex;gap:12px;flex-wrap:wrap">'+
+        '<div><label style="font-size:13px;font-weight:700;display:block">Fall Semester Grade</label><select data-k="f"></select></div>'+
+        '<div><label style="font-size:13px;font-weight:700;display:block">Spring Semester Grade</label><select data-k="s"></select></div></div>';
+      $all("select",row).forEach(function(sel){
+        var k=sel.dataset.k; gradeOptions(sel,t[k]);
+        sel.onchange=function(){ t[k]=sel.value; save(); };
+      });
+    }
     host.appendChild(row);
   });
   gradesModal.showModal();
@@ -767,28 +800,46 @@ function addFuture(id, silent){
 /* ----- grade chooser (for completed classes) ----- */
 var pickModal=$("#pickModal"), gradeCourse=null;
 function selectedYear(){ var r=$("#pkYears input:checked"); return r ? +r.value : 0; }
+function selectedSem(){ var r=$("#pkSems input:checked"); return r ? r.value : ""; }
+function pkLayout(){
+  // one-semester classes show a Fall/Spring choice and a single grade for that semester
+  var half=isHalf(gradeCourse), sm=selectedSem();
+  $("#pkSemWrap").style.display = half ? "" : "none";
+  $("#pkFallBox").style.display = (half && sm!=="f") ? "none" : "";
+  $("#pkSpringBox").style.display = (half && sm!=="s") ? "none" : "";
+  $("#pkFallLbl").textContent = half ? "Semester Grade" : "Fall Semester Grade";
+  $("#pkSpringLbl").textContent = half ? "Semester Grade" : "Spring Semester Grade";
+  $("#pkAdd").disabled = !selectedYear() || (half && !sm);
+}
 function openGrade(c){
   gradeCourse=c;
-  $("#pkCourse").textContent = c.name+" ("+LEVELN[c.level]+")";
+  $("#pkCourse").textContent = c.name+" ("+LEVELN[c.level]+")"+(isHalf(c)?" - one semester":"");
   // every year is always available (accelerated students take upper-level classes early)
   var host=$("#pkYears"); host.innerHTML="";
   var opts=[];
   if(MS_DEPTS.indexOf(c.department)>=0) opts.push([8,"Middle School"]);
   [9,10,11,12].forEach(function(g){ opts.push([g,"Grade "+g]); });
+  var box="display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:6px;padding:7px 12px;background:#faf9f6;cursor:pointer;font-size:16px";
   opts.forEach(function(p){
-    var lb=document.createElement("label");
-    lb.style.cssText="display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:6px;padding:7px 12px;background:#faf9f6;cursor:pointer;font-size:16px";
+    var lb=document.createElement("label"); lb.style.cssText=box;
     lb.innerHTML='<input type="radio" name="pkyr" value="'+p[0]+'"> '+p[1];
     host.appendChild(lb);
   });
+  var sh=$("#pkSems"); sh.innerHTML="";
+  [["f","Fall semester"],["s","Spring semester"]].forEach(function(p){
+    var lb=document.createElement("label"); lb.style.cssText=box;
+    lb.innerHTML='<input type="radio" name="pksem" value="'+p[0]+'"> '+p[1];
+    sh.appendChild(lb);
+  });
   $all("input",host).forEach(function(r){ r.onchange=updateGradeWarn; });
+  $all("input",sh).forEach(function(r){ r.onchange=function(){ pkLayout(); }; });
   gradeOptions($("#pkFall"),""); gradeOptions($("#pkSpring"),"");
   updateGradeWarn();
   pickModal.showModal();
 }
 function updateGradeWarn(){
   var g=selectedYear();
-  $("#pkAdd").disabled = !g;
+  pkLayout();
   if(!g){ $("#pkWarn").innerHTML='<div class="muted">Choose the year you took this class.</div>'; return; }
   var miss=unmetPrereqs(gradeCourse,g,"taken");
   $("#pkWarn").innerHTML = miss.length ? '<div class="warnbox">You have not met the prerequisite for this class: '+esc(miss.join("; "))+'. You can still add it.</div>' : "";
@@ -796,7 +847,9 @@ function updateGradeWarn(){
 $("#pkCancel").onclick=function(){ pickModal.close(); };
 $("#pkAdd").onclick=function(){
   var g=selectedYear(); if(!g) return;
-  plan.taken.push({id:gradeCourse.id, year:g, f:$("#pkFall").value, s:$("#pkSpring").value});
+  var entry={id:gradeCourse.id, year:g, f:$("#pkFall").value, s:$("#pkSpring").value};
+  if(isHalf(gradeCourse)){ var sm=selectedSem(); if(!sm) return; setSemGrade(entry,sm,sm==="f"?$("#pkFall").value:$("#pkSpring").value); }
+  plan.taken.push(entry);
   save(); pickModal.close();
   if(pickerModal.open) renderPickerChosen(); else renderAll();
 };
@@ -859,7 +912,7 @@ function renderPickerChosen(){
   } else {
     var added=plan.taken.slice(pickerBaseTaken);
     host.innerHTML = added.length ? added.map(function(t,i){var c=CBY[t.id]; if(!c) return "";
-      return '<div class="chosenitem"><span>'+esc(c.name)+'<br><span class="meta">'+LEVELN[c.level]+' &middot; '+yearText(t.year)+(t.f||t.s?' &middot; Fall '+esc(t.f||'-')+', Spring '+esc(t.s||'-'):'')+'</span></span><button class="mini" data-xt="'+(pickerBaseTaken+i)+'">Remove</button></div>';
+      return '<div class="chosenitem"><span>'+esc(c.name)+'<br><span class="meta">'+LEVELN[c.level]+' &middot; '+yearText(t.year)+(gradeShort(t)?' &middot; '+esc(gradeShort(t)):'')+'</span></span><button class="mini" data-xt="'+(pickerBaseTaken+i)+'">Remove</button></div>';
     }).join("") : '<p class="muted">Nothing added yet in this window.</p>';
     $all("[data-xt]",host).forEach(function(b){b.onclick=function(){ plan.taken.splice(+b.dataset.xt,1); save(); renderPickerChosen(); renderPickerList(); };});
   }
@@ -990,7 +1043,7 @@ function drawPlanOfStudy(){
     slot.courses.slice().sort(function(a,b){return a.year-b.year;}).forEach(function(cc){
       var cr=(CBY[cc.id]&&CBY[cc.id].credit)||1, n=Math.max(1,Math.ceil(cr));
       var failF=(cc.when==="taken"&&cc.f==="F"), failS=(cc.when==="taken"&&cc.s==="F");
-      for(var i=0;i<n;i++) u.push(cr>=1 ? {name:cc.name,f:!failF,s:!failS} : {name:cc.name,f:!(failF||failS),s:false});
+      for(var i=0;i<n;i++) u.push(cr>=1 ? {name:cc.name,f:!failF,s:!failS} : (function(){ var sm=cc.sem||(cc.s&&!cc.f?"s":"f"), ok=!(failF||failS); return {name:cc.name,f:sm==="f"&&ok,s:sm==="s"&&ok}; })());
     });
     return u;
   }

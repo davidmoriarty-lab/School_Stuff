@@ -1233,7 +1233,6 @@ function drawPlanOfStudy(){
     T("F",x+nameW+fsW/2,gridTop-11.5,9,false,null,"center");
     T("S",x+nameW+fsW*1.5,gridTop-11.5,9,false,null,"center");
     var list=perGrade[g].slice();
-    if(list.length && list.length<7){ while(list.length<6) list.push({n:"",f:"",s:""}); list.push({n:"Study Hall",f:"",s:""}); }
     for(var r=0;r<rows;r++){
       var top=gridTop-hdrH-r*rowH;
       box(x,top-rowH,nameW,rowH); box(x+nameW,top-rowH,fsW,rowH); box(x+nameW+fsW,top-rowH,fsW,rowH);

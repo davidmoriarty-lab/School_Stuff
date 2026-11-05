@@ -43,7 +43,7 @@ Each course lists which requirements it can satisfy. The `evaluate()` function a
 
 ### Saving
 - Auto-save in the browser's `localStorage`.
-- The exported PDF is a one-page landscape **4 Year Plan of Study** form (layout from `reference/Export Format.pdf`): a 9th to 12th grade grid of courses (Study Hall in the 7th row) with the student's Fall (F) and Spring (S) grades in the boxes, then requirement tables (Elective Focus, Science, Fine Arts / Computer Science, English, Social Studies, PE / Wellness, Math, World Language, and Credits Earned in Middle School, filled from middle school classes) with X marks for fall/spring credit. Student name, class year, a notes line and the NOT AN OFFICIAL DOCUMENT banner are included. School logos are not yet on the form.
+- The exported PDF is a one-page landscape **4 Year Plan of Study** form (layout from `reference/Export Format.pdf`): a 9th to 12th grade grid of courses (study halls are not listed) with the student's Fall (F) and Spring (S) grades in the boxes, then requirement tables (Elective Focus, Science, Fine Arts / Computer Science, English, Social Studies, PE / Wellness, Math, World Language, and Credits Earned in Middle School, filled from middle school classes) with X marks for fall/spring credit. Student name, class year, a notes line and the NOT AN OFFICIAL DOCUMENT banner are included. School logos are not yet on the form.
 - The PDF is hand-built (no libraries) with the plan data hidden in its metadata. Import only works on PDFs this planner made.
 
 ## Course catalog

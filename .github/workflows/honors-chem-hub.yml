@@ -1,0 +1,46 @@
+name: Rebuild honors chemistry hub
+
+# Runs whenever files in honors-chemistry/Units (or the virtual lab list) change on main,
+# so the searchable index stays up to date without anyone running code.
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'honors-chemistry/Units/**'
+      - 'honors-chemistry/virtual-labs.csv'
+      - 'honors-chemistry/_build/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: honors-chem-hub
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install converters (Word to PDF, PDF text)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libreoffice-writer libreoffice-impress libreoffice-calc poppler-utils
+
+      - name: Build the hub
+        run: python3 honors-chemistry/_build/build_hub.py
+
+      - name: Save the rebuilt hub
+        run: |
+          git config user.name "honors-chem-hub-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add honors-chemistry/index.html honors-chemistry/_pdf
+          if git diff --cached --quiet; then
+            echo "Hub already up to date."
+          else
+            git commit -m "Rebuild honors chemistry hub"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi

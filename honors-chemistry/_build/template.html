@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Honors Chemistry Resource Hub</title>
+<style>
+:root{--navy:#0b3d6b;--navy2:#14508a;--green:#1f7a5c;--ink:#1c2430;--muted:#5b6675;--line:#d5dbe3;--bg:#f4f6f9;--panel:#fff;--warn:#8a5a00;--chip:#e8eef6}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:16px;line-height:1.45;color:var(--ink);background:var(--bg)}
+header{background:var(--navy);color:#fff;padding:18px 22px 14px}
+header h1{margin:0;font-size:26px}
+header .sub{opacity:.85;font-size:14px;margin-top:2px}
+.wrap{max-width:1150px;margin:0 auto;padding:0 18px}
+.searchbar{background:var(--navy2);padding:14px 0}
+.searchbar input{width:100%;font-size:19px;padding:13px 16px;border:0;border-radius:8px}
+.searchbar input:focus{outline:3px solid #ffd27a}
+.tabs{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.tabs .wrap{display:flex;gap:4px;overflow-x:auto;padding-top:8px}
+.tab{flex:0 0 auto;border:1px solid var(--line);border-bottom:0;border-radius:8px 8px 0 0;background:#eef2f7;padding:8px 14px;cursor:pointer;font:inherit;color:var(--ink);text-align:center;line-height:1.2}
+.tab small{display:block;font-size:11.5px;color:var(--muted);max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tab .n{font-size:12px;color:var(--muted)}
+.tab[aria-selected=true]{background:var(--bg);font-weight:700;border-color:var(--navy2);box-shadow:inset 0 3px 0 var(--navy2)}
+.filters{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;padding:14px 0 6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 13px;cursor:pointer;font:inherit;font-size:14px;color:var(--ink)}
+.chip[aria-pressed=true]{background:var(--navy);border-color:var(--navy);color:#fff}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
+.seg button{border:0;background:#fff;padding:6px 12px;font:inherit;font-size:14px;cursor:pointer;color:var(--ink)}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed=true]{background:var(--green);color:#fff}
+.count{color:var(--muted);font-size:14px;margin:4px 0 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px;padding-bottom:40px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:13px 14px;display:flex;flex-direction:column;gap:8px}
+.card h3{margin:0;font-size:16.5px;line-height:1.3;word-break:break-word}
+.meta{display:flex;flex-wrap:wrap;gap:5px;font-size:12px}
+.pill{background:var(--chip);border-radius:999px;padding:2px 9px;color:#27384d}
+.pill.t{background:#fdf0d6;color:var(--warn)}
+.pill.ext{background:#e3f1ea;color:#175a43;font-weight:700;letter-spacing:.3px}
+.snip{font-size:13px;color:var(--muted);border-left:3px solid var(--line);padding-left:8px}
+mark{background:#ffe38a;padding:0 1px}
+.desc{font-size:14px;color:var(--muted)}
+.btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
+.btn{font:inherit;font-size:14px;text-decoration:none;border:1px solid var(--navy);background:var(--navy);color:#fff;padding:6px 12px;border-radius:7px;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.btn.alt{background:#fff;color:var(--navy)}
+.btn.print{background:var(--green);border-color:var(--green)}
+.btn[aria-disabled=true]{opacity:.45;pointer-events:none}
+.empty{padding:40px 10px;text-align:center;color:var(--muted)}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:0 0 30px}
+.hint{font-size:12.5px;color:var(--muted)}
+@media (max-width:600px){header h1{font-size:21px}.grid{grid-template-columns:1fr}}
+@media print{.searchbar,.tabs,.filters,.btns{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1 id="hTitle">Honors Chemistry Resource Hub</h1>
+    <div class="sub">One place for the honors chemistry team's notes, worksheets, homework, tests, labs and virtual labs. <span id="hUpdated"></span></div>
+  </div>
+</header>
+<div class="searchbar"><div class="wrap">
+  <input id="q" type="search" placeholder="Search by topic, file name, or words inside the documents (for example: mole ratio)" autocomplete="off" aria-label="Search all files">
+</div></div>
+<nav class="tabs" aria-label="Units"><div class="wrap" id="tabs" role="tablist"></div></nav>
+<main class="wrap">
+  <div class="filters">
+    <div class="chips" id="types" aria-label="Filter by type"></div>
+    <div class="seg" id="aud" aria-label="Filter by audience">
+      <button data-a="all" aria-pressed="true">All copies</button>
+      <button data-a="student" aria-pressed="false">Student copies</button>
+      <button data-a="teacher" aria-pressed="false">Teacher editions and keys</button>
+    </div>
+  </div>
+  <div class="count" id="count" aria-live="polite"></div>
+  <div class="grid" id="grid"></div>
+</main>
+<footer>Print opens your browser's print window. If it does not, use Open, then print from there.</footer>
+<noscript><p style="padding:20px">This page needs JavaScript to search and filter.</p></noscript>
+<script>
+var HUB = /*__HUB_DATA__*/null;
+
+(function(){
+"use strict";
+var $=function(s,r){return (r||document).querySelector(s);};
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function encPath(p){return String(p).split("/").map(encodeURIComponent).join("/");}
+function human(n){ if(n<1024) return n+" B"; if(n<1048576) return Math.round(n/1024)+" KB"; return (n/1048576).toFixed(1)+" MB"; }
+function norm(s){return String(s||"").toLowerCase();}
+
+if(!HUB){ $("#grid").innerHTML='<p class="empty">The hub has not been built yet.</p>'; return; }
+$("#hTitle").textContent=HUB.title; document.title=HUB.title;
+$("#hUpdated").textContent=HUB.updated?"Updated "+HUB.updated+".":"";
+
+var UNIT={}; HUB.units.forEach(function(u){UNIT[u.id]=u;});
+var items=HUB.items.map(function(it){
+  it._hay = norm([it.title,it.file,it.type,(UNIT[it.unit]||{}).label,(UNIT[it.unit]||{}).name].join(" "));
+  it._txt = norm(it.text);
+  return it;
+});
+var state={unit:"all",type:"all",aud:"all",q:""};
+try{ var h=decodeURIComponent((location.hash||"").slice(1)); if(h){ var m=h.match(/unit=([^&]*)/); if(m && (m[1]==="all"||UNIT[m[1]])) state.unit=m[1]; } }catch(e){}
+
+function tokens(){ return norm(state.q).split(/\s+/).filter(Boolean); }
+function matches(it, ignoreUnit, toks){
+  if(!ignoreUnit && state.unit!=="all" && it.unit!==state.unit) return false;
+  if(state.type!=="all" && it.type!==state.type) return false;
+  if(state.aud==="student" && it.teacher) return false;
+  if(state.aud==="teacher" && !it.teacher) return false;
+  for(var i=0;i<toks.length;i++){ if(it._hay.indexOf(toks[i])<0 && it._txt.indexOf(toks[i])<0) return false; }
+  return true;
+}
+function score(it,toks){
+  var s=0; toks.forEach(function(t){ if(norm(it.title).indexOf(t)>=0) s+=10; else if(it._hay.indexOf(t)>=0) s+=5; else s+=1; });
+  return s;
+}
+function snippet(it,toks){
+  if(!toks.length || !it.text) return "";
+  var low=it._txt, best=-1;
+  for(var i=0;i<toks.length;i++){ var p=low.indexOf(toks[i]); if(p>=0 && it._hay.indexOf(toks[i])<0){ best=p; break; } }
+  if(best<0) return "";
+  var a=Math.max(0,best-55), b=Math.min(it.text.length,best+95);
+  var part=it.text.slice(a,b), out=esc(part);
+  toks.forEach(function(t){ if(t.length>1) out=out.replace(new RegExp("("+t.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+")","ig"),"<mark>$1</mark>"); });
+  return (a>0?"\u2026":"")+out+(b<it.text.length?"\u2026":"");
+}
+
+function renderTabs(){
+  var toks=tokens(), counts={all:0};
+  items.forEach(function(it){ if(matches(it,true,toks)){ counts.all++; counts[it.unit]=(counts[it.unit]||0)+1; } });
+  var html='<button class="tab" role="tab" data-u="all" aria-selected="'+(state.unit==="all")+'">All units<br><span class="n">'+counts.all+'</span></button>';
+  HUB.units.forEach(function(u){
+    html+='<button class="tab" role="tab" data-u="'+esc(u.id)+'" aria-selected="'+(state.unit===u.id)+'">'+esc(u.label)+(u.sub?'<small title="'+esc(u.sub)+'">'+esc(u.sub)+'</small>':'<small>&nbsp;</small>')+'<span class="n">'+(counts[u.id]||0)+'</span></button>';
+  });
+  $("#tabs").innerHTML=html;
+  Array.prototype.forEach.call(document.querySelectorAll(".tab"),function(b){ b.onclick=function(){ state.unit=b.dataset.u; try{history.replaceState(null,"","#unit="+encodeURIComponent(state.unit));}catch(e){} render(); }; });
+}
+function renderTypes(){
+  var present={}; items.forEach(function(it){present[it.type]=1;});
+  var html='<button class="chip" data-t="all" aria-pressed="'+(state.type==="all")+'">All types</button>';
+  HUB.typeOrder.forEach(function(t){ if(present[t]) html+='<button class="chip" data-t="'+esc(t)+'" aria-pressed="'+(state.type===t)+'">'+esc(t)+'</button>'; });
+  $("#types").innerHTML=html;
+  Array.prototype.forEach.call(document.querySelectorAll(".chip"),function(b){ b.onclick=function(){ state.type=b.dataset.t; render(); }; });
+}
+function cardHTML(it,toks){
+  var u=UNIT[it.unit]||{label:it.unit,sub:""};
+  var meta='<span class="pill">'+esc(u.label+(u.sub?": "+u.sub:""))+'</span><span class="pill">'+esc(it.type)+'</span>';
+  if(it.kind==="file") meta+='<span class="pill ext">'+esc(it.ext.toUpperCase())+'</span><span class="pill">'+human(it.size)+'</span>';
+  if(it.teacher) meta+='<span class="pill t">Teacher copy</span>';
+  var body='', btns='';
+  if(it.kind==="link"){
+    if(it.text) body+='<div class="desc">'+esc(it.text)+'</div>';
+    btns='<a class="btn" href="'+esc(it.url)+'" target="_blank" rel="noopener">Open in a new tab</a>';
+  } else {
+    var sn=snippet(it,toks); if(sn) body+='<div class="snip">'+sn+'</div>';
+    var file=encPath(it.path);
+    btns='<a class="btn" href="'+file+'" download="'+esc(it.file)+'">Download'+(it.ext==="pdf"?"":" ."+esc(it.ext))+'</a>';
+    if(it.pdf){
+      var pdf=encPath(it.pdf);
+      if(it.pdf!==it.path) btns+='<a class="btn alt" href="'+pdf+'" download="'+esc(it.title)+'.pdf">Download PDF</a>';
+      btns+='<button class="btn print" data-print="'+pdf+'" title="Open the print window for this file">Print</button>';
+      btns+='<a class="btn alt" href="'+pdf+'" target="_blank" rel="noopener">Open</a>';
+    } else {
+      btns+='<span class="hint">No print version yet. Download it to print.</span>';
+    }
+  }
+  return '<article class="card"><h3>'+esc(it.title)+'</h3><div class="meta">'+meta+'</div>'+body+'<div class="btns">'+btns+'</div></article>';
+}
+function render(){
+  var toks=tokens();
+  renderTabs(); renderTypes();
+  Array.prototype.forEach.call(document.querySelectorAll("#aud button"),function(b){ b.setAttribute("aria-pressed",String(b.dataset.a===state.aud)); });
+  var list=items.filter(function(it){return matches(it,false,toks);});
+  if(toks.length) list.sort(function(a,b){ return score(b,toks)-score(a,toks) || a.id-b.id; });
+  var scope = state.unit==="all" ? "in all units" : "in "+(UNIT[state.unit]||{}).label;
+  $("#count").textContent = list.length+" result"+(list.length===1?"":"s")+" "+scope+(state.q?' for "'+state.q+'"':"");
+  $("#grid").innerHTML = list.length ? list.map(function(it){return cardHTML(it,toks);}).join("") :
+    '<p class="empty">Nothing matches. Try fewer words, a different unit tab, or "All types".</p>';
+  Array.prototype.forEach.call(document.querySelectorAll("[data-print]"),function(b){ b.onclick=function(){ printUrl(b.dataset.print); }; });
+}
+
+// Print a PDF or image: load it in a hidden frame and open the print window. If the browser blocks that,
+// open the file in a new tab so it can be printed from there.
+function printUrl(u){
+  var f=document.createElement("iframe");
+  f.setAttribute("aria-hidden","true");
+  f.style.cssText="position:fixed;left:-9999px;top:0;width:850px;height:1100px;border:0";
+  var fired=false;
+  f.onload=function(){
+    if(fired) return; fired=true;
+    try{ f.contentWindow.focus(); f.contentWindow.print(); }
+    catch(e){ window.open(u,"_blank"); }
+    setTimeout(function(){ if(f.parentNode) f.parentNode.removeChild(f); },120000);
+  };
+  f.src=u;
+  document.body.appendChild(f);
+}
+window.__printUrl=printUrl;
+
+$("#q").addEventListener("input",function(){ state.q=this.value; render(); });
+Array.prototype.forEach.call(document.querySelectorAll("#aud button"),function(b){ b.onclick=function(){ state.aud=b.dataset.a; render(); }; });
+render();
+})();
+</script>
+</body>
+</html>

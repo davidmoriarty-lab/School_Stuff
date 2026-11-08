@@ -13,7 +13,8 @@ One page searches all molecules, problems and quiz questions, with filters by co
 | `simulations/periodic-table-highway/` | Periodic Table Highway: a lane-switching driving game for learning element symbols (single page, with tests) |
 | `chemistry_notes/` | Guided notes: honors packets (units 0 to 7, student and teacher editions) with the packet builder, nomenclature notes, and AP equilibrium notes |
 | `4-year-course-planner/` | Student course planner (`wcs-planner.html`) and school setup tool (`course-builder.html`), with course catalog config, plan and reference documents |
-| `honors-chemistry/`, `ap-chemistry/` | Reserved for those courses |
+| `honors-chemistry/` | Honors Chemistry Resource Hub: the team's shared notes, worksheets, tests, labs and virtual lab links, with a searchable page that downloads and prints files (https://davidmoriarty-lab.github.io/School_Stuff/honors-chemistry/) |
+| `ap-chemistry/` | Reserved for that course |
 | `tools/build_index.py` | Rebuilds the master `index.html` |
 
 ## Keeping the index current

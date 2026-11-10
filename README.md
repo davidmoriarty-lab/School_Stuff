@@ -12,6 +12,7 @@ One page searches all molecules, problems and quiz questions, with filters by co
 | `simulations/enthalpy-dissolution-lab/` | Enthalpy of Dissolution Virtual Lab (moved from the repo root) |
 | `simulations/periodic-table-highway/` | Periodic Table Highway: a lane-switching driving game for learning element symbols (single page, with tests) |
 | `simulations/reaction-explorer/` | Reaction Explorer: slow-motion particle collisions with electron clouds, forces, energy diagrams, bond energy curves, Maxwell–Boltzmann distributions and kinetics, for Honors, AP and Organic (classroom demo, with tests) |
+| `simulations/titration-lab/` | Titration Lab: acid–base titrations with accurate glassware, zoomed-in particle views of the flask and buret, a live titration curve, worked math and a mystery-sample mode, for Honors and AP (classroom demo, with tests) |
 | `chemistry_notes/` | Guided notes: honors packets (units 0 to 7, student and teacher editions) with the packet builder, nomenclature notes, and AP equilibrium notes |
 | `4-year-course-planner/` | Student course planner (`wcs-planner.html`) and school setup tool (`course-builder.html`), with course catalog config, plan and reference documents |
 | `honors-chemistry/`, `ap-chemistry/` | Reserved for those courses |

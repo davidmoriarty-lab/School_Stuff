@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reaction Explorer: what really happens in a chemical reaction</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><circle cx="9" cy="16" r="6" fill="var(--c-ke)"/><circle cx="20" cy="16" r="5" fill="var(--c-form)"/><circle cx="27" cy="16" r="3.5" fill="var(--c-break)"/></svg>
+    <span>Reaction Explorer</span>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="View">
+    <button role="tab" id="tab-collision" data-tab="collision" aria-selected="true">① One collision <small>slow motion</small></button>
+    <button role="tab" id="tab-chamber" data-tab="chamber" aria-selected="false">② Many particles <small>rates &amp; temperature</small></button>
+  </nav>
+  <div class="spacer"></div>
+  <div class="seg" role="group" aria-label="Course level" id="levelSeg">
+    <button data-level="honors" aria-pressed="true" title="Core ideas only">Honors</button>
+    <button data-level="ap" aria-pressed="false" title="Adds forces, bond curves, energy map, Arrhenius">AP</button>
+    <button data-level="organic" aria-pressed="false" title="Adds electrons, curved arrows, organic reactions">Organic</button>
+  </div>
+  <button class="btn ghost" id="btnTour" title="Step-by-step lesson walkthrough"><svg viewBox="0 0 24 24"><path d="M3 9l9-5 9 5-9 5-9-5z"/><path d="M7 11.5V16c1.5 1.5 8.5 1.5 10 0v-4.5"/></svg> Guided lesson</button>
+  <button class="btn ghost" id="btnHelp" title="Help, glossary and notes for teachers"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.300c-.7.400-1 1-1 1.700M12 17v.01"/></svg> Help</button>
+  <button class="btn ghost icon" id="btnTheme" title="Light / dark" aria-label="Toggle light or dark theme"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18" /><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg></button>
+  <button class="btn ghost icon" id="btnSide" title="Hide or show the control panel (H)" aria-label="Toggle control panel"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg></button>
+  <button class="btn ghost icon" id="btnFull" title="Full screen for projecting (F)" aria-label="Full screen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+</header>
+
+<main id="main">
+  <aside class="side" id="side" aria-label="Controls">
+
+<!-- guided lesson -->
+<div class="tour" id="tour" hidden role="region" aria-label="Guided lesson">
+  <div class="tour-head"><span id="tourStep"></span><button class="x" id="tourClose" aria-label="Close guided lesson">✕</button></div>
+  <h3 id="tourTitle"></h3>
+  <p id="tourText"></p>
+  <p class="ask" id="tourAsk"></p>
+  <div class="row"><button class="btn small" id="tourPrev">← Back</button><button class="btn small primary" id="tourNext">Next →</button></div>
+</div>
+
+
+    <section class="panel">
+      <h2>Reaction</h2>
+      <select id="rxSelect" aria-label="Choose a reaction"></select>
+      <p class="rx-blurb" id="rxBlurb"></p>
+      <div class="rx-facts" id="rxFacts"></div>
+      <div class="row">
+        <button class="btn small" id="btnReverse" aria-pressed="false" title="Run the same reaction backwards">⇄ Reverse it</button>
+        <label class="chk pill" title="A catalyst gives the reaction an easier route with a lower activation energy"><input type="checkbox" id="optCatalyst"> Catalyst</label>
+      </div>
+      <div id="customBox" hidden>
+        <label class="slider"><span>Activation energy <output id="outCustomEa"></output></span>
+          <input type="range" id="customEa" min="2" max="150" step="1" value="40"></label>
+        <label class="slider"><span>ΔH <output id="outCustomDH"></output></span>
+          <input type="range" id="customDH" min="-150" max="120" step="5" value="-60"></label>
+      </div>
+    </section>
+
+    <!-- controls for the single-collision view -->
+    <div data-for="collision">
+      <section class="panel">
+        <h2>Set up the collision</h2>
+        <label class="slider"><span>Collision energy <output id="outEnergy"></output></span>
+          <div class="slider-track"><input type="range" id="energy" min="0" max="100" step="0.5" value="30"><i class="ea-mark" id="eaMark" title="Activation energy"></i></div></label>
+        <div class="chips" id="energyChips">
+          <button data-e="0.6">Too little</button><button data-e="1.02">Just enough</button><button data-e="1.8">Plenty</button>
+        </div>
+        <p class="hint" id="energyHint"></p>
+        <label class="slider"><span>Orientation <output id="outAngle"></output></span>
+          <input type="range" id="angle" min="0" max="180" step="5" value="0"></label>
+        <div class="chips" id="angleChips">
+          <button data-a="0">Head-on</button><button data-a="60">Tilted</button><button data-a="90">Side-on</button><button data-a="180">Wrong end</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Show on the molecules</h2>
+        <div class="checks">
+          <label class="chk"><input type="checkbox" data-opt="cloud"> Electron clouds</label>
+          <label class="chk"><input type="checkbox" data-opt="labels"> Atom labels</label>
+          <label class="chk"><input type="checkbox" data-opt="forces"> Push / pull forces</label>
+          <label class="chk"><input type="checkbox" data-opt="velocity"> Velocity arrows</label>
+          <label class="chk"><input type="checkbox" data-opt="lengths"> Bond lengths</label>
+          <label class="chk"><input type="checkbox" data-opt="bondOrder"> Bond strength %</label>
+          <label class="chk"><input type="checkbox" data-opt="charges"> Partial charges δ</label>
+          <label class="chk"><input type="checkbox" data-opt="chargeMap"> Charge colors</label>
+          <label class="chk"><input type="checkbox" data-opt="electrons"> Bonding electrons</label>
+          <label class="chk"><input type="checkbox" data-opt="arrows"> Curved arrows</label>
+          <label class="chk"><input type="checkbox" data-opt="vib"> Product vibration</label>
+          <label class="chk"><input type="checkbox" data-opt="captions"> Explanations</label>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Show graphs</h2>
+        <div class="checks">
+          <label class="chk"><input type="checkbox" data-opt="gProfile"> Energy diagram</label>
+          <label class="chk"><input type="checkbox" data-opt="gBars"> Energy bars</label>
+          <label class="chk"><input type="checkbox" data-opt="gMorse"> Bond energy curves</label>
+          <label class="chk"><input type="checkbox" data-opt="gPES"> Energy map</label>
+        </div>
+        <h3>On the energy diagram</h3>
+        <div class="checks">
+          <label class="chk"><input type="checkbox" data-opt="showEa"> E<sub>a</sub></label>
+          <label class="chk"><input type="checkbox" data-opt="showDH"> ΔH</label>
+          <label class="chk"><input type="checkbox" data-opt="showEaRev"> E<sub>a</sub> (reverse)</label>
+          <label class="chk"><input type="checkbox" data-opt="showTotal"> Collision energy</label>
+        </div>
+      </section>
+    </div>
+
+    <!-- controls for the many-particle view -->
+    <div data-for="chamber" hidden>
+      <section class="panel">
+        <h2>Conditions</h2>
+        <label class="slider"><span>Temperature <output id="outTemp"></output></span>
+          <input type="range" id="temp" min="100" max="3000" step="25" value="600"></label>
+        <label class="slider"><span id="lblNA">Particles of A <output id="outNA"></output></span>
+          <input type="range" id="nA" min="5" max="80" step="1" value="30"></label>
+        <label class="slider"><span id="lblNBC">Molecules of BC <output id="outNBC"></output></span>
+          <input type="range" id="nBC" min="5" max="80" step="1" value="30"></label>
+        <label class="slider"><span>Simulation speed <output id="outSimSpeed"></output></span>
+          <input type="range" id="simSpeed" min="-2" max="3" step="1" value="0"></label>
+        <div class="row">
+          <button class="btn small primary" id="btnChamberPlay">▶ Start</button>
+          <button class="btn small" id="btnChamberReset">↺ Reset</button>
+        </div>
+      </section>
+      <section class="panel">
+        <h2>Rules</h2>
+        <div class="checks one">
+          <label class="chk" title="Off: any collision with enough energy reacts"><input type="checkbox" data-opt="orient"> Orientation matters</label>
+          <label class="chk" title="Products can collide and turn back into reactants"><input type="checkbox" data-opt="allowReverse"> Reverse reaction allowed</label>
+          <label class="chk" title="On: the container is held at the set temperature. Off: insulated, so heat released stays in the gas"><input type="checkbox" data-opt="thermostat"> Hold temperature constant</label>
+        </div>
+      </section>
+      <section class="panel">
+        <h2>Show</h2>
+        <div class="checks">
+          <label class="chk"><input type="checkbox" data-opt="flashes"> Collision flashes</label>
+          <label class="chk"><input type="checkbox" data-opt="trails"> Glow if E ≥ Eₐ</label>
+          <label class="chk"><input type="checkbox" data-opt="gMB"> Energy distribution</label>
+          <label class="chk"><input type="checkbox" data-opt="gConc"> Amounts vs. time</label>
+          <label class="chk"><input type="checkbox" data-opt="gArr"> Rate vs. temperature</label>
+          <label class="chk"><input type="checkbox" data-opt="gFunnel"> Collision tally</label>
+        </div>
+      </section>
+    </div>
+  </aside>
+
+  <!-- ============ view 1: one collision ============ -->
+  <section class="view" id="view-collision" role="tabpanel" aria-labelledby="tab-collision">
+    <div class="stage-card">
+      <canvas id="stage" aria-label="Animation of the particles colliding"></canvas>
+      <div class="hud hud-tl"><div class="eq" id="hudEq"></div><div class="tags" id="hudTags"></div></div>
+      <div class="hud hud-tr"><div class="clock" id="hudClock">t = 0 fs</div><div class="clock-sub" id="hudSlow"></div></div>
+      <div class="banner" id="banner" hidden></div>
+      <div class="caption" id="caption" aria-live="polite"></div>
+      <div class="transport">
+        <button class="btn primary launch" id="btnPlay" title="Play / pause (Space)">▶ Launch</button>
+        <button class="btn icon" id="btnRestart" title="Back to the start (R)" aria-label="Restart"><svg viewBox="0 0 24 24"><path d="M6 5v14M19 5l-9 7 9 7z"/></svg></button>
+        <button class="btn icon" id="btnStepB" title="Step back (←)" aria-label="Step back"><svg viewBox="0 0 24 24"><path d="M15 5l-8 7 8 7z"/></svg></button>
+        <button class="btn icon" id="btnStepF" title="Step forward (→)" aria-label="Step forward"><svg viewBox="0 0 24 24"><path d="M9 5l8 7-8 7z"/></svg></button>
+        <input type="range" id="scrub" min="0" max="100" value="0" step="1" aria-label="Scrub through the collision">
+        <label class="speed" title="How slow the slow motion is">Speed
+          <select id="speed" aria-label="Playback speed">
+            <option value="4">Super slow</option><option value="10">Slow</option><option value="25" selected>Normal</option><option value="60">Fast</option>
+          </select></label>
+        <label class="chk pill" title="Stop automatically at the top of the energy hill"><input type="checkbox" data-opt="pauseTS"> Pause at top</label>
+        <label class="chk pill" title="Play again automatically"><input type="checkbox" data-opt="loop"> Loop</label>
+      </div>
+    </div>
+    <div class="graphs" id="graphsCollision">
+      <figure class="card g-profile" data-card="gProfile">
+        <figcaption><b>Energy diagram</b><span class="sub" id="subProfile">potential energy along the reaction</span><button class="expand" title="Enlarge" aria-label="Enlarge graph">⤢</button></figcaption>
+        <canvas id="cProfile"></canvas>
+      </figure>
+      <figure class="card g-bars" data-card="gBars">
+        <figcaption><b>Where is the energy?</b><button class="expand" title="Enlarge" aria-label="Enlarge graph">⤢</button></figcaption>
+        <canvas id="cBars"></canvas>
+      </figure>
+      <figure class="card g-morse" data-card="gMorse">
+        <figcaption><b>Bond energy vs. bond length</b><button class="expand" title="Enlarge" aria-label="Enlarge graph">⤢</button></figcaption>
+        <canvas id="cMorse"></canvas>
+      </figure>
+      <figure class="card g-pes" data-card="gPES">
+        <figcaption><b>Energy map</b><span class="sub">seen from above</span><button class="expand" title="Enlarge" aria-label="Enlarge graph">⤢</button></figcaption>
+        <canvas id="cPES"></canvas>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ view 2: many particles ============ -->
+  <section class="view" id="view-chamber" role="tabpanel" aria-labelledby="tab-chamber" hidden>
+    <div class="stage-card">
+      <canvas id="chamber" aria-label="Many particles moving and colliding in a container"></canvas>
+      <div class="hud hud-tl"><div class="legend" id="chLegend"></div></div>
+      <div class="hud hud-tr"><div class="clock" id="chTemp">T = 600 K</div><div class="clock-sub" id="chTempSub"></div></div>
+      <div class="caption" id="chCaption"></div>
+      <div class="transport">
+        <div class="funnel" id="funnel" data-card="gFunnel"></div>
+        <button class="btn" id="btnZoomLast" title="Open the most recent A + BC collision in the slow-motion view">Watch the last collision up close →</button>
+      </div>
+    </div>
+    <div class="graphs" id="graphsChamber">
+      <figure class="card g-mb" data-card="gMB">
+        <figcaption><b>Energy distribution</b><span class="sub">Maxwell–Boltzmann</span>
+          <button class="mini" id="btnPin" title="Keep this curve on screen to compare with another temperature">Pin curve</button>
+          <button class="expand" title="Enlarge" aria-label="Enlarge graph">⤢</button></figcaption>
+        <canvas id="cMB"></canvas>
+      </figure>
+      <figure class="card g-conc" data-card="gConc">
+        <figcaption><b>Amounts vs. time</b><span class="sub" id="subConc"></span><button class="expand" title="Enlarge" aria-label="Enlarge graph">⤢</button></figcaption>
+        <canvas id="cConc"></canvas>
+      </figure>
+      <figure class="card g-arr" data-card="gArr">
+        <figcaption><b>Rate vs. temperature</b><span class="sub">Arrhenius</span>
+          <button class="mini" id="btnArrMode" title="Switch between k vs T and ln k vs 1/T">ln k vs 1/T</button>
+          <button class="expand" title="Enlarge" aria-label="Enlarge graph">⤢</button></figcaption>
+        <canvas id="cArr"></canvas>
+      </figure>
+    </div>
+  </section>
+</main>
+
+<div class="tip" id="tip" hidden></div>
+
+<!-- help -->
+<div class="modal" id="help" hidden role="dialog" aria-modal="true" aria-label="Help">
+  <div class="modal-box">
+    <button class="x" id="helpClose" aria-label="Close help">✕</button>
+    <h2>Reaction Explorer: help</h2>
+    <div class="help-cols">
+      <div>
+        <h3>The two views</h3>
+        <p><b>① One collision</b> zooms in on a single particle A hitting a molecule B–C, slowed down about ten trillion times. Set the collision energy and the orientation, press <b>Launch</b>, and watch the old bond break while the new one forms. Every graph is tied to the animation: the dot on each graph is the atoms you are watching.</p>
+        <p><b>② Many particles</b> zooms out to a container of particles. Change the temperature, the amounts, or add a catalyst and see how the rate changes and why.</p>
+        <h3>Keys</h3>
+        <table class="keys">
+          <tr><td><kbd>Space</kbd></td><td>Play / pause</td></tr>
+          <tr><td><kbd>←</kbd> <kbd>→</kbd></td><td>Step backwards / forwards</td></tr>
+          <tr><td><kbd>R</kbd></td><td>Restart</td></tr>
+          <tr><td><kbd>T</kbd></td><td>Jump to the top of the hill</td></tr>
+          <tr><td><kbd>H</kbd></td><td>Hide / show the control panel</td></tr>
+          <tr><td><kbd>F</kbd></td><td>Full screen</td></tr>
+          <tr><td><kbd>1</kbd> <kbd>2</kbd></td><td>Switch view</td></tr>
+        </table>
+        <h3>Reading the picture</h3>
+        <ul>
+          <li><b>Soft glow</b> = electron cloud. Where two clouds merge, electrons are shared: that is a covalent bond.</li>
+          <li><b>Dashed line</b> = a bond that is only partly formed or partly broken.</li>
+          <li><b class="c-pull">Pull</b> arrows point toward each other (attraction). <b class="c-push">Push</b> arrows point apart (repulsion). Longer arrow = stronger force.</li>
+          <li><b>δ+ / δ−</b> = partial charges. Electrons spend more time near the more electronegative atom.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Glossary</h3>
+        <dl>
+          <dt>Activation energy (E<sub>a</sub>)</dt><dd>The minimum energy a collision needs to reach the top of the hill. It is a threshold, not the overall energy change.</dd>
+          <dt>Transition state (‡)</dt><dd>The highest-energy arrangement on the way from reactants to products. Old bond half broken, new bond half made. It exists for only a few femtoseconds.</dd>
+          <dt>ΔH (enthalpy change)</dt><dd>Energy of products minus energy of reactants. Negative = exothermic (energy released), positive = endothermic (energy absorbed).</dd>
+          <dt>Effective collision</dt><dd>A collision with enough energy <i>and</i> the right orientation, so it makes products.</dd>
+          <dt>Maxwell–Boltzmann distribution</dt><dd>How kinetic energy is shared among the molecules at one temperature. A few are slow, a few are very fast, most are in between.</dd>
+          <dt>Catalyst</dt><dd>Offers a different route with a lower activation energy. It does not change ΔH and is not used up.</dd>
+          <dt>Femtosecond (fs)</dt><dd>10⁻¹⁵ s. A femtosecond is to one second what one second is to about 32 million years.</dd>
+        </dl>
+        <h3>How real is it? (for teachers)</h3>
+        <ul>
+          <li>The energies come from a real potential energy surface (the LEPS model used in research on these reactions), built from each bond's energy and length and tuned to the measured activation energy.</li>
+          <li>The atoms follow the minimum-energy path across that surface and obey Newton's laws along it, so kinetic + potential energy is conserved and times are in real femtoseconds.</li>
+          <li>Groups such as CH₃ are treated as one particle. Solvent is not shown for the SN2 reaction and its numbers are approximate.</li>
+          <li>Real molecules also tunnel, rotate and vibrate before colliding. Those are left out to keep the picture clear.</li>
+          <li>In view ②, kinetic energies follow the true 3-D Maxwell–Boltzmann distribution and a collision reacts when the energy along the line of centers is at least E<sub>a</sub>, which gives the Arrhenius factor e<sup>−Ea/RT</sup>.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/chem-data.js"></script>
+<script src="js/model.js"></script>
+<script src="js/draw.js"></script>
+<script src="js/stage.js"></script>
+<script src="js/graphs.js"></script>
+<script src="js/chamber.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

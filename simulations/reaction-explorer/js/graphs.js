@@ -91,6 +91,11 @@
     if (other) curve(other, th.muted, 2 * ts, [6 * ts, 5 * ts], false);
     curve(path, th.pe, 3 * ts, null, true);
 
+    // labels keep clear of the moving dot
+    if (fr) {
+      const mx = f.x(fr.x), my = f.y(Math.min(fr.V, yr[1])), r = 9 * ts;
+      canvas._texts.push({ str: 'page: marker', x0: mx - r, x1: mx + r, y0: my - r, y1: my + r });
+    }
     let keLabel = null;
     // the kinetic energy of the atoms right now = gap between the curve and the collision's total energy
     if (fr && o.showTotal) {
@@ -111,12 +116,12 @@
     // names
     const below = (y) => y + 15 * ts, above = (y) => y - 8 * ts;
     D.text(ctx, 'Reactants', f.x(0.0), above(y0), { size: 12 * ts, weight: 700, color: th.ink, halo });
-    D.text(ctx, sys.formulas.A + ' + ' + sys.formulas.BC, f.x(0.0), below(y0), { size: 11.5 * ts, color: th.ink2, halo });
+    D.text(ctx, sys.formulas.A + ' + ' + sys.formulas.BC, f.x(0.0), below(y0), { size: 11.5 * ts, color: th.ink2, halo, optional: true });
     if (path.reactive) {
       // a product level close under the hill top leaves no room above it: write both lines underneath
       const cramped = (yP - yTS) < 34 * ts && path.x[path.iTS] / path.xMax > 0.55;
       D.text(ctx, 'Products', f.x(1.0), cramped ? below(yP) : above(yP), { size: 12 * ts, weight: 700, align: 'right', color: th.ink, halo });
-      D.text(ctx, sys.formulas.AB + ' + ' + sys.formulas.C, f.x(1.0), below(yP) + (cramped ? 14 * ts : 0), { size: 11.5 * ts, align: 'right', color: th.ink2, halo });
+      D.text(ctx, sys.formulas.AB + ' + ' + sys.formulas.C, f.x(1.0), below(yP) + (cramped ? 14 * ts : 0), { size: 11.5 * ts, align: 'right', color: th.ink2, halo, optional: true });
       const early = path.x[path.iTS] / path.xMax < 0.4;
       if (path.iTS > 5 && path.iTS < path.N - 5) {
         const lateTS = path.x[path.iTS] / path.xMax > 0.6;

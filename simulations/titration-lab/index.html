@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Titration Lab: acid–base titrations from the buret to the particles</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><path d="M13 3h6v9l7 13a3 3 0 0 1-2.600 4.500H8.600A3 3 0 0 1 6 25l7-13z" fill="none" stroke="var(--accent)" stroke-width="2.200" stroke-linejoin="round"/><path d="M9.500 22h13l2.200 4.200a1.500 1.500 0 0 1-1.300 2.300H8.600a1.500 1.500 0 0 1-1.300-2.300z" fill="var(--c-break)"/></svg>
+    <span>Titration Lab</span>
+  </div>
+  <div class="spacer"></div>
+  <div class="seg" role="group" aria-label="Course level" id="levelSeg">
+    <button data-level="honors" aria-pressed="true" title="Strong and weak acid titrations, indicators, finding an unknown concentration">Honors</button>
+    <button data-level="ap" aria-pressed="false" title="Adds buffers, pKa, the slope graph, weak bases and polyprotic acids">AP</button>
+  </div>
+  <button class="btn ghost" id="btnTour" title="Step-by-step lesson walkthrough"><svg viewBox="0 0 24 24"><path d="M3 9l9-5 9 5-9 5-9-5z"/><path d="M7 11.500V16c1.500 1.500 8.500 1.500 10 0v-4.500"/></svg> Guided lesson</button>
+  <button class="btn ghost" id="btnHelp" title="Help, glossary and notes for teachers"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.500 9.500a2.500 2.500 0 1 1 3.500 2.300c-.7.400-1 1-1 1.700M12 17v.01"/></svg> Help</button>
+  <button class="btn ghost icon" id="btnTheme" title="Light / dark" aria-label="Toggle light or dark theme"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg></button>
+  <button class="btn ghost icon" id="btnSide" title="Hide or show the control panel (H)" aria-label="Toggle control panel"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg></button>
+  <button class="btn ghost icon" id="btnFull" title="Full screen for projecting (F)" aria-label="Full screen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+</header>
+
+<main id="main">
+  <aside class="side" id="side" aria-label="Controls">
+    <div class="tour" id="tour" hidden role="region" aria-label="Guided lesson">
+      <div class="tour-head"><span id="tourStep"></span><button class="x" id="tourClose" aria-label="Close guided lesson">✕</button></div>
+      <h3 id="tourTitle"></h3>
+      <p id="tourText"></p>
+      <p class="ask" id="tourAsk"></p>
+      <div class="row"><button class="btn small" id="tourPrev">← Back</button><button class="btn small primary" id="tourNext">Next →</button></div>
+    </div>
+
+    <section class="panel">
+      <h2>In the flask</h2>
+      <select class="sel" id="analyte" aria-label="Substance in the flask"></select>
+      <p class="rx-blurb" id="blurb"></p>
+      <div class="rx-facts" id="facts"></div>
+      <label class="slider"><span>Concentration in the flask <output id="outCa"></output></span>
+        <input type="range" id="Ca" min="0.02" max="0.5" step="0.01" value="0.10"></label>
+      <label class="slider"><span>Volume in the flask <output id="outVa"></output></span>
+        <input type="range" id="Va" min="10" max="50" step="5" value="25"></label>
+      <label class="slider"><span id="lblCt">Concentration in the buret <output id="outCt"></output></span>
+        <input type="range" id="Ct" min="0.02" max="0.5" step="0.01" value="0.10"></label>
+      <div class="row">
+        <button class="btn small" id="btnUnknown" aria-pressed="false" title="Hide the flask concentration and find it by titrating">Mystery sample</button>
+        <button class="btn small" id="btnReset" title="Empty the flask, refill the buret and start again (R)">↺ New flask</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Indicator and meter</h2>
+      <select class="sel" id="indicator" aria-label="Indicator"></select>
+      <p class="hint" id="indHint"></p>
+      <div class="checks">
+        <label class="chk"><input type="checkbox" data-opt="meter"> pH meter</label>
+        <label class="chk"><input type="checkbox" data-opt="stir"> Stirrer on</label>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Zoom in</h2>
+      <div class="checks one">
+        <label class="chk"><input type="checkbox" data-opt="zFlask"> Particles in the flask</label>
+        <label class="chk"><input type="checkbox" data-opt="zBuret"> Particles in the buret</label>
+        <label class="chk"><input type="checkbox" data-opt="zRead"> Buret scale (read the meniscus)</label>
+        <label class="chk"><input type="checkbox" data-opt="water"> Show water molecules</label>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Show</h2>
+      <div class="checks">
+        <label class="chk"><input type="checkbox" data-opt="readVol"> Volume added</label>
+        <label class="chk"><input type="checkbox" data-opt="readPH"> pH value</label>
+        <label class="chk"><input type="checkbox" data-opt="captions"> Explanations</label>
+        <label class="chk"><input type="checkbox" data-opt="labels"> Glassware labels</label>
+      </div>
+      <h3>Graphs</h3>
+      <div class="checks">
+        <label class="chk"><input type="checkbox" data-opt="gCurve"> Titration curve</label>
+        <label class="chk"><input type="checkbox" data-opt="gBars"> What's in the flask</label>
+        <label class="chk"><input type="checkbox" data-opt="gMath"> The math</label>
+        <label class="chk"><input type="checkbox" data-opt="gSlope"> Slope graph</label>
+      </div>
+      <h3>On the titration curve</h3>
+      <div class="checks">
+        <label class="chk"><input type="checkbox" data-opt="cPreview"> Whole curve</label>
+        <label class="chk"><input type="checkbox" data-opt="cEq"> Equivalence point</label>
+        <label class="chk"><input type="checkbox" data-opt="cHalf"> Half-equivalence</label>
+        <label class="chk"><input type="checkbox" data-opt="cBuffer"> Buffer region</label>
+        <label class="chk"><input type="checkbox" data-opt="cInd"> Indicator range</label>
+        <label class="chk"><input type="checkbox" data-opt="cSeven"> pH 7 line</label>
+      </div>
+    </section>
+
+    <section class="panel lab" id="labPanel" hidden>
+      <h2>Mystery sample: lab report</h2>
+      <p class="hint">Titrate to the endpoint (first permanent color change), then work out the concentration in the flask.</p>
+      <label>Buret reading at start (mL) <input type="number" id="labV0" step="0.01" inputmode="decimal"></label>
+      <label>Buret reading at endpoint (mL) <input type="number" id="labV1" step="0.01" inputmode="decimal"></label>
+      <label>Concentration in the flask (M) <input type="number" id="labM" step="0.001" inputmode="decimal"></label>
+      <div class="row"><button class="btn small primary" id="btnCheck">Check my answer</button><button class="btn small" id="btnReveal">Reveal</button></div>
+      <p class="verdict" id="labVerdict" aria-live="polite"></p>
+    </section>
+  </aside>
+
+  <section class="bench" aria-label="Lab bench">
+    <canvas id="scene" aria-label="Buret, flask and stirrer"></canvas>
+    <div class="readouts">
+      <div class="ro" id="roVol"><small>Volume added</small><b id="outVol">0.00 mL</b></div>
+      <div class="ro" id="roPH"><small>pH</small><b id="outPH">–</b></div>
+      <div class="ro" id="roColor"><small>Solution color</small><b id="outColor">–</b></div>
+    </div>
+    <div class="caption" id="caption" aria-live="polite"></div>
+    <div class="pour">
+      <span class="lbl">Add from buret:</span>
+      <button class="btn" id="add1" title="One drop, 0.05 mL (D)">1 drop</button>
+      <button class="btn" id="add05" title="0.50 mL">0.5 mL</button>
+      <button class="btn" id="add1ml" title="1.00 mL">1 mL</button>
+      <button class="btn" id="add5" title="5.00 mL">5 mL</button>
+      <button class="btn primary" id="btnFlow" title="Hold to let the buret run (hold Space)">Hold to pour</button>
+      <span class="grow"></span>
+      <button class="btn" id="btnAuto" aria-pressed="false" title="Titrate automatically, slowing down near each equivalence point">▶ Auto</button>
+      <button class="btn" id="btnUndo" title="Take back the last addition (not possible in a real lab!)">Undo</button>
+    </div>
+  </section>
+
+  <section class="col" id="col">
+    <figure class="card g-curve" data-card="gCurve">
+      <figcaption><b>Titration curve</b><span class="sub" id="subCurve">pH against volume of titrant added</span><button class="expand" title="Enlarge" aria-label="Enlarge graph">⤢</button></figcaption>
+      <canvas id="cCurve"></canvas>
+    </figure>
+    <div class="row2" id="row2">
+      <figure class="card g-bars" data-card="gBars">
+        <figcaption><b>What's in the flask</b><span class="sub">amounts in mmol</span><button class="expand" title="Enlarge" aria-label="Enlarge graph">⤢</button></figcaption>
+        <canvas id="cBars"></canvas>
+      </figure>
+      <figure class="card g-math" data-card="gMath">
+        <figcaption><b>The math</b><span class="sub" id="subMath"></span><button class="expand" title="Enlarge" aria-label="Enlarge">⤢</button></figcaption>
+        <div class="math" id="math"></div>
+      </figure>
+    </div>
+  </section>
+</main>
+
+<div class="tip" id="tip" hidden></div>
+
+<div class="modal" id="help" hidden role="dialog" aria-modal="true" aria-label="Help">
+  <div class="modal-box">
+    <button class="x" id="helpClose" aria-label="Close help">✕</button>
+    <h2>Titration Lab: help</h2>
+    <div class="help-cols">
+      <div>
+        <h3>How to run a titration</h3>
+        <p>The flask holds the sample (the <b>analyte</b>). The buret holds a solution of known concentration (the <b>titrant</b>). Add titrant with the buttons under the bench, or hold <b>Hold to pour</b>. Go quickly at first, then drop by drop as the color starts to linger.</p>
+        <p>The graph, the particle views and the math all update with every drop.</p>
+        <h3>Keys</h3>
+        <table class="keys">
+          <tr><td><kbd>D</kbd></td><td>Add one drop</td></tr>
+          <tr><td><kbd>Space</kbd> (hold)</td><td>Pour</td></tr>
+          <tr><td><kbd>A</kbd></td><td>Auto-titrate on / off</td></tr>
+          <tr><td><kbd>Z</kbd></td><td>Undo the last addition</td></tr>
+          <tr><td><kbd>R</kbd></td><td>New flask</td></tr>
+          <tr><td><kbd>H</kbd></td><td>Hide / show the control panel</td></tr>
+          <tr><td><kbd>F</kbd></td><td>Full screen</td></tr>
+        </table>
+        <h3>Reading the particle views</h3>
+        <ul>
+          <li>Each small white bump on a particle is an <b>acidic hydrogen</b> (a proton it can give away). Watch the bumps move from acid to base.</li>
+          <li>Each particle stands for the same amount of substance. The legend gives the count of each kind. Anything too scarce to earn one whole particle is listed as "trace".</li>
+          <li>Water is left out unless you tick <b>Show water molecules</b>. In the real flask there are hundreds of water molecules for every ion.</li>
+        </ul>
+        <h3>Reading the buret</h3>
+        <p>A buret is numbered from the top down: it tells you how much has been <b>delivered</b>. Read the bottom of the meniscus and estimate one digit past the smallest marking, to the nearest 0.01 mL. Volume added = final reading − starting reading.</p>
+      </div>
+      <div>
+        <h3>Glossary</h3>
+        <dl>
+          <dt>Equivalence point</dt><dd>The exact volume at which moles of titrant added equal the moles needed to react with all of the sample. It is a fact about amounts, not about pH.</dd>
+          <dt>Endpoint</dt><dd>Where the indicator changes color. A good indicator makes the endpoint land on the equivalence point.</dd>
+          <dt>Half-equivalence point</dt><dd>Half the equivalence volume. Half of a weak acid has been converted to its conjugate base, so [HA] = [A⁻] and pH = pK<sub>a</sub>.</dd>
+          <dt>Buffer region</dt><dd>The flat stretch before equivalence in a weak acid or weak base titration. Both members of a conjugate pair are present, so added acid or base barely moves the pH.</dd>
+          <dt>Strong vs. weak</dt><dd>Strong acids and bases ionize completely in water. Weak ones ionize only slightly, so most of the molecules stay intact.</dd>
+          <dt>Spectator ion</dt><dd>An ion that is present but takes no part in the reaction (Na⁺ and Cl⁻ here).</dd>
+        </dl>
+        <h3>How real is it? (for teachers)</h3>
+        <ul>
+          <li>The pH is found by solving the full charge-balance equation for every mixture (K<sub>w</sub> = 1.0 × 10⁻¹⁴, 25 °C), so there are no approximations in the curve. "The math" card shows the standard classroom method beside it.</li>
+          <li>One drop is 0.05 mL, the buret holds 50.00 mL with 0.1 mL markings, and the flask level rises by the true volume for a 250 mL Erlenmeyer flask.</li>
+          <li>Indicator colors change over their real pH ranges. Near the endpoint the color flashes where the drop lands and fades on stirring, as it does in the lab.</li>
+          <li>Simplified: activity effects are ignored, the pH meter responds instantly and has no drift, and carbonic acid does not escape as CO₂.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/chem.js"></script>
+<script src="js/draw.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/graphs.js"></script>
+<script src="js/explain.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

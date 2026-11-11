@@ -12,6 +12,7 @@ One page searches all molecules, problems and quiz questions, with filters by co
 | `simulations/enthalpy-dissolution-lab/` | Enthalpy of Dissolution Virtual Lab (moved from the repo root) |
 | `simulations/periodic-table-highway/` | Periodic Table Highway: a lane-switching driving game for learning element symbols (single page, with tests) |
 | `simulations/reaction-explorer/` | Reaction Explorer: slow-motion particle collisions with electron clouds, forces, energy diagrams, bond energy curves, Maxwell–Boltzmann distributions and kinetics, for Honors, AP and Organic (classroom demo, with tests) |
+| `simulations/digestive-system-builder/` | Digestive System Builder: students build a digestive system on a snapping grid, feed it, and get a nutrient analysis and a report of what went wrong, for Anatomy & Physiology (with sound effects and tests) |
 | `chemistry_notes/` | Guided notes: honors packets (units 0 to 7, student and teacher editions) with the packet builder, nomenclature notes, and AP equilibrium notes |
 | `4-year-course-planner/` | Student course planner (`wcs-planner.html`) and school setup tool (`course-builder.html`), with course catalog config, plan and reference documents |
 | `honors-chemistry/`, `ap-chemistry/` | Reserved for those courses |

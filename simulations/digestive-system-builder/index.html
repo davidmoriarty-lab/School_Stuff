@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Digestive System Builder</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-mode="build">
+<header class="top">
+  <h1>Digestive System Builder</h1>
+  <span class="spacer"></span>
+  <button class="btn ghost" id="btnSound" aria-pressed="true">🔊 Sound on</button>
+  <button class="btn ghost" id="btnHelp">How it works</button>
+  <button class="btn ghost" id="btnClear">Clear board</button>
+</header>
+
+<main>
+  <section class="stage">
+    <div class="bar">
+      <p id="status" class="status" aria-live="polite"></p>
+      <div class="controls" role="group" aria-label="Run controls">
+        <button class="btn primary" id="btnPlay" title="Feed the food to your build">▶ Play</button>
+        <button class="btn" id="btnFast" aria-pressed="false" title="Run four times faster">⏩ Fast</button>
+        <button class="btn" id="btnPause" title="Pause">⏸ Pause</button>
+        <button class="btn" id="btnReset" title="Stop and go back to building">↺ Reset</button>
+      </div>
+    </div>
+    <div class="boardWrap">
+      <svg id="board" viewBox="0 0 1800 600" role="img" aria-label="Building grid, 18 columns by 6 rows"></svg>
+    </div>
+  </section>
+
+  <section class="bottom">
+    <div class="panel">
+      <div id="trays">
+        <h2>Organs of the digestive tract <small>food passes through these</small></h2>
+        <div id="trayTract" class="tray"></div>
+        <h2>Glands, cells and vessels <small>these work on the organ they touch</small></h2>
+        <div id="trayAcc" class="tray"></div>
+      </div>
+      <div id="summary" class="summary" hidden></div>
+    </div>
+    <div class="panel">
+      <h2>Food</h2>
+      <div id="foods" class="foods" role="group" aria-label="Choose a food"></div>
+      <h2>Analysis <small id="analysisFood"></small></h2>
+      <div class="tableWrap"><table id="analysis"></table></div>
+      <p class="fine">Nutrient values are in Calories; water is in grams. Initial = In the gut now + Absorbed (after digestion converts one form into another).</p>
+    </div>
+  </section>
+</main>
+
+<dialog id="help">
+  <h2>How it works</h2>
+  <ol>
+    <li><b>Build.</b> Drag parts from the trays onto the grid; they snap to the squares. You can also click a part and then click a square. Drag a part off the grid (or double-click it) to put it back.</li>
+    <li><b>Connect the tube.</b> Food enters the mouth and moves left to right. Two organs are joined when the open end of one sits against the open end of the next.</li>
+    <li><b>Attach the helpers.</b> A gland, group of cells or vessel works on the organ it is touching. A small connector appears when it is attached.</li>
+    <li><b>Feed it.</b> Choose a food and press Play. Watch the Analysis table: digestion converts nutrients into smaller units, and absorption moves them out of the gut.</li>
+    <li><b>Read the result.</b> At the end you get a report of what went wrong and why. Fix the build and try again, then try other foods.</li>
+  </ol>
+  <p class="fine">Keyboard: choose a part with Tab and Enter, move it with the arrow keys, press Enter to place it, Esc to cancel.</p>
+  <form method="dialog"><button class="btn primary">Close</button></form>
+</dialog>
+
+<script src="js/data.js"></script>
+<script src="js/model.js"></script>
+<script src="js/art.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

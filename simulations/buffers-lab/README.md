@@ -26,11 +26,21 @@ Things that go wrong on purpose: forgetting to tare, not stirring (the reading k
 | `js/glass.js` | draws the glassware and equipment to one scale (16 px = 1 cm) |
 | `js/lab.js` | bench state, drag and drop, pouring, balance, stirring, pH probe |
 | `js/notebook.js` | procedure, pre-lab, data table, analysis |
+| `js/scorm.js` | reports progress and completion to the learning system |
 
-"Teacher view" under the bench shows the exact amounts in every container.
+## SCORM package (for Canvas, Schoology, Moodle, Blackboard...)
+`dist/buffers-lab-scorm12.zip` is a SCORM 1.2 package. Upload it to your learning system as a SCORM activity.
+
+- The lab reports **completed** when all 8 procedure steps are done **and** all 8 data-table entries pass "Check my data".
+- Until then it reports **incomplete** with a progress score from 0 to 100 (half for the procedure steps, half for the data entries).
+- Notebook answers are stored with the learning system, so a student can continue on another computer. The bench itself starts fresh each visit.
+- Opened on its own (not inside a learning system), the lab works the same and simply reports nothing.
+
+After changing any file, rebuild the zip with `sh build-scorm.sh`.
 
 ## Tests
 ```bash
 node tests/chem.test.js   # chemistry engine
 node tests/ui.test.js     # runs the whole lab in a real browser (Playwright)
+node tests/scorm.test.js  # runs it inside a pretend learning system and checks what gets reported
 ```

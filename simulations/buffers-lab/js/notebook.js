@@ -9,8 +9,10 @@
   'use strict';
   const C = window.BufChem, Lab = window.BufferLab, root = document.getElementById('notebook');
   const KEY = 'buffers-lab-notebook-v1';
+  const SC = window.BufScorm;
   let saved = {}; try { saved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { saved = {}; }
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) { /* private window: just keep it in memory */ } };
+  if (SC && SC.saved && typeof SC.saved === 'object') saved = Object.assign({}, saved, SC.saved);   // answers kept by the learning system win
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) { /* private window: just keep it in memory */ } if (SC) SC.suspend(saved); };
   const num = (s) => { const v = parseFloat(String(s).replace(',', '.').replace(/[^0-9.eE+-]/g, '')); return isFinite(v) ? v : NaN; };
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
@@ -58,7 +60,7 @@
     '<tr><th>Volume of 0.50 M NaOH (mL)</th><td class="na">N/A</td>' + cell('d2naoh') + '</tr><tr><th>Actual pH</th>' + cell('d1ph') + cell('d2ph') + '</tr></table>' +
     '<h2>Calculations</h2><p>1. Calculate your percent error using the assigned pH and your actual pH for both buffers.</p><div class="eq">% error = |actual − assigned| ÷ assigned × 100</div>' +
     '<table class="datat" style="margin-top:.5rem"><tr><th>Percent error (%)</th>' + cell('e1') + cell('e2') + '</tr></table>' +
-    '<p><button type="button" class="btn primary" id="checkData">Check my data</button> <button type="button" class="btn" id="printBtn">Print my report</button></p><div class="fb" id="dataFb" aria-live="polite"></div></div>' +
+    '<p class="how">The lab is marked <b>complete</b> when all 8 procedure steps are done and every entry below passes “Check my data”.</p><p><button type="button" class="btn primary" id="checkData">Check my data</button> <button type="button" class="btn" id="printBtn">Print my report</button></p><div class="fb" id="dataFb" aria-live="polite"></div></div>' +
     /* ---- analysis ---- */
     '<div class="pane" data-pane="ana" hidden><h2>Analysis</h2>' +
     '<div class="q"><label>2. If either percent error is greater than 5 %, provide a reasonable source of error and explain precisely how the error would affect the actual pH.</label>' + ta('a2', 4) + '</div>' +
@@ -111,15 +113,17 @@
     one('d2ph', t.b2.pH, 0.025, 'does not match your last stable reading', 'no stable pH reading yet: stir, then wait for “reading stable”');
     for (const [e, p] of [['e1', 'd1ph'], ['e2', 'd2ph']]) { n++; const v = num(saved[e]), ph = num(saved[p]); if (!isFinite(v)) mark(e, false, 'empty'); else if (!isFinite(ph)) mark(e, false, 'enter the pH first'); else { const ok = Math.abs(v - C.pctError(ph)) <= 0.06; if (ok) good++; mark(e, ok, ok ? '✔' : '|actual − 4.75| ÷ 4.75 × 100'); } }
     for (const [k, name] of [['b1', 'Buffer 1'], ['b2', 'Buffer 2']]) { const b = t[k]; if (b.pH != null) { const pe = C.pctError(b.pH); out.push(name + ': measured pH ' + b.pH.toFixed(2) + ', ' + pe.toFixed(1) + ' % from the target' + (pe <= 1 ? ' (excellent).' : pe <= 5 ? ' (within 5 %).' : ' (more than 5 %: think about what went wrong for analysis question 2).')); } }
-    const fb = document.getElementById('dataFb'); fb.className = 'fb ' + (good === n ? 'ok' : 'hint'); fb.innerHTML = (good === n ? '✔ Every entry matches what happened on your bench.' : good + ' of ' + n + ' entries check out. Fix the ones outlined in red.') + (out.length ? '<br>' + out.join('<br>') : '');
+    const fb = document.getElementById('dataFb'); fb.className = 'fb ' + (good === n ? 'ok' : 'hint'); dataGood = good; const complete = SC ? SC.report(stepsDone, good) : false;
+    fb.innerHTML = (complete ? '<b>✔ Lab complete!</b> ' + (SC.connected ? 'Your completion has been reported to your class. ' : '') : '') + (good === n ? '✔ Every entry matches what happened on your bench.' + (complete ? '' : ' Finish all 8 procedure steps to complete the lab.') : good + ' of ' + n + ' entries check out. Fix the ones outlined in red.') + (out.length ? '<br>' + out.join('<br>') : '');
   }
 
   /* ---- the procedure check marks follow the bench ---- */
-  let lastSync = 0;
+  let lastSync = 0, stepsDone = 0, dataGood = null;
   function sync() {
     const now = Date.now(); if (now - lastSync < 300) return; lastSync = now; const t = Lab.truth();
     const done = { b1: [t.b1.acid >= 40, t.flags.weighed || t.b1.solid > 0, t.b1.solid > 0 && t.b1.undissolved <= 0 && t.b1.mixed, t.b1.pH != null && t.b1.solid > 0], b2: [t.b2.acid >= 40, t.flags.naohMeasured || t.b2.naoh > 0, t.b2.naoh > 0 && t.b2.mixed, t.b2.pH != null && t.b2.naoh > 0] };
     for (const k of ['b1', 'b2']) root.querySelectorAll('.steps[data-k="' + k + '"] li').forEach((li, i) => li.classList.toggle('done', !!done[k][i]));
+    const nDone = done.b1.concat(done.b2).filter(Boolean).length; if (nDone !== stepsDone) { stepsDone = nDone; if (SC) SC.report(stepsDone, dataGood); }
   }
   window.BufNotebook = { sync, checkData, checkPre };
 })();

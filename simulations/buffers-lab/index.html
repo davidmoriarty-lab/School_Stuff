@@ -9,7 +9,7 @@
 <body>
 <header class="top">
   <div><h1>Buffers Lab</h1><p>Make two buffers with pH 4.75 two different ways · AP Chemistry virtual lab</p></div>
-  <button class="btn ghost" id="resetBtn" type="button">↺ Reset the lab</button>
+  <div class="topright"><span class="status" id="status" role="status" aria-live="polite">Lab in progress</span><button class="btn ghost" id="resetBtn" type="button">↺ Reset the lab</button></div>
 </header>
 <div class="layout">
   <section class="benchcol" aria-label="Lab bench">
@@ -42,10 +42,10 @@
     <p class="small-screen">This lab needs room to drag. Turn your phone sideways, or use a tablet, Chromebook or computer.</p>
     <div class="tip" id="tip" role="status" aria-live="polite">Welcome to the lab.</div>
     <div class="actionbar" id="actionbar"></div>
-    <details class="teacher"><summary>Teacher view: exact amounts (students should read the glassware instead)</summary><div id="exact"></div></details>
   </section>
   <aside class="notebook" id="notebook" aria-label="Lab notebook"></aside>
 </div>
+<script src="js/scorm.js"></script>
 <script src="js/chem.js"></script>
 <script src="js/glass.js"></script>
 <script src="js/lab.js"></script>

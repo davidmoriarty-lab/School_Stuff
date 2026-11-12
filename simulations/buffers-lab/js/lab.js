@@ -126,17 +126,11 @@
     const id = S.zoom, cap = IT[id].cap; $('#zoomSvg').innerHTML = G.zoomCylinder(cap, S.cont[id].vol);
     $('#zoomTitle').textContent = cap + ' mL cylinder, at eye level';
     document.querySelectorAll('#zoomPick button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.z === id)));
-    const t = $('#exact'); if (t) t.innerHTML = exactHTML();
   }
   const balGross = () => (S.boat.loc === 'pan' ? BOAT_MASS + S.boat.solid : 0);
   function balText() { const v = S.bal.shown; return (Math.abs(v) < 0.005 ? 0 : v).toFixed(2) + ' g'; }
   function phText() { const p = S.probe; if (p.loc !== 'rinse' && S.cont[p.loc].vol < 25) return '--.--'; return p.reading.toFixed(2); }
   function phSub() { const p = S.probe; if (p.loc === 'rinse') return 'probe in rinse water'; if (S.cont[p.loc].vol < 25) return 'probe tip not covered'; return p.stable ? '● reading stable' : '~ settling…'; }
-  function exactHTML() {
-    const r = (id, label) => { const m = S.cont[id]; return '<tr><th>' + label + '</th><td>' + m.vol.toFixed(2) + ' mL</td><td>' + m.vA.toFixed(2) + '</td><td>' + m.vB.toFixed(2) + '</td><td>' + (m.gSolid || 0).toFixed(3) + ' g</td><td>' + (m.vol > 0 ? C.pH(m).toFixed(3) : '–') + '</td></tr>'; };
-    return '<table><tr><th></th><th>total</th><th>acid mL</th><th>NaOH mL</th><th>NaC₂H₃O₂</th><th>true pH</th></tr>' + r('cyl50', '50 mL cyl') + r('cyl100', '100 mL cyl') + r('b1', 'Buffer 1') + r('b2', 'Buffer 2') + '</table><p>Weigh boat: ' + S.boat.solid.toFixed(3) + ' g · scoop: ' + S.scoop.toFixed(3) + ' g</p>';
-  }
-
   /* ---------- messages and the action bar ---------- */
   function tip(msg, kind) { tipEl.textContent = msg; tipEl.className = 'tip ' + (kind || ''); }
   function renderBar() {

@@ -1,7 +1,7 @@
 /* tests/ui.test.js: does the whole lab in a real browser (needs Playwright).
  *   node simulations/buffers-lab/tests/ui.test.js
  * It drags equipment with the mouse, holds the pour button, weighs solid, stirs, reads the pH meter,
- * fills in the notebook, and checks that mistakes (no stirring, no tare, wrong amounts) show up. */
+ * watches the procedure checklist, and checks that mistakes (no stirring, no tare, wrong amounts) show up. */
 const path = require('path');
 let chromium;
 try { ({ chromium } = require('playwright')); } catch (e) { try { ({ chromium } = require('/opt/node22/lib/node_modules/playwright')); } catch (e2) { console.error('Playwright is not installed; skipping.'); process.exit(0); } }
@@ -69,18 +69,12 @@ const expect = (c, m) => { checks++; if (!c) problems.push(m); };
   await drag('probe', 'b2'); await page.waitForTimeout(5500);
   const ph2 = parseFloat(await page.locator('#phText').textContent()); expect(Math.abs(ph2 - 4.75) <= 0.03, 'Buffer 2 reads pH 4.75 (' + ph2 + ')');
 
-  /* notebook */
+  /* the procedure panel */
   expect((await page.locator('.steps li.done').count()) === 8, 'all eight procedure steps are ticked (' + (await page.locator('.steps li.done').count()) + ')');
-  await page.click('[data-tab=pre]');
-  const pre = async (id, v) => { await page.fill('[data-save=' + id + ']', v); await page.click('[data-check=' + id + ']'); return page.locator('[data-fb=' + id + ']').innerText(); };
-  expect((await pre('q4', '3.40')).includes('Correct') && (await pre('q5', '41.5')).includes('Correct') && (await pre('q1', '10.7')).includes('Correct'), 'pre-lab answers 10.7 g, 3.40 g and 41.5 mL are accepted');
-  expect((await pre('q5', '83')).includes('ALL') && (await pre('q4', '0.0415')).includes('moles') && (await pre('q4', '2')).includes('Hint'), 'wrong pre-lab answers get a targeted hint, not the answer');
-  await page.click('[data-tab=data]');
-  for (const [k, v] of [['d1acid', '50.0'], ['d2acid', '50.0'], ['d1mass', '3.40'], ['d2naoh', '41.5'], ['d1ph', String(ph1)], ['d2ph', String(ph2)], ['e1', (Math.abs(ph1 - 4.75) / 4.75 * 100).toFixed(2)], ['e2', (Math.abs(ph2 - 4.75) / 4.75 * 100).toFixed(2)]]) await page.fill('[data-save=' + k + ']', v);
-  await page.click('#checkData'); expect((await page.locator('#dataFb').innerText()).includes('Every entry matches') && (await page.locator('.datat input.ok').count()) === 8, 'a correct data table passes the check: ' + (await page.locator('#dataFb').innerText()).slice(0, 80));
-  await page.fill('[data-save=d1mass]', '4.92'); await page.click('#checkData'); expect((await page.locator('.datat input.no').count()) === 1 && (await page.locator('#dataFb').innerText()).includes('7 of 8'), 'a wrong entry is flagged');
-  await page.click('[data-tab=ana]'); await page.fill('[data-save=a3]', 'HCl is a strong acid'); await page.check('input[name=a4pick][value=C]'); await page.reload(); await page.waitForTimeout(200);
-  await page.click('#gogglesBtn'); await page.click('[data-tab=ana]'); expect((await page.inputValue('[data-save=a3]')) === 'HCl is a strong acid' && await page.isChecked('input[name=a4pick][value=C]'), 'notebook answers survive a reload');
+  expect((await page.locator('#doneBox').innerText()).includes('Lab complete') && (await page.locator('#status').innerText()).includes('Lab complete'), 'finishing both buffers shows "Lab complete"');
+  expect((await page.locator('#notebook input, #notebook textarea, #notebook [data-tab]').count()) === 0 && (await page.locator('#notebook').innerText()).includes('lab sheet'), 'the questions are on the paper sheet: the panel has no answer boxes or tabs');
+  await page.reload(); await page.waitForTimeout(200); await page.click('#gogglesBtn');
+  expect((await page.locator('.steps li.done').count()) === 0, 'a reload starts a fresh bench');
 
   /* mistakes show up in the pH */
   await S(() => { BufferLab.moveLiquid('acid', 'b1', 50); BufferLab.S.cont.b1.solid = 1.70; BufferLab.S.cont.b1.gSolid = 1.70; });

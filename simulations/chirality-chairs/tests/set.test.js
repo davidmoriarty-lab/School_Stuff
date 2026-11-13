@@ -38,5 +38,24 @@ ok(Object.keys(seen.patterns).length === 4, 'all four chair patterns appear');
 /* flipping a center changes its letter in a real set, and the original molecule data is never changed by it */
 { const p = S.plan(777).slice(0, 8), before = JSON.stringify(Mol.byId[p[0].id].mol); S.chiralData(p[0]); S.chiralData(Object.assign({}, p[0], { flip: Cip.chiralCenters(Mol.byId[p[0].id].mol) })); ok(JSON.stringify(Mol.byId[p[0].id].mol) === before, 'making a student\'s copy never changes the stored molecule'); }
 
+/* ---- the undrawn hydrogen is shown as a wedge or dash when a center is opened ---- */
+{ const Draw = require('../js/draw.js'); let shown = 0, dashes = 0, wedges = 0;
+  for (const p of Mol.POOL) for (const flipAll of [false, true]) {
+    const m = Mol.transform(p.mol, { rotate: flipAll, flip: flipAll ? Cip.chiralCenters(p.mol) : [] });
+    for (const c of Cip.chiralCenters(m)) {
+      const gs = Cip.groups(m, c), h = gs.filter((x) => x.atom === null), svg = Draw.skeletal(m, { slots: { center: c, nums: {} } }).svg, hb = svg.match(/class="hbond (wedge|dash|plain)"/g) || [];
+      if (!h.length) { ok(hb.length === 0, p.name + ': no hydrogen to draw on a center with four drawn groups'); continue; }
+      shown++; ok(hb.length === 1, p.name + ' center ' + c + ': exactly one hydrogen bond is drawn');
+      const want = h[0].v.z > 0.15 ? 'wedge' : h[0].v.z < -0.15 ? 'dash' : 'plain'; ok(hb[0].indexOf(want) >= 0 && want !== 'plain', p.name + ' center ' + c + ': the hydrogen is a ' + want + ' (it points ' + (want === 'dash' ? 'away from' : 'toward') + ' you)');
+      // opposite to the drawn stereo bond: wedge on the molecule means the hydrogen is a dash
+      const stereo = m.bonds.filter((b) => b.from === c && b.stereo); ok(stereo.length === 1 && (stereo[0].stereo === 'w') === (want === 'dash'), p.name + ' center ' + c + ': the hydrogen is opposite to the drawn wedge/dash');
+      if (want === 'dash') dashes++; else wedges++;
+      ok(/class="slot[ "]/.test(svg) && svg.split('class="slot').length === 5, p.name + ' center ' + c + ': four numbered-group circles are drawn');
+    }
+  }
+  ok(shown > 40 && dashes > 15 && wedges > 15, 'both kinds of hydrogen appear across the pool (' + dashes + ' dashes, ' + wedges + ' wedges of ' + shown + ')');
+  // the solved picture draws it too
+  const m = Mol.byId.butan2ol.mol, cf = Cip.config(m, 1), hv = cf.dir[3], solved = Draw.skeletal(m, { priorities: [{ center: 1, groups: cf.ranking.groups.map((g) => ({ priority: g.priority, atom: g.atom })), hdir: { x: hv.x, y: -hv.y }, hz: hv.z }] }).svg; ok(/hbond dash/.test(solved), 'the solved picture shows the hydrogen as a dash too'); }
+
 if (problems.length) { console.error(problems.length + ' of ' + checks + ' checks FAILED:\n  ' + problems.slice(0, 30).join('\n  ')); process.exit(1); }
 console.log('set: all ' + checks + ' checks passed');

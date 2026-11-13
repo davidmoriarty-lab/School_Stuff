@@ -49,6 +49,15 @@
       if (want) { const w = ang(want.x, want.y); if (sep(w) > 0.75) return w; }
       let best = 0, bs = -1; for (let k = 0; k < 72; k++) { const a = k * Math.PI / 36, sc = sep(a); if (sc > bs + 1e-9) { bs = sc; best = a; } } return best;
     };
+    /* An undrawn hydrogen, drawn out as a bond to an "H": a wedge if it points toward you, a dash if it points away,
+     * a plain line if the picture does not say. z comes from the other bonds (the H points opposite to the wedge). */
+    const hBond = (c, ang, z) => {
+      const ux = Math.cos(ang), uy = Math.sin(ang), px = -uy, py = ux, a = P[c], e = { x: a.x + ux * 27, y: a.y + uy * 27 }; let s2 = '';
+      if (z > 0.15) s2 = '<polygon points="' + f(a.x) + ',' + f(a.y) + ' ' + f(e.x + px * 4.4) + ',' + f(e.y + py * 4.4) + ' ' + f(e.x - px * 4.4) + ',' + f(e.y - py * 4.4) + '" fill="currentColor"/>';
+      else if (z < -0.15) for (let k = 1; k <= 6; k++) { const t = k / 6, qx = a.x + (e.x - a.x) * t, qy = a.y + (e.y - a.y) * t, w = 0.8 + 4.2 * t; s2 += '<line x1="' + f(qx + px * w) + '" y1="' + f(qy + py * w) + '" x2="' + f(qx - px * w) + '" y2="' + f(qy - py * w) + '" stroke="currentColor" stroke-width="1.7"/>'; }
+      else s2 = '<line x1="' + f(a.x) + '" y1="' + f(a.y) + '" x2="' + f(e.x) + '" y2="' + f(e.y) + '" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
+      return '<g class="hbond ' + (z > 0.15 ? 'wedge' : z < -0.15 ? 'dash' : 'plain') + '">' + s2 + '<text x="' + f(a.x + ux * 39) + '" y="' + f(a.y + uy * 39 + 5) + '" text-anchor="middle" font-size="15" font-weight="600" fill="#1b2a38">H</text></g>';
+    };
     /* heteroatom labels, with their hydrogens on the side away from the bond */
     A.forEach((a, i) => {
       if (a.el === 'C') return; const h = g.hs[i], nbs = g.nb[i]; let leftward = false;
@@ -64,13 +73,13 @@
     (o.marks || []).forEach((m, n) => { const i = m.atom, bad = m.state; overlay += '<circle class="mark ' + (bad || '') + '" cx="' + f(P[i].x) + '" cy="' + f(P[i].y) + '" r="14"/><g class="badge ' + (bad || '') + '"><circle cx="' + f(P[i].x + 15) + '" cy="' + f(P[i].y - 15) + '" r="9"/><text x="' + f(P[i].x + 15) + '" y="' + f(P[i].y - 11.5) + '" text-anchor="middle" font-size="11" font-weight="700">' + (n + 1) + '</text></g>'; });
     if (o.focus !== undefined) overlay += '<circle class="mark focus" cx="' + f(P[o.focus].x) + '" cy="' + f(P[o.focus].y) + '" r="15"/>';
     if (o.slots) {   // the four groups on one center, each a button that gets a number when clicked
-      const c = o.slots.center, gs = Cip.groups(mol, c, g), usedH = []; let hi = 0;
+      const c = o.slots.center, gs = Cip.groups(mol, c, g), usedH = [], nH = gs.filter((x) => x.atom === null).length; let hi = 0;
       gs.forEach((gr) => {
         const n = o.slots.nums[gr.id]; let q, extra = '';
         if (gr.atom !== null) { const u = dirTo(c, gr.atom), far = u.d + (labeled(gr.atom) ? 22 : 19); q = { x: P[c].x + u.x * far, y: P[c].y + u.y * far }; }
         else {
           const hx = gr.v.x, hy = -gr.v.y, d = Math.hypot(hx, hy), ang = freeDir(c, d < 0.2 ? null : { x: hx, y: hy }, usedH); usedH.push(ang); hi++;
-          q = { x: P[c].x + Math.cos(ang) * 40, y: P[c].y + Math.sin(ang) * 40 }; extra = '<text x="' + f(q.x + Math.cos(ang) * 25) + '" y="' + f(q.y + Math.sin(ang) * 25 + 5) + '" text-anchor="middle" font-size="15" font-weight="600" fill="#6b7a88">H</text>';
+          q = { x: P[c].x + Math.cos(ang) * 64, y: P[c].y + Math.sin(ang) * 64 }; extra = hBond(c, ang, nH === 1 ? gr.v.z : 0);
         }
         overlay += extra + '<g class="slot' + (n ? ' on' : '') + '" data-gid="' + gr.id + '" tabindex="0" role="button" aria-label="' + (gr.atom === null ? 'hydrogen that is not drawn' : A[gr.atom].el + ' group') + (n ? ', priority ' + n : '') + '"><circle cx="' + f(q.x) + '" cy="' + f(q.y) + '" r="13"/><text x="' + f(q.x) + '" y="' + f(q.y + 5) + '" text-anchor="middle" font-size="14" font-weight="800">' + (n || '') + '</text></g>';
       });
@@ -80,8 +89,8 @@
       const usedP = [];
       pr.groups.forEach((gr) => {
         if (gr.atom === null) {   // an undrawn hydrogen: show it where it points, with its number
-          const hd = pr.hdir || { x: 0, y: 0 }, d = Math.hypot(hd.x, hd.y), ang = freeDir(pr.center, d < 0.2 ? null : hd, usedP), ux = Math.cos(ang), uy = Math.sin(ang), qx = P[pr.center].x + ux * 30, qy = P[pr.center].y + uy * 30; usedP.push(ang);
-          overlay += '<text x="' + f(qx + ux * 17) + '" y="' + f(qy + uy * 17 + 5) + '" text-anchor="middle" font-size="14" font-weight="600" fill="#6b7a88">H</text>' + badge(qx, qy, gr.priority);
+          const hd = pr.hdir || { x: 0, y: 0 }, d = Math.hypot(hd.x, hd.y), ang = freeDir(pr.center, d < 0.2 ? null : hd, usedP); usedP.push(ang);
+          overlay += hBond(pr.center, ang, pr.hz || 0) + badge(P[pr.center].x + Math.cos(ang) * 58, P[pr.center].y + Math.sin(ang) * 58, gr.priority);
         } else { const u = dirTo(pr.center, gr.atom), far = u.d + (labeled(gr.atom) ? 18 : 15); overlay += badge(P[pr.center].x + u.x * far, P[pr.center].y + u.y * far, gr.priority); }
       });
     });

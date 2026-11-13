@@ -49,6 +49,7 @@ let SEED = 0; for (let s = 5000; s < 9000 && !SEED; s++) if (SetMod.plan(s)[1].i
   await card.locator('.atom[data-atom="' + center + '"]').click();
   expect(await modal.isVisible() && (await page.locator('.dlg h3').innerText()) === 'Chiral center 1' && (await page.locator('.dlg .slot').count()) === 4, 'clicking a center opens a window for that center, with its four groups to rank');
   expect((await page.locator('.dlg .mark.focus').count()) === 1 && (await page.locator('.dlg .slot.on').count()) === 0, 'the window highlights that one carbon and starts with no numbers');
+  { const hz = await ev((c) => Cip.groups(ChiralApp.data[0].mol, c).find((x) => x.atom === null).v.z, center); const cls = await page.locator('.dlg .hbond').getAttribute('class'); expect((await page.locator('.dlg .hbond').count()) === 1 && cls.includes(hz < 0 ? 'dash' : 'wedge') && (await page.locator('.dlg .hbond').textContent()).trim() === 'H', 'the window draws the undrawn hydrogen as a ' + (hz < 0 ? 'dashed' : 'wedged') + ' bond to an H (' + cls + ')'); }
   await page.locator('[data-mact=done]').click(); expect((await page.locator('.dlg .pc-fb').innerText()).includes('all four groups') && await modal.isVisible(), 'Done is refused until all four groups are numbered');
   await slot(T0.order[0][0]).click(); await slot(T0.order[0][1]).click();
   expect((await page.locator('.dlg .slot.on').count()) === 2 && (await slot(T0.order[0][0]).textContent()).trim() === '1' && (await slot(T0.order[0][1]).textContent()).trim() === '2', 'clicking groups numbers them 1, 2 in the order clicked');

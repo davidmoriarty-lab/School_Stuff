@@ -36,21 +36,11 @@ expect(!/teacher|id="exact"/i.test(html), 'the teacher view is gone');
   await fr().evaluate(() => { const L = BufferLab; L.moveLiquid('acid', 'cyl50', 50); L.drop('cyl50', 'b1'); L.act('all'); L.drop('boat', 'balance'); L.tare(); L.S.boat.solid = 3.40; });
   await page.waitForTimeout(500); await fr().evaluate(() => { const L = BufferLab; L.drop('boat', 'b1'); L.drop('rod', 'b1'); }); await page.waitForTimeout(5200);
   await fr().evaluate(() => { BufferLab.act('done'); BufferLab.drop('probe', 'b1'); }); await page.waitForTimeout(5000);
-  const s1 = await store(); expect(s1['cmi.core.score.raw'] === '25' && s1['cmi.core.lesson_status'] === 'incomplete', 'after Buffer 1 the score is 25 and the lab is still incomplete (' + s1['cmi.core.score.raw'] + ')');
-  const ph1 = await fr().evaluate(() => BufferLab.S.last.b1);
+  const s1 = await store(); expect(s1['cmi.core.score.raw'] === '50' && s1['cmi.core.lesson_status'] === 'incomplete', 'after Buffer 1 the score is 50 and the lab is still incomplete (' + s1['cmi.core.score.raw'] + ')');
   await fr().evaluate(() => { const L = BufferLab; L.drop('probe', 'rinse'); L.moveLiquid('acid', 'cyl50', 50); L.drop('cyl50', 'b2'); L.act('all'); L.moveLiquid('naoh', 'cyl50', 41.5); L.drop('cyl50', 'b2'); L.act('all'); L.drop('rod', 'b2'); }); await page.waitForTimeout(2600);
   await fr().evaluate(() => { BufferLab.act('done'); BufferLab.drop('probe', 'b2'); }); await page.waitForTimeout(5000);
-  const ph2 = await fr().evaluate(() => BufferLab.S.last.b2);
-  expect((await store())['cmi.core.score.raw'] === '50' && (await store())['cmi.core.lesson_status'] === 'incomplete', 'all 8 steps done but no data yet: score 50, still incomplete');
-  await f.locator('[data-tab=data]').click();
-  const fill = async (vals) => { for (const [k, v] of vals) await f.locator('[data-save=' + k + ']').fill(v); await f.locator('#checkData').click(); };
-  const pe = (p) => (Math.abs(p - 4.75) / 4.75 * 100).toFixed(2);
-  await fill([['d1acid', '50.0'], ['d2acid', '50.0'], ['d1mass', '9.99'], ['d2naoh', '41.5'], ['d1ph', String(ph1)], ['d2ph', String(ph2)], ['e1', pe(ph1)], ['e2', pe(ph2)]]);
-  expect((await store())['cmi.core.lesson_status'] === 'incomplete' && (await store())['cmi.core.score.raw'] === '94', 'one wrong data entry: score 94, not complete (' + (await store())['cmi.core.score.raw'] + ')');
-  await fill([['d1mass', '3.40']]);
-  const s2 = await store(); expect(s2['cmi.core.lesson_status'] === 'completed' && s2['cmi.core.score.raw'] === '100', 'all steps + correct data: "completed" with a score of 100');
-  expect((await f.locator('#status').innerText()).includes('Lab complete') && (await f.locator('#dataFb').innerText()).includes('reported to your class'), 'the student is told the lab is complete and reported');
-  expect(JSON.parse(s2['cmi.suspend_data']).d1mass === '3.40', 'the notebook is stored with the learning system');
+  const s2 = await store(); expect(s2['cmi.core.lesson_status'] === 'completed' && s2['cmi.core.score.raw'] === '100', 'all 8 steps done: "completed" with a score of 100 (' + s2['cmi.core.lesson_status'] + ', ' + s2['cmi.core.score.raw'] + ')');
+  expect((await f.locator('#status').innerText()).includes('Lab complete') && (await f.locator('#doneBox').innerText()).includes('reported to your class'), 'the student is told the lab is complete and reported');
   const c = await calls(); expect(c.some((x) => x[0] === 'commit') && c.findIndex((x) => x[1] === 'cmi.core.lesson_status' && x[2] === 'completed') < c.map((x) => x[0]).lastIndexOf('commit'), 'the completion is committed straight away');
   /* leaving the page closes the session properly */
   await fr().evaluate(() => BufScorm.finish()); const s3 = await store(); expect((await calls()).some((x) => x[0] === 'finish') && /^\d\d:\d\d:\d\d$/.test(s3['cmi.core.session_time']), 'on leaving, the session time is sent and the session is finished (' + s3['cmi.core.session_time'] + ')');
@@ -58,7 +48,6 @@ expect(!/teacher|id="exact"/i.test(html), 'the teacher view is gone');
   /* coming back later: still complete, notebook restored, never downgraded */
   page = await start(s3); f = page.frameLocator('#sco'); await page.evaluate(() => 0);
   expect((await f.locator('#status').innerText()).includes('Lab complete'), 'a returning student still sees "Lab complete"');
-  await f.locator('[data-tab=data]').click(); expect((await f.locator('[data-save=d1mass]').inputValue()) === '3.40', 'the notebook comes back from the learning system');
   await f.locator('#gogglesBtn').click(); await page.waitForTimeout(600); expect((await store())['cmi.core.lesson_status'] === 'completed' && (await store())['cmi.core.score.raw'] === '100', 'a completed lab is never set back to incomplete');
   await page.close();
   /* with no learning system the page still works */

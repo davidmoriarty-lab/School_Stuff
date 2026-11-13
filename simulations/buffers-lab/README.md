@@ -10,7 +10,8 @@ Open `index.html` in a browser. Nothing to install, no internet needed. Best on 
 - **Weigh** sodium acetate: weigh boat on the 0.01 g balance, TARE, load the scoop at the jar, tap solid in or take a little out.
 - **Mix**: tip the boat into the beaker and stir with the rod until the solid dissolves.
 - **Measure pH**: drag the probe in and wait for "reading stable". Rinse the probe between solutions.
-- **Notebook**: procedure checklist, pre-lab questions with answer checks (hints, never the answer), the lab's data table with "Check my data", percent error, the analysis questions, and a printable report. Notebook answers are saved in the browser; the bench itself starts fresh on a reload.
+- **Procedure panel**: the lab's procedure, with each step ticked as it is done on the bench. The bench starts fresh on a reload.
+- **Lab sheet**: the pre-lab questions, data table, calculations and analysis are on paper: `Buffers_Lab_Student_Sheet.pdf` (two pages, front and back).
 - **Optional stress test**: add 1.0 M HCl to each buffer to compare buffer capacity (analysis question 5).
 
 ## How the chemistry works
@@ -25,15 +26,15 @@ Things that go wrong on purpose: forgetting to tare, not stirring (the reading k
 | `js/chem.js` | mixing, dissolving, pH, pre-lab answers |
 | `js/glass.js` | draws the glassware and equipment to one scale (16 px = 1 cm) |
 | `js/lab.js` | bench state, drag and drop, pouring, balance, stirring, pH probe |
-| `js/notebook.js` | procedure, pre-lab, data table, analysis |
+| `js/notebook.js` | the procedure panel and its check marks |
 | `js/scorm.js` | reports progress and completion to the learning system |
 
 ## SCORM package (for Canvas, Schoology, Moodle, Blackboard...)
 `dist/buffers-lab-scorm12.zip` is a SCORM 1.2 package. Upload it to your learning system as a SCORM activity.
 
-- The lab reports **completed** when all 8 procedure steps are done **and** all 8 data-table entries pass "Check my data".
-- Until then it reports **incomplete** with a progress score from 0 to 100 (half for the procedure steps, half for the data entries).
-- Notebook answers are stored with the learning system, so a student can continue on another computer. The bench itself starts fresh each visit.
+- The lab reports **completed** when all 8 procedure steps are done (both buffers made, stirred and measured with the pH meter).
+- Until then it reports **incomplete** with a progress score from 0 to 100 (12.5 per step).
+- Completion means the steps were done, not that the pH was accurate. Accuracy is graded from the paper lab sheet.
 - Opened on its own (not inside a learning system), the lab works the same and simply reports nothing.
 
 After changing any file, rebuild the zip with `sh build-scorm.sh`.

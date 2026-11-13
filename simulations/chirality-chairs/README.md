@@ -35,6 +35,17 @@ You can drag a chip onto a position, drag a placed chip to another position, or 
 - The set is complete when all 12 spots are answered correctly. A results page lists each problem.
 - Progress saves automatically in the browser, plus a **Save progress** button. Each set has a number; `index.html?set=12345` rebuilds the same set.
 
+## SCORM package (for Schoology, Canvas, Moodle, Blackboard...)
+`dist/chirality-chairs-scorm12.zip` is a SCORM 1.2 package. In Schoology: Add Materials, then Add File/Link/External Tool, then **SCORM Package**, and upload the zip.
+
+- **Completion:** reported as **completed** only when all 12 problems have been **answered correctly**. Looking at a worked solution never counts: that spot is replaced by a similar problem that must be answered correctly. Completion is never taken back.
+- **Grade (score):** reported after every answer, as the share of the 12 spots completed (0 to 100). It reaches **100 when the set is complete**, whether or not solutions were used along the way. The printable results page shows how many were correct on the first try.
+- **Save progress:** the set number, the place, tries, solutions shown and the work in progress are stored with the class (SCORM `suspend_data`, plus `lesson_location`), so a student can close the page and continue later on any computer. That includes a half-finished chiral center (which groups are numbered), and chips already placed on a chair or a ring flip. The red feedback messages are not saved. The packed data stays well under the 4096-character limit (worst case about a third of it).
+- **One set per student:** inside a class the "New set" and "Try a new set" buttons are hidden.
+- Opened on its own, the page works the same and keeps progress in the browser.
+
+After changing any file, rebuild the zip with `sh build-scorm.sh`.
+
 ## How the chemistry works
 `js/cip.js` follows the real Cahn–Ingold–Prelog procedure: each group is a tree growing outward from the center, compared one sphere at a time (atomic number first, then the set of atoms attached, and so on), with duplicate atoms for double bonds, ring closures followed around, and undrawn hydrogens added back. R or S comes from the 3D positions that the wedges and dashes give (an undrawn hydrogen points opposite to the other three groups). Answers are never stored: they are worked out from the drawing, so changing a molecule can never leave a wrong key.
 
@@ -56,6 +67,7 @@ What is accepted on purpose: any carbons, and either face of the ring (the same 
 | `js/chair.js` | chair geometry, the cis/trans and distance checks, the ring flip |
 | `js/draw.js` | skeletal structures, the flat ring, the chair template (SVG) |
 | `js/set.js` | builds each student's 12 problems from the set number |
+| `js/scorm.js` | reports score and completion to the learning system |
 | `js/app.js` | the page: one problem at a time, clicking, dragging, saving |
 
 ## Tests
@@ -64,4 +76,5 @@ node tests/cip.test.js     # priorities and R/S against textbook facts (L-amino 
 node tests/chair.test.js   # the chair rules: the textbook table, the 3D geometry, and an independent 3D checker
 node tests/set.test.js     # 2,500 sets: distinct molecules, solvable chairs, R and S balanced
 node tests/ui.test.js      # a whole set in a real browser with real mouse drags (Playwright)
+node tests/scorm.test.js   # runs it inside a pretend learning system: score, completion, saving, resuming
 ```

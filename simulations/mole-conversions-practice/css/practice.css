@@ -24,6 +24,8 @@ html { scroll-padding-top: 5.5rem; }
 .finish input { padding: .4rem .6rem; border-radius: 8px; border: 2px solid var(--line); font: inherit; background: var(--panel2); color: var(--ink); }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 #list .pcard { margin-top: 1rem; }
+/* on a phone the header wraps to about a quarter of the screen, so it scrolls away instead of staying on top */
+@media (max-width: 700px) { .bar { position: static; } html { scroll-padding-top: 0; } }
 @media (max-width: 560px) { .dots { order: 3; flex-basis: 100%; } .pc-in.wide { width: 100%; } }
 @media print { .bar .btn, .pc-actions, .gate, .ref, .intro, #againBtn, #printBtn { display: none !important; } .bar { position: static; box-shadow: none; } .finish { border-color: #000; } .prob { break-inside: avoid; } }
 

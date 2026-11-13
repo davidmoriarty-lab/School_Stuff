@@ -57,17 +57,29 @@ expect(html.indexOf('js/scorm.js') < html.indexOf('js/assignment.js'), 'scorm.js
   page = await start(mid); f = page.frameLocator('#sco');
   expect((await sco(() => MolePractice.state.seed)) === seed && (await sco(() => MolePractice.state.cur)) === 1, 'resuming gives the same set and the same problem');
   expect((await card().locator('.pc-in').inputValue()) === '678' && (await card().locator('.ptag').innerText()).includes('1 try'), 'the typed answer and the try count come back');
-  expect((await f.locator('.dot.solved').count()) === 1 && (await f.locator('#score').innerText()).startsWith('1 / 13'), 'the finished problem is still counted correct');
+  expect((await f.locator('.dot.solved').count()) === 1 && (await f.locator('#score').innerText()).startsWith('1 / 13'), 'the finished problem is still counted');
   expect((await f.locator('#newSet').isHidden()), 'the New set button stays hidden when resuming');
   expect((await store())['cmi.core.lesson_status'] === 'incomplete', 'resuming does not complete anything');
 
-  /* ---- finish everything: one solution shown, rest correct ---- */
+  /* ---- using the solution on problem 2: it does not count, a similar problem takes its place ---- */
   for (let k = 0; k < 3; k++) { await card().locator('.pc-in').fill(String(99999 + k)); await card().locator('[data-act=check]').click(); }
-  await card().locator('[data-act=reveal]').click(); await card().locator('[data-act=next]').click();
+  const orig = await card().locator('.pc-q').innerText();
+  await card().locator('[data-act=reveal]').click();
+  let sh = await store(); const shItem = JSON.parse(sh['cmi.suspend_data']).i[1];
+  expect(shItem[1] === 2 && sh['cmi.core.score.raw'] === '8' && sh['cmi.core.lesson_status'] === 'incomplete', 'showing the solution is saved as "shown" and earns no score or completion (score ' + sh['cmi.core.score.raw'] + ')');
+  await page.close(); page = await start(sh); f = page.frameLocator('#sco');
+  expect((await card().getAttribute('class')).includes('shown') && (await card().locator('[data-act=next]').count()) === 0, 'resuming at a shown solution still offers only "Try a similar problem"');
+  await card().locator('[data-act=retry]').click();
+  const q1 = await card().locator('.pc-q').innerText(); const saved1 = JSON.parse((await store())['cmi.suspend_data']).i[1];
+  expect(q1 !== orig && saved1[1] === 0 && saved1[5] === 1 && saved1[6] === 1, 'a similar problem replaces it, and the number of similar problems and solutions shown is saved');
+  const st1 = await store(); await page.close(); page = await start(st1); f = page.frameLocator('#sco');
+  expect((await card().locator('.pc-q').innerText()) === q1 && (await card().locator('.similar').count()) === 1, 'resuming gives the same similar problem');
+  expect((await store())['cmi.core.lesson_status'] === 'incomplete', 'still incomplete while problem 2 is open');
+  await answer(1); expect((await store())['cmi.core.score.raw'] === '15' && (await store())['cmi.core.lesson_status'] === 'incomplete', 'the similar problem counts as problem 2: score 15 (2 of 13)'); await card().locator('[data-act=next]').click();
   for (let i = 2; i < 13; i++) { expect((await sco(() => MolePractice.state.cur)) === i, 'on problem ' + (i + 1)); expect((await store())['cmi.core.lesson_status'] === 'incomplete', 'still incomplete before problem ' + (i + 1) + ' is finished'); await answer(i); await card().locator('[data-act=next]').click(); }
   await f.locator('#finish').waitFor();
-  const s2 = await store(); expect(s2['cmi.core.lesson_status'] === 'completed', 'all 13 finished: "completed" (' + s2['cmi.core.lesson_status'] + ')');
-  expect(s2['cmi.core.score.raw'] === '92', 'score is 12 of 13 correct = 92 (' + s2['cmi.core.score.raw'] + ')');
+  const s2 = await store(); expect(s2['cmi.core.lesson_status'] === 'completed', 'all 13 answered correctly: "completed" (' + s2['cmi.core.lesson_status'] + ')');
+  expect(s2['cmi.core.score.raw'] === '100', 'all 13 done: score 100 (' + s2['cmi.core.score.raw'] + ')');
   expect((await f.locator('#finish').innerText()).includes('reported to your class') && (await f.locator('#againBtn').count()) === 0, 'the results say completion was reported, and offer no new set');
   const c = await calls(); expect(c.findIndex((x) => x[1] === 'cmi.core.lesson_status' && x[2] === 'completed') < c.map((x) => x[0]).lastIndexOf('commit'), 'the completion is committed straight away');
   await sco(() => MoleScorm.finish()); const s3 = await store(); expect((await calls()).some((x) => x[0] === 'finish') && /^\d\d:\d\d:\d\d$/.test(s3['cmi.core.session_time']), 'on leaving, the session time is sent and the session is finished');
@@ -75,9 +87,9 @@ expect(html.indexOf('js/scorm.js') < html.indexOf('js/assignment.js'), 'scorm.js
 
   /* ---- a completed attempt is shown as completed, never downgraded ---- */
   page = await start(s3); f = page.frameLocator('#sco');
-  expect((await sco(() => MolePractice.state.cur)) === 13 && await f.locator('#finish').isVisible() && (await f.locator('#finish .big').innerText()).trim() === '12 / 13', 'a returning student sees their results (12 / 13)');
+  expect((await sco(() => MolePractice.state.cur)) === 13 && await f.locator('#finish').isVisible() && (await f.locator('#finish .big').innerText()).trim() === '11 / 13', 'a returning student sees their results (11 / 13 first try)');
   await f.locator('.dot[data-go="0"]').click(); await f.locator('#saveBtn').click();
-  expect((await store())['cmi.core.lesson_status'] === 'completed' && (await store())['cmi.core.score.raw'] === '92', 'revisiting a problem never sets a completed lab back to incomplete or lowers the score');
+  expect((await store())['cmi.core.lesson_status'] === 'completed' && (await store())['cmi.core.score.raw'] === '100', 'revisiting a problem never sets a completed lab back to incomplete or lowers the score');
   await page.close();
 
   /* ---- bad or old saved data is ignored ---- */

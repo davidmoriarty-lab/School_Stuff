@@ -4,10 +4,11 @@
  * How it works:
  *   - The learning system opens this page in a frame and puts an object called "API" on one of the
  *     windows above it. find() climbs up through the parent windows looking for it.
- *   - Score: every time an answer is checked we send the percent of the 13 problems answered
- *     correctly (cmi.core.score.raw, 0-100).
- *   - Completion: when all 13 problems are finished (correct, or the worked solution was shown) we send
- *     lesson_status = "completed". Once completed it is never set back to "incomplete".
+ *   - Score: every time an answer is checked we send the percent of the 13 problems completed
+ *     (cmi.core.score.raw, 0-100). A problem only counts when it is answered correctly. If the student
+ *     uses the worked solution, the page gives that spot a similar problem instead.
+ *   - Completion: when all 13 problems have been answered correctly we send lesson_status = "completed".
+ *     Once completed it is never set back to "incomplete".
  *   - Saving: the student's place and answers are packed into cmi.suspend_data (limit 4096 characters)
  *     and the current problem is stored in cmi.core.lesson_location, so the student can close the page
  *     and continue later, even on another computer.
@@ -33,7 +34,7 @@
   }
   function commit(force) { if (!st.on) return false; const now = Date.now(); if (!force && now - st.lastCommit < 4000) return true; st.lastCommit = now; call('LMSCommit', ''); return true; }
 
-  /* correct = problems answered correctly, finished = problems finished, total = 13 */
+  /* correct = problems answered correctly, finished = problems that count toward completion (the same thing), total = 13 */
   function report(correct, finished, total) {
     if (!st.on) return false;
     const score = Math.round(correct / total * 100), complete = finished >= total;

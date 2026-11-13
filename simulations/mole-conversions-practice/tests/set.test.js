@@ -56,5 +56,37 @@ ok(seen.whole.size === M.WHOLE.length && seen.half.size === M.HALF.length, 'ever
 const sig = (n) => M.makeSet(n).map((p) => p.statement).join('|');
 ok(sig(31415) === sig(31415), 'a set number always rebuilds the same set'); ok(sig(31415) !== sig(31416), 'different set numbers differ');
 ok(new Set(Array.from({ length: 300 }, (_, i) => sig(20000 + i))).size === 300, '300 set numbers give 300 different sets');
+/* ---- similar problems: what a student gets after using the solution ---- */
+{ const C2 = require('../js/chem.js'), strip = (t) => t.replace(/<[^>]+>/g, '');
+  let made = 0;
+  for (let seed = 30000; seed < 30400; seed++) {
+    const base = M.makeSet(seed);
+    for (let i = 0; i < 13; i++) {
+      const b = base[i], tag = 'seed ' + seed + ' slot ' + (i + 1) + ': '; const seenStm = new Set([strip(b.statement)]), seenSub = new Set([b.formula]);
+      for (let v = 1; v <= (seed < 30060 ? 8 : 2); v++) {
+        const q = M.similar(seed, base, i, v); made++;
+        ok(q.type === b.type, tag + 'a similar problem is the same type');
+        ok(JSON.stringify(M.similar(seed, base, i, v).statement) === JSON.stringify(q.statement), tag + 'similar problem ' + v + ' is rebuilt identically');
+        ok(!seenStm.has(strip(q.statement)), tag + 'similar problem ' + v + ' is not a repeat of an earlier one'); seenStm.add(strip(q.statement));
+        if (b.type === 'conv') {
+          ok(q.from === b.from && q.to === b.to, tag + 'same conversion (' + b.from + '>' + b.to + ')');
+          ok(!seenSub.has(q.formula) || v > 6, tag + 'a new substance each time (' + q.formula + ')'); seenSub.add(q.formula);
+          ok(!/formula unit/i.test(q.statement) && !/NaN(?![A-Za-z])|undefined/.test(q.statement), tag + 'clean wording');
+          const gas = q.from === 'L' || q.to === 'L'; ok(!gas || M.GASES.includes(q.formula), tag + 'liters only for real gases');
+          ok(q.check(q.answer.fmt.text.replace(' × 10', 'e').replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]/g, (c) => '0123456789-'['⁰¹²³⁴⁵⁶⁷⁸⁹⁻'.indexOf(c)])).status === 'ok', tag + 'its key answer is accepted');
+        } else if (b.type === 'formula') {
+          ok(q.pool === b.pool && (b.pool === 'half' ? q.mult === 2 : q.mult === 1) && C2.sameFormula(q.engine.empirical, q.empirical) && C2.sameFormula(q.engine.molecular, q.molecular), tag + 'same kind of formula problem (' + q.empirical + ' / ' + q.molecular + ', x' + q.mult + ')');
+          ok(M.checkFormula(q, 'emp', q.empirical).ok && M.checkFormula(q, 'mol', q.molecular).ok, tag + 'key formulas accepted');
+        } else {
+          ok(M.OXIDES.some((o) => o[2] === q.formula) && M.checkLab(q, [String(q.d.fe), String(q.d.oxide), String(q.d.o), q.want.fe.toPrecision(3), q.want.o.toPrecision(3), q.formula]).every((r) => r.ok), tag + 'the lab similar problem has valid data and key');
+          ok(q.d.empty !== b.d.empty || q.d.fe !== b.d.fe, tag + 'new lab numbers');
+        }
+      }
+    }
+  }
+  ok(made > 12000, 'many similar problems checked (' + made + ')');
+  /* a slot can need many similar problems without running out */
+  const base = M.makeSet(31337); let hang = 0; for (let i = 0; i < 13; i++) { try { M.similar(31337, base, i, 25); } catch (e) { hang++; } } ok(hang === 0, 'even 25 similar problems in one slot can be built');
+}
 if (problems.length) { console.error(problems.length + ' of ' + checks + ' checks FAILED:\n  ' + problems.slice(0, 25).join('\n  ')); process.exit(1); }
 console.log('set: all ' + checks + ' checks passed');

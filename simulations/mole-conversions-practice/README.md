@@ -13,10 +13,10 @@ Thirteen problems, shown **one at a time**:
 ## How it works for the student
 - Type an answer and press **Check**. Answers are accepted to the correct significant figures (a small rounding difference is fine).
 - There are no hints. A wrong answer gets a specific message when the mistake is recognizable (a flipped factor, a power of ten, 1.5 rounded to 2, the empirical formula typed as the molecular formula).
-- **Show solution** unlocks only after 3 wrong attempts on a problem. A problem whose solution was shown does not count as correct.
-- After a problem is finished, **Next problem** shows the next one. The numbered dots at the top let a student go back to finished problems, but not ahead.
+- **Show solution** unlocks only after 3 wrong attempts on a problem. **Using it means that problem does not count.** The student then gets a **similar problem** in the same spot (the same kind of problem with a new substance and new numbers, or a new oxide and new lab data for problem 13) and has to answer that one correctly to get credit for the spot. If they use the solution again, they get another similar problem, and so on. The set is complete only when all 13 spots are answered correctly.
+- After a problem is answered correctly, **Next problem** shows the next one. The numbered dots at the top let a student go back to finished problems, but not ahead.
 - No constants or atomic masses are shown. A short reminder tells students to use the mole conversion chart in their notes.
-- After problem 13, a results panel shows the score and the tries per problem, with a name box and a print button.
+- After problem 13, a results panel shows how many were correct on the first try, how many needed a similar problem after a solution was shown, and the tries per problem, with a name box and a print button.
 - **Save progress:** work is saved automatically after every answer, and a **Save progress** button under each problem saves on demand and says when it saved. Without a learning system the work is kept in the browser; inside a class it is kept with the class (see below). A reload or a return visit brings back the same set, the same problem, the answers typed so far and the tries used. **New set** makes a fresh set (outside a class).
 
 ## Set numbers
@@ -27,8 +27,8 @@ To change how many conversions a set has, edit `NCONV` in `js/assignment.js` (it
 ## SCORM package (for Schoology, Canvas, Moodle, Blackboard...)
 `dist/mole-conversions-practice-scorm12.zip` is a SCORM 1.2 package. In Schoology: Add Materials, then Add File/Link/External Tool, then **SCORM Package**, and upload the zip.
 
-- **Completion:** reported as **completed** when all 13 problems are finished. A problem is finished when it is answered correctly or its worked solution was shown. Completion is never taken back.
-- **Score:** reported after every check, as the percent of the 13 problems answered correctly (0 to 100). A solution shown counts as finished but not correct.
+- **Completion:** reported as **completed** only when all 13 problems have been **answered correctly**. Looking at a worked solution never counts: that spot is replaced by a similar problem that must be answered correctly. Completion is never taken back.
+- **Score:** reported after every answer, as the share of the 13 spots completed (0 to 100). It reaches 100 when the set is complete, whether or not solutions were used along the way; the printable results page shows how many problems needed a similar problem.
 - **Save progress:** the student's set number, place, answers and tries are stored with the class (SCORM `suspend_data`, plus `lesson_location`), so they can close the page and continue later on any computer. The packed answers stay well under the 4096-character limit.
 - **One set per student:** inside a class the "New set" and "Try a new set" buttons are hidden, so a student cannot redraw problems to chase a better score.
 - Opened on its own (not inside a learning system), the page works the same and keeps progress in the browser.

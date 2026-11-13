@@ -11,7 +11,7 @@ const plain = (t) => t.replace(' × 10', 'e').replace(/[⁰¹²³⁴⁵⁶⁷⁸
   const browser = await chromium.launch(); const errors = [];
   const open = async (q, w) => { const page = await browser.newPage({ viewport: { width: w || 1280, height: 900 } }); page.on('pageerror', (e) => errors.push(e.message)); page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); }); page.on('dialog', (d) => d.accept()); await page.goto(URL + (q || '')); await page.waitForTimeout(150); return page; };
   let page = await open('?set=24680');
-  const K = await page.evaluate(() => MolePractice.set.map((p) => (p.type === 'conv' ? { t: 'c', a: p.answer.fmt.text, v: p.answer.value } : p.type === 'lab' ? { t: 'l', d: p.d, want: p.want, f: p.formula } : { t: 'f', e: p.empirical, m: p.molecular, mult: p.mult })));
+  const K = await page.evaluate(() => MolePractice.set.map((p) => (p.type === 'conv' ? { t: 'c', a: p.answer.fmt.text, v: p.answer.value, from: p.from, to: p.to, label: p.label } : p.type === 'lab' ? { t: 'l', d: p.d, want: p.want, f: p.formula } : { t: 'f', e: p.empirical, m: p.molecular, mult: p.mult })));
   const card = () => page.locator('.prob');
   const cur = () => page.evaluate(() => MolePractice.state.cur);
   const ans = async (v) => { await card().locator('.pc-in').first().fill(String(v)); await card().locator('[data-act=check]').click(); };
@@ -26,18 +26,29 @@ const plain = (t) => t.replace(' × 10', 'e').replace(/[⁰¹²³⁴⁵⁶⁷⁸
   await ans(K[0].v * 2.9); expect((await card().locator('.pc-fb').getAttribute('class')).includes('no') && (await card().locator('.ptag').innerText()).includes('1 try') && await card().locator('[data-act=reveal]').isDisabled() && (await card().locator('.gate').innerText()).includes('2 more'), 'attempt 1: marked wrong, still locked (2 more)');
   await ans(K[0].v * 0.31); expect(await card().locator('[data-act=reveal]').isDisabled(), 'attempt 2: still locked');
   await ans(plain(K[0].a)); expect((await card().getAttribute('class')).includes('solved') && (await card().locator('.ptag').innerText()).includes('3 tries') && await card().locator('.pc-in').isDisabled(), 'the right answer solves and locks the problem');
-  expect((await page.locator('#score').innerText()).startsWith('1 / 13') && (await cur()) === 0, 'score 1 / 12; stays on the problem until Next');
+  expect((await page.locator('#score').innerText()).startsWith('1 / 13') && (await cur()) === 0, 'score 1 / 13; stays on the problem until Next');
   await card().locator('[data-act=sol]').click(); expect((await card().locator('.sol .st-step').count()) >= 5, 'a finished problem can show its worked solution');
   await card().locator('[data-act=next]').click();
   expect((await cur()) === 1 && (await card().locator('.pc-skill').innerText()).toLowerCase().includes('problem 2 of 13') && (await page.locator('.prob').count()) === 1, 'Next shows only problem 2');
   /* going back */
   await page.locator('.dot[data-go="0"]').click(); expect((await cur()) === 0 && await card().locator('.pc-in').isDisabled(), 'a finished problem can be revisited with the dots');
   expect(await page.locator('.dot[data-go="5"]').isDisabled(), 'problems ahead stay locked'); await page.locator('.dot[data-go="1"]').click();
-  /* problem 2: three misses, then reveal (no credit) */
+  /* problem 2: three misses, then the solution: it does not count, and a similar problem takes its place */
   for (let k = 0; k < 3; k++) await ans(K[1].v * (5 + k));
   expect(!(await card().locator('[data-act=reveal]').isDisabled()), 'after 3 wrong attempts the solution unlocks');
+  const orig2 = await card().locator('.pc-q').innerText();
   await card().locator('[data-act=reveal]').click();
-  expect((await card().getAttribute('class')).includes('revealed') && (await card().locator('.sol .st-step').count()) >= 5 && (await card().locator('.ptag').innerText()).includes('no credit'), 'showing the solution works, with no credit');
+  expect((await card().getAttribute('class')).includes('shown') && (await card().locator('.sol .st-step').count()) >= 5 && (await card().locator('.ptag').innerText()).includes('does not count'), 'showing the solution works, and says it does not count');
+  expect((await card().locator('[data-act=next]').count()) === 0 && (await card().locator('[data-act=retry]').count()) === 1 && (await card().locator('.gate').innerText()).includes('does not count'), 'there is no Next button: only "Try a similar problem"');
+  expect((await page.locator('#score').innerText()).startsWith('1 / 13') && (await page.locator('.dot.shown').count()) === 1 && (await page.locator('.dot:not([disabled])').count()) === 2, 'the problem is not counted, and later problems stay locked');
+  await page.locator('.dot[data-go="0"]').click(); await page.locator('.dot[data-go="1"]').click(); expect((await card().getAttribute('class')).includes('shown'), 'leaving and coming back keeps the shown state');
+  await card().locator('[data-act=retry]').click();
+  const sim2 = await card().locator('.pc-q').innerText();
+  expect(sim2 !== orig2 && (await card().locator('.pc-skill').innerText()).toLowerCase().includes('problem 2 of 13') && (await card().locator('.pc-skill').innerText()).toLowerCase().includes('similar') && (await card().locator('.similar').count()) === 1, 'a similar problem replaces it, still problem 2 of 13');
+  expect((await card().locator('.pc-in').first().isEnabled()) && (await card().locator('.ptag').count()) === 0 && (await card().locator('.pc-skill').innerText()).toLowerCase().includes((K[1].label || '').toLowerCase()), 'the similar problem starts fresh with the same kind of conversion');
+  const K2 = await page.evaluate(() => { const p = MolePractice.set[1]; return { a: p.answer.fmt.text, f: p.formula, v: p.answer.value, from: p.from, to: p.to }; });
+  expect(K2.from === K[1].from && K2.to === K[1].to && plain(K2.a) !== plain(K[1].a), 'same conversion (' + K2.from + ' to ' + K2.to + '), new answer');
+  await ans(plain(K2.a)); expect((await card().getAttribute('class')).includes('solved') && (await page.locator('#score').innerText()).startsWith('2 / 13'), 'getting the similar problem right counts as problem 2');
   await card().locator('[data-act=next]').click();
   /* problems 3-10 first try */
   for (let i = 2; i < 10; i++) { expect((await cur()) === i, 'on problem ' + (i + 1)); await ans(plain(K[i].a)); expect((await card().locator('.ptag').innerText()).includes('first try'), 'problem ' + (i + 1) + ' accepts its key answer ' + K[i].a); await card().locator('[data-act=next]').click(); }
@@ -67,16 +78,16 @@ const plain = (t) => t.replace(' × 10', 'e').replace(/[⁰¹²³⁴⁵⁶⁷⁸
   await card().locator('[data-act=sol]').click(); expect((await card().locator('.sol .st-step').count()) >= 6 && (await card().locator('.sol').innerText()).includes('Subtract'), 'the lab solution begins with the subtraction step');
   expect((await card().locator('[data-act=next]').innerText()).includes('See my results'), 'the last problem offers "See my results"'); await card().locator('[data-act=next]').click(); await page.waitForTimeout(150);
   /* results */
-  expect(await page.locator('#finish').isVisible() && (await page.locator('.prob').count()) === 0 && (await page.locator('#finish .big').innerText()).trim() === '12 / 13', 'the results show 12 / 13');
-  expect((await page.locator('#finish .res tr').count()) === 14 && (await page.locator('.dot.solved').count()) === 12 && (await page.locator('.dot.revealed').count()) === 1, 'the results table and the dots match');
+  expect(await page.locator('#finish').isVisible() && (await page.locator('.prob').count()) === 0 && (await page.locator('#finish .big').innerText()).trim() === '8 / 13' && (await page.locator('#finish').innerText()).includes('1 needed a similar problem'), 'the results show 8 / 13 correct on the first try, and 1 similar problem');
+  expect((await page.locator('#finish .res tr').count()) === 14 && (await page.locator('.dot.solved').count()) === 13 && (await page.locator('.dot.shown').count()) === 0 && (await page.locator('#finish .res').innerText()).includes('correct after 1 solution shown'), 'the results table and the dots match: all 13 done, one after a solution');
   await page.fill('#nameIn', 'Test Student'); await page.reload(); await page.waitForTimeout(150);
-  expect((await page.locator('#finish .big').innerText()).trim() === '12 / 13' && (await page.inputValue('#nameIn')) === 'Test Student' && (await page.locator('#setNo').innerText()) === 'Set #24680', 'a reload keeps the set, the work and the name');
+  expect((await page.locator('#finish .big').innerText()).trim() === '8 / 13' && (await page.inputValue('#nameIn')) === 'Test Student' && (await page.locator('#setNo').innerText()) === 'Set #24680', 'a reload keeps the set, the work and the name');
   expect(!/NaN(?![A-Za-z])|undefined/.test(await page.locator('body').innerText()), 'no NaN or undefined anywhere');
   await page.click('#againBtn'); await page.waitForTimeout(150);
   expect((await page.locator('#setNo').innerText()) !== 'Set #24680' && (await page.locator('#score').innerText()).startsWith('0 / 13') && !(await page.locator('#finish').isVisible()) && (await cur()) === 0, '"Try a new set" starts a different, fresh set');
   await page.close();
   /* a reload in the middle comes back to the same problem */
-  page = await open('?set=777'); const K2 = await page.evaluate(() => MolePractice.set.map((p) => p.type === 'conv' ? p.answer.fmt.text : '')); await ans(plain(K2[0])); await card().locator('[data-act=next]').click(); await page.reload(); await page.waitForTimeout(150);
+  page = await open('?set=777'); const K7 = await page.evaluate(() => MolePractice.set.map((p) => p.type === 'conv' ? p.answer.fmt.text : '')); await ans(plain(K7[0])); await card().locator('[data-act=next]').click(); await page.reload(); await page.waitForTimeout(150);
   expect((await cur()) === 1 && (await card().locator('.pc-skill').innerText()).toLowerCase().includes('problem 2 of 13'), 'a reload in the middle returns to the problem you were on'); await page.close();
   const a = await open(''), b = await open(''); await a.evaluate(() => localStorage.clear()); await a.reload(); const s1 = await a.locator('#setNo').innerText(); await b.evaluate(() => localStorage.clear()); await b.reload(); const s2 = await b.locator('#setNo').innerText();
   expect(/^Set #\d{5}$/.test(s1) && s1 !== s2, 'new visitors get their own random set (' + s1 + ', ' + s2 + ')'); await a.close(); await b.close();

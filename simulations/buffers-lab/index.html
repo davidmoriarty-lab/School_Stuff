@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Buffers Lab · Virtual Lab</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="top">
+  <div><h1>Buffers Lab</h1><p>Make two buffers with pH 4.75 two different ways · AP Chemistry virtual lab</p></div>
+  <div class="topright"><span class="status" id="status" role="status" aria-live="polite">Lab in progress</span><button class="btn ghost" id="resetBtn" type="button">↺ Reset the lab</button></div>
+</header>
+<div class="layout">
+  <section class="benchcol" aria-label="Lab bench">
+    <div class="stage">
+      <svg id="scene" viewBox="0 30 1200 670" role="application" aria-label="Lab bench with equipment you can drag">
+        <defs>
+          <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eaf1f6"/><stop offset="1" stop-color="#dbe6ee"/></linearGradient>
+          <linearGradient id="bench" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b4650"/><stop offset="1" stop-color="#252d34"/></linearGradient>
+        </defs>
+        <rect x="0" y="0" width="1200" height="700" fill="url(#wall)"/>
+        <rect x="20" y="200" width="850" height="12" rx="2" fill="#b98d5e" stroke="#8a6238"/>
+        <path d="M60 212 L60 250 L90 212 M830 212 L830 250 L800 212" fill="none" stroke="#8a6238" stroke-width="5"/>
+        <rect x="0" y="640" width="1200" height="60" fill="url(#bench)"/><rect x="0" y="640" width="1200" height="5" fill="#55636e"/>
+        <g transform="translate(630,200)"><rect x="-16" y="-34" width="32" height="34" rx="3" fill="#d7dee4" stroke="#6b7c8a" stroke-width="1.2"/></g>
+        <text x="525" y="228" font-size="10" text-anchor="middle" fill="#5b6b78">scoop</text><text x="630" y="228" font-size="10" text-anchor="middle" fill="#5b6b78">dropper</text><text x="760" y="228" font-size="10" text-anchor="middle" fill="#5b6b78">stirring rod</text>
+        <text x="415" y="228" font-size="10" text-anchor="middle" fill="#5b6b78">stress test</text>
+        <g id="boatSpot" data-id="boatHome" style="display:none"><rect x="212" y="612" width="76" height="26" rx="4" fill="rgba(255,255,255,.08)" stroke="#9fb0bd" stroke-dasharray="4 3"/><text x="250" y="629" font-size="9" text-anchor="middle" fill="#cdd8e0">bench</text></g>
+        <path id="cable" d="" fill="none" stroke="#1c2a36" stroke-width="2.5"/>
+        <g id="items"></g>
+        <path id="stream" d="" fill="none" stroke="rgba(120,190,235,.85)" stroke-width="3.5" stroke-linecap="round"/>
+      </svg>
+      <div class="zoom" aria-label="Magnified view of the graduated cylinder">
+        <div class="ztitle" id="zoomTitle">50 mL cylinder, at eye level</div>
+        <svg id="zoomSvg" viewBox="0 0 220 300"></svg>
+        <div class="zpick" id="zoomPick"><button type="button" data-z="cyl50" aria-pressed="true">50 mL</button><button type="button" data-z="cyl100" aria-pressed="false">100 mL</button></div>
+        <div class="zhint">Read the <b>bottom</b> of the meniscus. Estimate one digit past the lines.</div>
+      </div>
+      <div class="goggles" id="goggles"><div><h2>Safety first</h2><p>Acids and bases can hurt your eyes and skin. Goggles stay on for the whole lab. If any solution gets on your skin, rinse it with water right away.</p><button class="btn primary" id="gogglesBtn" type="button">🥽 Put on my goggles</button></div></div>
+    </div>
+    <p class="small-screen">This lab needs room to drag. Turn your phone sideways, or use a tablet, Chromebook or computer.</p>
+    <div class="tip" id="tip" role="status" aria-live="polite">Welcome to the lab.</div>
+    <div class="actionbar" id="actionbar"></div>
+  </section>
+  <aside class="notebook" id="notebook" aria-label="Lab notebook"></aside>
+</div>
+<script src="js/scorm.js"></script>
+<script src="js/chem.js"></script>
+<script src="js/glass.js"></script>
+<script src="js/lab.js"></script>
+<script src="js/notebook.js"></script>
+</body>
+</html>

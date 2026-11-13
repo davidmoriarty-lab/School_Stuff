@@ -13,7 +13,7 @@ Twelve problems, shown **one at a time**:
 - There are no hints. A wrong answer gets a specific message when the mistake is recognizable (a flipped factor, a power of ten, 1.5 rounded to 2, the empirical formula typed as the molecular formula).
 - **Show solution** unlocks only after 3 wrong attempts on a problem. A problem whose solution was shown does not count as correct.
 - After a problem is finished, **Next problem** shows the next one. The numbered dots at the top let a student go back to finished problems, but not ahead.
-- A reference box lists Avogadro's number, 22.4 L/mol and the atomic masses for the problem on screen.
+- No constants or atomic masses are shown. A short reminder tells students to use the mole conversion chart in their notes.
 - After problem 12, a results panel shows the score and the tries per problem, with a name box and a print button.
 - Work is saved in the browser, so a reload returns to the same set and the same problem. **New set** makes a fresh one.
 

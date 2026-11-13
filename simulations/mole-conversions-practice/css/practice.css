@@ -35,3 +35,4 @@ html { scroll-padding-top: 5.5rem; }
 .labform { display: grid; gap: .5rem; margin-top: .5rem; } .lrow label { display: block; font-weight: 600; margin-bottom: .15rem; } .lin { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
 .lmark { font-weight: 900; color: var(--good); min-width: 1.2rem; } .lmsg { color: var(--bad); font-size: .9rem; margin-top: .15rem; }
 .remind { margin-top: .7rem; padding: .5rem .8rem; border-radius: 10px; background: color-mix(in srgb, var(--accent) 10%, transparent); border: 1px solid var(--accent); }
+.rxn { font-size: 1.15rem; text-align: center; margin: .3rem 0; padding: .4rem; background: var(--panel2); border-radius: 10px; letter-spacing: .02em; }

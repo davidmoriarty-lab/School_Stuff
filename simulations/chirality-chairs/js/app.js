@@ -18,8 +18,28 @@
   /* ---------- state ---------- */
   const fresh = () => ({ tries: 0, tot: 0, shownN: 0, variant: 0, status: 'open', fb: null, marked: [], cfg: {}, prio: {}, viewC: 0, none: false, mstate: {}, stage: 1, p1: {}, p2: {}, sel: null, showSol: false });
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { return null; } };
-  function save(manual) { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) { /* private window */ } savedAt = new Date(); showSaved(!!manual); }
-  function showSaved(manual) { const el = $('#saved'); if (!el) return; el.textContent = savedAt ? '✔ ' + (manual ? 'Progress saved' : 'Saved') + ' on this device at ' + savedAt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'Your work saves automatically on this device.'; el.classList.toggle('flash', !!manual); }
+  const SC = root.ChiralScorm, linked = () => !!(SC && SC.connected);
+  /* The learning system keeps the student's work in a small text field (4096 characters), so it is packed tightly:
+   * [wrong tries now, total wrong tries, solutions shown, similar-problem number, 0 open / 1 correct / 2 solution shown,
+   *  then for chirality: no-centers box, marked centers, [center, letter] pairs, [center, group order] pairs;
+   *  for chairs: step, chair 1 as [chip, carbon, type], chair 2]. The red feedback messages are not saved. */
+  function encode() {
+    const code = { open: 0, solved: 1, shown: 2 }, pairs = (o) => Object.keys(o).map((k) => [isNaN(+k) ? k : +k, o[k]]), chips = (pl) => Object.keys(pl).map((id) => [id, pl[id].k, pl[id].type]);
+    const pack = (keep) => JSON.stringify({ v: 1, s: st.seed, c: st.cur, n: String(st.name || '').slice(0, 40), i: st.items.map((it, k) => { const row = [it.tries, it.tot, it.shownN, it.variant, code[it.status] || 0]; if (it.status !== 'open' && !keep) return row; if (k < S.N_CHIRAL) row.push(it.none ? 1 : 0, it.marked, pairs(it.cfg), pairs(it.prio)); else row.push(it.stage, chips(it.p1), chips(it.p2)); return row; }) });
+    const full = pack(true); return full.length <= 3900 ? full : pack(false);
+  }
+  function decode(o) {
+    if (!o || o.v !== 1 || !Number.isInteger(o.s) || !Array.isArray(o.i) || o.i.length !== N) return null;
+    const status = ['open', 'solved', 'shown'], obj = (a) => { const r = {}; (a || []).forEach((x) => { r[x[0]] = x[1]; }); return r; }, placed = (a) => { const r = {}; (a || []).forEach((x) => { r[x[0]] = { k: x[1], type: x[2] }; }); return r; };
+    return { ver: VER, seed: o.s, name: String(o.n || ''), cur: Math.max(0, Math.min(N, +o.c || 0)), items: o.i.map((r, k) => { const it = fresh(); it.tries = +r[0] || 0; it.tot = +r[1] || 0; it.shownN = +r[2] || 0; it.variant = Math.max(0, +r[3] || 0); it.status = status[r[4]] || 'open';
+      if (r.length > 5) { if (k < S.N_CHIRAL) { it.none = !!r[5]; it.marked = Array.isArray(r[6]) ? r[6].map(Number) : []; it.cfg = obj(r[7]); it.prio = obj(r[8]); } else { it.stage = r[5] === 2 ? 2 : 1; it.p1 = placed(r[6]); it.p2 = placed(r[7]); } } return it; }) };
+  }
+  function save(manual) {
+    try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) { /* private window */ }
+    if (linked()) { SC.suspend(encode(), st.cur, manual); SC.report(score(), score(), N); }
+    savedAt = new Date(); showSaved(!!manual);
+  }
+  function showSaved(manual) { const el = $('#saved'); if (!el) return; el.textContent = savedAt ? '✔ ' + (manual ? 'Progress saved' : 'Saved') + (linked() ? ' to your class' : ' on this device') + ' at ' + savedAt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : (linked() ? 'Your work is saved to your class automatically.' : 'Your work saves automatically on this device.'); el.classList.toggle('flash', !!manual); }
   const newSeed = () => 10000 + Math.floor(Math.random() * 90000);
   const score = () => st.items.filter((it) => it.status === 'solved').length;
   const firstOpen = () => { const i = st.items.findIndex((it) => it.status !== 'solved'); return i < 0 ? N : i; };
@@ -177,7 +197,7 @@
     const first = st.items.filter((it) => !it.shownN && it.tries === 0).length, again = st.items.filter((it) => it.shownN).length, fin = $('#finish');
     fin.hidden = false; fin.innerHTML = '<h2>Set complete</h2><p class="big">' + first + ' / ' + N + '</p><p>correct on the first try' + (again ? ' · ' + again + ' needed a similar problem after the solution was shown' : '') + '</p>' +
       '<table class="res"><tr><th>#</th><th>Problem</th><th>Result</th><th>Wrong tries</th></tr>' + probs.map((p, i) => { const it = st.items[i]; return '<tr><td>' + (i + 1) + '</td><td>' + (p.type === 'chiral' ? 'Chirality: ' + esc(data[i].name) : 'Chair: ' + esc(Chair.describe(p.target))) + '</td><td>✔ ' + (it.shownN ? 'correct after ' + it.shownN + (it.shownN === 1 ? ' solution' : ' solutions') + ' shown' : it.tries ? 'correct' : 'correct, first try') + '</td><td>' + (it.tot || it.tries) + '</td></tr>'; }).join('') + '</table>' +
-      '<p><label>Name <input id="nameIn" type="text" value="' + esc(st.name || '') + '" autocomplete="name"></label> <button type="button" class="btn primary" id="printBtn">Print my results</button> <button type="button" class="btn" id="againBtn">Try a new set</button></p>';
+      '<p><label>Name <input id="nameIn" type="text" value="' + esc(st.name || '') + '" autocomplete="name"></label> <button type="button" class="btn primary" id="printBtn">Print my results</button> ' + (linked() ? '' : '<button type="button" class="btn" id="againBtn">Try a new set</button>') + '</p>' + (linked() ? '<p class="reported">\u2714 Your completion has been reported to your class.</p>' : '');
   }
 
   /* ---------- drawing the page ---------- */
@@ -269,11 +289,18 @@
   document.addEventListener('pointerup', endDrag); document.addEventListener('pointercancel', endDrag);
 
   /* ---------- start ---------- */
-  const forced = parseInt((location.search.match(/[?&]set=(\d{1,9})/) || [])[1], 10), old = load();
-  if (old && old.items && old.items[0] && !old.items[0].prio) old.ver = -1;   // saved with the older answer format
-  if (forced && (!old || old.seed !== forced)) { st = old ? { name: old.name } : null; start(forced); }
-  else if (old && old.ver === VER && old.seed && Array.isArray(old.items) && old.items.length === N) { st = old; rebuild(); drawAll(); }
-  else start(newSeed());
+  if (linked()) {
+    /* inside a class: one set per student, resumed from the learning system */
+    const nb = $('#newSet'); if (nb) nb.hidden = true;
+    const sv = decode(SC.saved);
+    if (sv) { st = sv; rebuild(); drawAll(); } else start(newSeed());
+  } else {
+    const forced = parseInt((location.search.match(/[?&]set=(\d{1,9})/) || [])[1], 10), old = load();
+    if (old && old.items && old.items[0] && !old.items[0].prio) old.ver = -1;   // saved with the older answer format
+    if (forced && (!old || old.seed !== forced)) { st = old ? { name: old.name } : null; start(forced); }
+    else if (old && old.ver === VER && old.seed && Array.isArray(old.items) && old.items.length === N) { st = old; rebuild(); drawAll(); }
+    else start(newSeed());
+  }
   showSaved(false);
-  root.ChiralApp = { get state() { return st; }, get probs() { return probs; }, get data() { return data; }, start, placeOn, render, openCenter, closeModal };
+  root.ChiralApp = { get state() { return st; }, get probs() { return probs; }, get data() { return data; }, start, placeOn, render, openCenter, closeModal, encode, decode };
 })(typeof self !== 'undefined' ? self : this);

@@ -1,0 +1,30 @@
+/* practice.css: the layout of the practice set. Colors and the step-by-step styles come from base.css. */
+html { scroll-padding-top: 5.5rem; }
+.bar { position: sticky; top: 0; z-index: 20; background: var(--panel); border-bottom: 1px solid var(--line); box-shadow: var(--shadow); }
+.bar-in { max-width: 60rem; margin: 0 auto; padding: .5rem 1rem; display: flex; align-items: center; gap: .8rem 1.2rem; flex-wrap: wrap; }
+.ttl h1 { margin: 0; font-size: 1.15rem; line-height: 1.2; } .setno { font-size: .8rem; color: var(--muted); font-weight: 600; }
+.dots { display: flex; gap: .3rem; flex: 1; justify-content: center; flex-wrap: wrap; }
+.dot { cursor: pointer; font: inherit; width: 1.9rem; height: 1.9rem; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: .9rem; text-decoration: none; color: var(--ink2); border: 2px solid var(--line); background: var(--panel2); }
+.dot:disabled { opacity: .4; cursor: not-allowed; } .dot.here { outline: 3px solid var(--accent); outline-offset: 2px; }
+.dot.solved { background: var(--good); border-color: var(--good); color: #fff; } .dot.revealed { background: var(--bad); border-color: var(--bad); color: #fff; }
+.right { display: flex; align-items: center; gap: .7rem; } .bar .score { font-weight: 800; font-size: 1rem; color: var(--ink); margin: 0; }
+.wrap { max-width: 60rem; margin: 0 auto; padding: 1rem 1rem 5rem; }
+.intro { margin: .2rem 0 .8rem; }
+.ref { background: var(--panel); border: 1px solid var(--line); border-left: 5px solid var(--accent); border-radius: 12px; padding: .6rem .9rem; }
+.refrow { display: flex; gap: .4rem 1.6rem; flex-wrap: wrap; margin: .2rem 0; }
+.masses { display: flex; flex-wrap: wrap; gap: .3rem .5rem; margin: .35rem 0; } .masses span { border: 1px solid var(--line); border-radius: 8px; padding: .05rem .5rem; background: var(--panel2); font-variant-numeric: tabular-nums; }
+.note { font-size: .85rem; color: var(--muted); margin-top: .3rem; }
+.part { font-size: 1.15rem; margin: 1.4rem 0 .2rem; } .part small { font-weight: 500; color: var(--muted); font-size: .85rem; margin-left: .4rem; }
+.prob { margin: .7rem 0; } .prob.solved { border-color: var(--good); } .prob.revealed { border-color: var(--bad); }
+.ptag { margin-left: auto; font-size: .8rem; font-weight: 700; padding: .1rem .6rem; border-radius: 999px; background: var(--panel2); border: 1px solid var(--line); color: var(--ink2); }
+.ptag.ok { background: var(--good); border-color: var(--good); color: #fff; } .ptag.no { background: var(--bad); border-color: var(--bad); color: #fff; }
+.frm { display: grid; gap: .5rem; } .frm label { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; font-weight: 600; } .mk { font-weight: 500; color: var(--ink2); } .mk .err { color: var(--bad); }
+.pc-in:disabled { opacity: 1; background: var(--panel2); color: var(--ink); border-style: dashed; }
+.finish { margin-top: 1.5rem; background: var(--panel); border: 2px solid var(--good); border-radius: 14px; padding: 1rem 1.2rem; text-align: center; }
+.finish h2 { margin: 0; } .finish .big { font-size: 2.6rem; font-weight: 800; margin: .2rem 0; }
+.res { border-collapse: collapse; margin: .6rem auto; } .res td, .res th { border: 1px solid var(--line); padding: .25rem .7rem; text-align: left; }
+.finish input { padding: .4rem .6rem; border-radius: 8px; border: 2px solid var(--line); font: inherit; background: var(--panel2); color: var(--ink); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+#list .pcard { margin-top: 1rem; }
+@media (max-width: 560px) { .dots { order: 3; flex-basis: 100%; } .pc-in.wide { width: 100%; } }
+@media print { .bar .btn, .pc-actions, .gate, .ref, .intro, #againBtn, #printBtn { display: none !important; } .bar { position: static; box-shadow: none; } .finish { border-color: #000; } .prob { break-inside: avoid; } }

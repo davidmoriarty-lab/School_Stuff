@@ -36,3 +36,8 @@ html { scroll-padding-top: 5.5rem; }
 .lmark { font-weight: 900; color: var(--good); min-width: 1.2rem; } .lmsg { color: var(--bad); font-size: .9rem; margin-top: .15rem; }
 .remind { margin-top: .7rem; padding: .5rem .8rem; border-radius: 10px; background: color-mix(in srgb, var(--accent) 10%, transparent); border: 1px solid var(--accent); }
 .rxn { font-size: 1.15rem; text-align: center; margin: .3rem 0; padding: .4rem; background: var(--panel2); border-radius: 10px; letter-spacing: .02em; }
+
+/* the save bar under each problem */
+.savebar { display: flex; align-items: center; justify-content: flex-end; gap: .8rem; flex-wrap: wrap; margin-top: .8rem; color: var(--muted); font-size: .9rem; }
+#saved.flash { color: var(--good); font-weight: 700; } .reported { color: var(--good); font-weight: 700; }
+@media print { .savebar { display: none !important; } }

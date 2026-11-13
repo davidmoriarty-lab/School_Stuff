@@ -133,7 +133,30 @@
   const KEY = 'mole-conversions-practice-v2', REVEAL = 3;
   let st, set;
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { return null; } };
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) { /* private window */ } };
+  const SC = root.MoleScorm, linked = () => !!(SC && SC.connected);
+  /* The learning system keeps the student's work in a small text field (4096 characters), so the work is
+   * packed tightly: [tries, 0 open / 1 correct / 2 solution shown, typed answers, parts right, solution open]. */
+  function encode() {
+    const code = { open: 0, solved: 1, revealed: 2 };
+    const pack = (keep) => JSON.stringify({ v: 2, s: st.seed, c: st.cur, n: String(st.name || '').slice(0, 40), i: st.items.map((it) => { let v = it.vals.map((x) => String(x || '').slice(0, 40)); if (!keep && it.status !== 'open') v = []; while (v.length && !v[v.length - 1]) v.pop(); return [it.tries, code[it.status] || 0, v, [0, 1, 2, 3, 4, 5].map((k) => (it.fok[k] ? 1 : 0)).join(''), it.showSol ? 1 : 0]; }) });
+    const full = pack(true); return full.length <= 3900 ? full : pack(false);
+  }
+  function decode(o) {
+    if (!o || o.v !== 2 || !Number.isInteger(o.s) || !Array.isArray(o.i) || o.i.length !== N) return null;
+    const status = ['open', 'solved', 'revealed'];
+    return { seed: o.s, name: String(o.n || ''), cur: Math.max(0, Math.min(N, +o.c || 0)), items: o.i.map((r) => { const v = Array.isArray(r[2]) ? r[2].map(String) : []; while (v.length < 6) v.push(''); return { tries: +r[0] || 0, status: status[r[1]] || 'open', vals: v.slice(0, 6), fok: String(r[3] || '').split('').map((c) => c === '1'), showSol: !!r[4] }; }) };
+  }
+  let savedAt = null;
+  function showSaved(manual) {
+    const el = $('#saved'); if (!el) return; if (!savedAt) { el.textContent = linked() ? 'Your work is saved to your class automatically.' : 'Your work saves automatically on this device.'; return; }
+    el.textContent = '✔ ' + (manual ? 'Progress saved' : 'Saved') + (linked() ? ' to your class' : ' on this device') + ' at ' + savedAt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    el.classList.toggle('flash', !!manual);
+  }
+  function save(force) {
+    try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) { /* private window */ }
+    if (linked()) { SC.suspend(encode(), st.cur, force); SC.report(st.items.filter((it) => it.status === 'solved').length, st.items.filter((it) => it.status !== 'open').length, N); }
+    savedAt = new Date(); showSaved(!!force);
+  }
   const newSeed = () => 10000 + Math.floor(Math.random() * 90000);
   const done = (it) => it.status !== 'open';
   const firstOpen = () => { const i = st.items.findIndex((it) => !done(it)); return i < 0 ? N : i; };
@@ -153,7 +176,7 @@
     const first = st.items.filter((it) => it.status === 'solved' && it.tries === 1).length, fin = $('#finish');
     fin.hidden = false; fin.innerHTML = '<h2>Set complete</h2><p class="big">' + score() + ' / ' + N + '</p><p>' + first + ' correct on the first try · ' + st.items.filter((it) => it.status === 'revealed').length + ' needed the solution</p>' +
       '<table class="res"><tr><th>#</th><th>Problem</th><th>Result</th><th>Tries</th></tr>' + set.map((p, i) => '<tr><td>' + (i + 1) + '</td><td>' + p.label + '</td><td>' + (st.items[i].status === 'solved' ? '✔ correct' : '✘ solution shown') + '</td><td>' + st.items[i].tries + '</td></tr>').join('') + '</table>' +
-      '<p><label>Name <input id="nameIn" type="text" value="' + UI.escapeHTML(st.name || '') + '" autocomplete="name"></label> <button type="button" class="btn primary" id="printBtn">Print my results</button> <button type="button" class="btn" id="againBtn">Try a new set</button></p>';
+      '<p><label>Name <input id="nameIn" type="text" value="' + UI.escapeHTML(st.name || '') + '" autocomplete="name"></label> <button type="button" class="btn primary" id="printBtn">Print my results</button> ' + (linked() ? '' : '<button type="button" class="btn" id="againBtn">Try a new set</button>') + '</p>' + (linked() ? '<p class="reported">\u2714 Your completion has been reported to your class.</p>' : '');
   }
   function card(i) {
     const p = set[i], it = st.items[i], el = $('#p' + (i + 1)), locked = done(it), last = i === N - 1;
@@ -228,6 +251,7 @@
     }
     if (e.target.id === 'newSet' || e.target.id === 'againBtn') { if (e.target.id === 'againBtn' || st.items.every((x) => x.tries === 0) || confirm('Start a brand-new set of problems? Your work on this set will be erased.')) { start(newSeed()); window.scrollTo(0, 0); } }
     if (e.target.id === 'printBtn') window.print();
+    if (e.target.id === 'saveBtn') { save(true); }
   });
   document.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.classList.contains('pc-in')) { const c = e.target.closest('.prob'); if (c) { e.preventDefault(); check(+c.id.slice(1) - 1); } } });
   document.addEventListener('input', (e) => {
@@ -237,9 +261,17 @@
     if (e.target.classList.contains('wide')) preview(e.target);
   });
 
-  const forced = parseInt((location.search.match(/[?&]set=(\d{1,9})/) || [])[1], 10), old = load();
-  if (forced && (!old || old.seed !== forced)) { st = old ? { name: old.name } : null; start(forced); }
-  else if (old && old.seed && Array.isArray(old.items) && old.items.length === N) { st = old; set = makeSet(st.seed); drawAll(); }
-  else start(newSeed());
-  root.MolePractice = { get state() { return st; }, get set() { return set; }, start };
+  if (linked()) {
+    /* inside a class: one set per student, resumed from the learning system */
+    const nb = $('#newSet'); if (nb) nb.hidden = true;
+    const sv = decode(SC.saved);
+    if (sv) { st = sv; set = makeSet(st.seed); drawAll(); showSaved(false); } else start(newSeed());
+  } else {
+    const forced = parseInt((location.search.match(/[?&]set=(\d{1,9})/) || [])[1], 10), old = load();
+    if (forced && (!old || old.seed !== forced)) { st = old ? { name: old.name } : null; start(forced); }
+    else if (old && old.seed && Array.isArray(old.items) && old.items.length === N) { st = old; set = makeSet(st.seed); drawAll(); }
+    else start(newSeed());
+  }
+  showSaved(false);
+  root.MolePractice = { get state() { return st; }, get set() { return set; }, start, encode, decode };
 })(typeof self !== 'undefined' ? self : this);

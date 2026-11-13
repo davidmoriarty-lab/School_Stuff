@@ -17,22 +17,35 @@ Thirteen problems, shown **one at a time**:
 - After a problem is finished, **Next problem** shows the next one. The numbered dots at the top let a student go back to finished problems, but not ahead.
 - No constants or atomic masses are shown. A short reminder tells students to use the mole conversion chart in their notes.
 - After problem 13, a results panel shows the score and the tries per problem, with a name box and a print button.
-- Work is saved in the browser, so a reload returns to the same set and the same problem. **New set** makes a fresh one.
+- **Save progress:** work is saved automatically after every answer, and a **Save progress** button under each problem saves on demand and says when it saved. Without a learning system the work is kept in the browser; inside a class it is kept with the class (see below). A reload or a return visit brings back the same set, the same problem, the answers typed so far and the tries used. **New set** makes a fresh set (outside a class).
 
 ## Set numbers
 Every set has a number, shown under the title. The same number always rebuilds the same eight problems. To see a student's exact set, open `index.html?set=12345` with their number.
 
 To change how many conversions a set has, edit `NCONV` in `js/assignment.js` (it must be an even number up to 12). The wrong-attempts gate is `REVEAL`.
 
+## SCORM package (for Schoology, Canvas, Moodle, Blackboard...)
+`dist/mole-conversions-practice-scorm12.zip` is a SCORM 1.2 package. In Schoology: Add Materials, then Add File/Link/External Tool, then **SCORM Package**, and upload the zip.
+
+- **Completion:** reported as **completed** when all 13 problems are finished. A problem is finished when it is answered correctly or its worked solution was shown. Completion is never taken back.
+- **Score:** reported after every check, as the percent of the 13 problems answered correctly (0 to 100). A solution shown counts as finished but not correct.
+- **Save progress:** the student's set number, place, answers and tries are stored with the class (SCORM `suspend_data`, plus `lesson_location`), so they can close the page and continue later on any computer. The packed answers stay well under the 4096-character limit.
+- **One set per student:** inside a class the "New set" and "Try a new set" buttons are hidden, so a student cannot redraw problems to chase a better score.
+- Opened on its own (not inside a learning system), the page works the same and keeps progress in the browser.
+
+After changing any file, rebuild the zip with `sh build-scorm.sh`.
+
 ## Files
 | File | Job |
 |---|---|
 | `js/assignment.js` | builds the set from the set number, checks answers, runs the page |
 | `js/data.js`, `js/chem.js`, `js/steps.js`, `js/problems.js`, `js/diagrams.js`, `js/ui.js`, `css/base.css` | the chemistry engine and step-by-step display, copied from `simulations/moles-study-guide` so this folder works on its own |
+| `js/scorm.js` | reports score and completion to the learning system, and stores the saved work |
 | `css/practice.css` | layout of this page |
 
 ## Tests
 ```bash
 node tests/set.test.js   # 2,500 sets: distinct conversions, answers re-calculated independently, formula ratios
 node tests/ui.test.js    # works a whole set in a real browser (Playwright)
+node tests/scorm.test.js # runs it inside a pretend learning system: score, completion, saving, resuming
 ```

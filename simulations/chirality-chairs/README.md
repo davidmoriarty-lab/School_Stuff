@@ -8,7 +8,7 @@ A practice set of 12 problems for organic chemistry. Open `index.html` in a brow
 2. in the **window that opens for that one center**, clicks its four groups from highest priority to lowest (the groups get the numbers 1 to 4), then chooses **R or S**, and
 3. repeats for every chiral center.
 
-Each center gets its own window with only its own four groups numbered, so two chiral centers next to each other never share (or overlap) priority numbers. The priorities are graded, not just the letter.
+The window also draws the hydrogen that the skeletal structure leaves out, as a real **wedge or dash** bond to an H (it points opposite to the drawn wedge/dash, so it is a dash when the substituent is a wedge). Each center gets its own window with only its own four groups numbered, so two chiral centers next to each other never share (or overlap) priority numbers. The priorities are graded, not just the letter.
 
 Each set uses 8 different molecules, from easy to hard: simple chains, amino and hydroxy acids (including cysteine, where the CIP rules give a surprise), a drug (ibuprofen), rings with double bonds (carvone, limonene), and molecules with two or three chiral centers (tartaric acid, threonine, ephedrine, menthol). The molecule is shown turned 180° half the time, and each chiral center has a coin-flip chance of being drawn as its mirror image, so R and S come up equally often and students rarely see the same answer.
 

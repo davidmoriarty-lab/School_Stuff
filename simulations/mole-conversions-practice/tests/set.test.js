@@ -13,6 +13,7 @@ for (let seed = 10000; seed < 12500; seed++) {
   for (const p of conv) {
     seen.kinds.add(key(p)); const gas = p.from === 'L' || p.to === 'L';
     ok(!gas || M.GASES.includes(p.formula), tag + 'liters are only asked for real gases (' + p.formula + ')');
+    ok(!/formula unit/i.test(p.statement + p.unit) && /atom|molecule/.test(p.statement + p.unit) === (p.from === 'part' || p.to === 'part'), tag + 'particles are atoms or molecules, never formula units (' + p.formula + ')');
     ok(gas === /STP/.test(p.statement), tag + 'STP is mentioned exactly when liters are involved');
     ok(isFinite(p.answer.value) && p.answer.value > 0 && (p.answer.sf === 3 || p.answer.sf === 4) && p.steps.length >= 5 && !/gas gas|undefined|NaN(?![A-Za-z])/.test(p.statement), tag + 'answer and steps exist');
     ok(p.check(p.answer.fmt.text.replace(' × 10', 'e').replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]/g, (c) => '0123456789-'['⁰¹²³⁴⁵⁶⁷⁸⁹⁻'.indexOf(c)])).status === 'ok', tag + 'the key answer is accepted: ' + p.answer.fmt.text);

@@ -4,7 +4,7 @@ A practice set of eight problems that is different for every student. Open `inde
 
 ## What each student gets
 Thirteen problems, shown **one at a time**:
-- **Problems 1–10: mole conversions** between particles (atoms, molecules, formula units), moles, grams, and liters of gas at STP. There are 12 possible conversions (6 one-step, 6 two-step). Each set has 5 one-step and 5 two-step conversions, in random order, and never the same conversion twice. Each problem uses a different substance.
+- **Problems 1–10: mole conversions** between particles (atoms and molecules), moles, grams, and liters of gas at STP. There are 12 possible conversions (6 one-step, 6 two-step). Each set has 5 one-step and 5 two-step conversions, in random order, and never the same conversion twice. Each problem uses a different substance.
 - **Problem 11: empirical and molecular formula** where the mole ratio comes out in whole numbers.
 - **Problem 12: empirical and molecular formula** where the ratio comes out as 1 : 1.5, so everything has to be multiplied by 2.
 - **Problem 13: an iron oxide lab.** A data table gives crucible-and-lid readings (empty, with iron powder, and after three heatings). The student works through five parts: (a) the mass of iron, (b) the mass of iron oxide, (c) the mass of oxygen, (d) the moles of iron and of oxygen, and (e) the empirical formula. Masses come from subtracting the empty crucible, and the oxide uses the last reading, when the mass stopped changing (heating #1 is a trap on purpose).

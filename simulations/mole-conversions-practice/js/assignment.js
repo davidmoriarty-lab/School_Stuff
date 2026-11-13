@@ -27,9 +27,11 @@
   const ONE = [['part', 'mol'], ['mol', 'part'], ['g', 'mol'], ['mol', 'g'], ['L', 'mol'], ['mol', 'L']];
   const TWO = [['part', 'g'], ['g', 'part'], ['part', 'L'], ['L', 'part'], ['g', 'L'], ['L', 'g']];
   const UNIT = { part: 'particles', mol: 'moles', g: 'grams', L: 'liters at STP' };
+  /* only atoms and molecules: no ionic compounds, so "formula units" never appears */
+  const notFU = (f) => C.particleWord(f) !== 'formula units';
   /* substances that really are gases at 0 °C and 1 atm */
-  const GASES = ['O2', 'N2', 'H2', 'He', 'Ne', 'Ar', 'Kr', 'Xe', 'Cl2', 'F2', 'CO2', 'CO', 'NH3', 'CH4', 'SO2', 'C3H8', 'C2H6', 'C2H4', 'C2H2', 'H2S', 'N2O', 'HCl', 'NF3', 'SF6'].filter((f) => C.parseFormula(f).ok);
-  const SOLIDS = D.POOL.molecules.filter((f) => D.POOL.gases.indexOf(f) < 0).concat(D.POOL.ionic, D.POOL.metals);
+  const GASES = ['O2', 'N2', 'H2', 'He', 'Ne', 'Ar', 'Kr', 'Xe', 'Cl2', 'F2', 'CO2', 'CO', 'NH3', 'CH4', 'SO2', 'C3H8', 'C2H6', 'C2H4', 'C2H2', 'H2S', 'N2O', 'HCl', 'NF3', 'SF6'].filter((f) => C.parseFormula(f).ok && notFU(f));
+  const SOLIDS = D.POOL.molecules.filter((f) => D.POOL.gases.indexOf(f) < 0).concat(D.POOL.metals).filter(notFU);
   /* empirical / molecular pairs. WHOLE: the ratio is whole numbers. HALF: the ratio has a 1.5 */
   const WHOLE = [['CH2O', 'C6H12O6'], ['CH2O', 'C2H4O2'], ['CH2O', 'C3H6O3'], ['CH2O', 'C5H10O5'], ['CH2', 'C2H4'], ['CH2', 'C4H8'], ['CH2', 'C6H12'], ['CH', 'C6H6'], ['CH', 'C2H2'], ['NO2', 'N2O4'], ['HO', 'H2O2'], ['CH3', 'C2H6'], ['NH2', 'N2H4'], ['CH2Cl', 'C2H4Cl2'], ['C2H4O', 'C4H8O2'], ['CHO2', 'C2H2O4'], ['C5H7N', 'C10H14N2']];
   const HALF = [['C2H3', 'C4H6'], ['C2H3', 'C8H12'], ['P2O3', 'P4O6'], ['As2O3', 'As4O6'], ['C2H3O2', 'C4H6O4'], ['C2H3O3', 'C4H6O6']];
@@ -38,7 +40,7 @@
 
   function convProblem(from, to, used) {
     const gas = from === 'L' || to === 'L'; let f;
-    do { f = P.pick(gas ? GASES : SOLIDS); } while (used.has(f)); used.add(f);
+    do { f = P.pick(gas ? GASES : SOLIDS); } while (used.has(f) || !notFU(f)); used.add(f);
     const v = from === 'part' ? P.randSci(3, 22, 25) : from === 'L' ? P.randSf(5, 400, 3) : from === 'g' ? P.randSf(5, 250, 3) : P.randSf(0.2, 9.99, 3);
     const pw = C.particleWord(f), name = (C.nameOf(f) || '').replace(/ gas$/, ''), sub = name ? name + (gas ? ' gas' : '') + ', [[' + f + ']]' : '[[' + f + ']]' + (gas ? ' gas' : '');
     const given = '{g|' + (from === 'part' ? C.fmtGiven(v).html + ' ' + pw : v + ({ mol: ' mol', g: ' g', L: ' L' })[from]) + '}';

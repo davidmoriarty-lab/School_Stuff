@@ -32,3 +32,4 @@ html { scroll-padding-top: 5.5rem; }
 .labt td { border: 1px solid var(--line); padding: .3rem .6rem; } .labt td:last-child { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: 600; }
 .labform { display: grid; gap: .5rem; margin-top: .5rem; } .lrow label { display: block; font-weight: 600; margin-bottom: .15rem; } .lin { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
 .lmark { font-weight: 900; color: var(--good); min-width: 1.2rem; } .lmsg { color: var(--bad); font-size: .9rem; margin-top: .15rem; }
+.remind { margin-top: .7rem; padding: .5rem .8rem; border-radius: 10px; background: color-mix(in srgb, var(--accent) 10%, transparent); border: 1px solid var(--accent); }

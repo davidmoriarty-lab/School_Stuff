@@ -26,3 +26,9 @@ html { scroll-padding-top: 5.5rem; }
 #list .pcard { margin-top: 1rem; }
 @media (max-width: 560px) { .dots { order: 3; flex-basis: 100%; } .pc-in.wide { width: 100%; } }
 @media print { .bar .btn, .pc-actions, .gate, .ref, .intro, #againBtn, #printBtn { display: none !important; } .bar { position: static; box-shadow: none; } .finish { border-color: #000; } .prob { break-inside: avoid; } }
+
+/* problem 13: the lab data table and the answer rows */
+.labt { border-collapse: collapse; margin: .6rem 0; width: 100%; max-width: 38rem; background: var(--panel2); } .labt caption { text-align: left; font-weight: 700; padding: .2rem 0; }
+.labt td { border: 1px solid var(--line); padding: .3rem .6rem; } .labt td:last-child { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: 600; }
+.labform { display: grid; gap: .5rem; margin-top: .5rem; } .lrow label { display: block; font-weight: 600; margin-bottom: .15rem; } .lin { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.lmark { font-weight: 900; color: var(--good); min-width: 1.2rem; } .lmsg { color: var(--bad); font-size: .9rem; margin-top: .15rem; }

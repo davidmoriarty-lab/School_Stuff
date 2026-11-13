@@ -3,10 +3,10 @@ const M = require('../js/assignment.js'), C = require('../js/chem.js'), S = requ
 const problems = []; let checks = 0; const ok = (c, m) => { checks++; if (!c) problems.push(m); };
 const key = (p) => p.from + '>' + p.to, one = new Set(M.ONE.map((k) => k.join('>'))), two = new Set(M.TWO.map((k) => k.join('>')));
 ok(M.ONE.length === 6 && M.TWO.length === 6 && new Set([...one, ...two]).size === 12, 'there are 12 different conversions');
-const seen = { kinds: new Set(), whole: new Set(), half: new Set() };
+const seen = { kinds: new Set(), whole: new Set(), half: new Set(), oxides: new Set() }, labSigs = new Set();
 for (let seed = 10000; seed < 12500; seed++) {
   const s = M.makeSet(seed), conv = s.slice(0, 10), tag = 'set ' + seed + ': ';
-  ok(s.length === 12 && conv.every((p) => p.type === 'conv') && s[10].type === 'formula' && s[11].type === 'formula', tag + '10 conversions then 2 formula problems');
+  ok(s.length === 13 && conv.every((p) => p.type === 'conv') && s[10].type === 'formula' && s[11].type === 'formula' && s[12].type === 'lab', tag + '10 conversions, 2 formula problems, then the lab');
   ok(new Set(conv.map(key)).size === 10, tag + 'no conversion appears twice');
   ok(conv.filter((p) => one.has(key(p))).length === 5 && conv.filter((p) => two.has(key(p))).length === 5, tag + '5 one-step and 5 two-step conversions');
   ok(new Set(conv.map((p) => p.formula)).size === 10, tag + 'ten different substances');
@@ -31,10 +31,25 @@ for (let seed = 10000; seed < 12500; seed++) {
     ok(!M.checkFormula(p, 'mol', p.empirical).ok && /empirical formula/.test(M.checkFormula(p, 'mol', p.empirical).msg), tag + 'empirical typed as molecular is explained');
     ok(M.checkFormula(p, 'emp', 'Xx2').bad === true, tag + 'a nonsense formula is rejected');
   }
+  /* problem 13: the iron oxide lab */
+  const L = s[12], d = L.d, c2 = (x) => Math.round(x * 100);
+  ok(M.OXIDES.some((o) => o[2] === L.formula) && C.sameFormula(L.engine.empirical, L.formula), tag + 'lab: the data give a known iron oxide (' + L.formula + ')');
+  ok(c2(d.cFe) - c2(d.empty) === c2(d.fe) && c2(d.final) - c2(d.empty) === c2(d.oxide) && c2(d.oxide) - c2(d.fe) === c2(d.o), tag + 'lab: the subtractions are exact');
+  ok(d.first < d.final && d.first > d.cFe && d.empty >= 18 && d.fe >= 1.2 && d.fe <= 2.4 && d.o > 0.25, tag + 'lab: heating #1 is below the constant mass but above the iron reading');
+  ok(L.statement.includes(d.empty.toFixed(2)) && L.statement.includes(d.final.toFixed(2)) && (L.statement.match(new RegExp(d.final.toFixed(2).replace('.', '\\.') + ' g', 'g')) || []).length === 2, tag + 'lab: the table shows the constant mass twice');
+  ok(Math.abs(L.want.fe - d.fe / 55.85) < 1e-12 && Math.abs(L.want.o - d.o / 16.00) < 1e-12, tag + 'lab: moles are mass / molar mass');
+  const keyAns = [String(d.fe), String(d.oxide), String(d.o), L.want.fe.toPrecision(3), L.want.o.toPrecision(3), L.formula];
+  ok(M.checkLab(L, keyAns).every((r) => r.ok), tag + 'lab: the key answers are all accepted');
+  ok(M.checkLab(L, ['', '', '', '', '', '']).every((r) => r.blank), tag + 'lab: blank boxes are not marked wrong');
+  const wrong = M.checkLab(L, [String(d.cFe), String(d.first - d.empty), String(d.oxide + d.fe), String(d.fe * 55.85), String(d.o / 32), 'Xx2']);
+  ok(wrong[0].msg.includes('together') && wrong[1].msg.includes('heating #1') && wrong[2].msg.includes('added') && wrong[3].msg.includes('multiplied') && wrong[4].msg.includes('ATOMS') && wrong[5].bad, tag + 'lab: typical slips each get their own message');
+  ok(L.steps.length >= 6 && L.steps[0].id === 'masses' && /−/.test(L.steps[0].html), tag + 'lab: the solution starts with the subtractions');
+  labSigs.add([d.empty, d.fe, L.formula].join('|'));
   const r = h.built.res.ratios, pairs = h.built.pairs, up = C.formulaString(pairs.map((x, i) => ({ el: x.el, n: Math.round(r[i] + 0.001) })));
   ok(/multiply/.test(M.checkFormula(h, 'emp', up).msg), tag + 'rounding 1.5 up (' + up + ') gets the "multiply by 2" message');
 }
 ok(seen.kinds.size === 12, 'across many sets, all 12 conversions are used');
+ok(labSigs.size > 2400, 'the lab data differ from student to student (' + labSigs.size + ' different in 2500 sets)');
 ok(seen.whole.size === M.WHOLE.length && seen.half.size === M.HALF.length, 'every formula compound is used (' + seen.whole.size + ' whole, ' + seen.half.size + ' with 1.5)');
 /* the same set number gives the same problems; different numbers give different ones */
 const sig = (n) => M.makeSet(n).map((p) => p.statement).join('|');

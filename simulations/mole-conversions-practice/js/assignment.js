@@ -1,12 +1,15 @@
 /* assignment.js: the Mole Conversions practice set.
  *
- * Every student gets their own set of 12 problems, built from a "set number" (the seed):
+ * Every student gets their own set of 13 problems, built from a "set number" (the seed):
  *   1-10  mole conversions between particles, moles, grams and liters of gas at STP.
  *         There are 12 possible conversions (6 one-step, 6 two-step). Each set uses 5 of each,
  *         in random order, so no conversion appears twice.
  *   11    empirical + molecular formula where the mole ratio comes out in whole numbers
  *   12    empirical + molecular formula where the ratio comes out as 1 : 1.5, so every number
  *         has to be multiplied by 2
+ *   13    an iron oxide lab: masses of a crucible are given, and the student subtracts to find the
+ *         mass of iron, iron oxide and oxygen, then moles, then the empirical formula. The oxide
+ *         (FeO, Fe2O3 or Fe3O4) and every mass are different for every student.
  * The problems are shown one at a time. A hint-free design: a wrong answer gets a specific
  * message, and the worked solution unlocks only after 3 attempts (and then earns no credit).
  * The same set number always rebuilds the same problems, so a teacher can open a student's set
@@ -69,17 +72,55 @@
     return { msg: 'Not quite. Find the mass of one empirical formula unit, divide the molar mass by it to get n, and multiply every subscript by n.' };
   }
 
-  const NCONV = 10, N = NCONV + 2;
+  const NCONV = 10, N = NCONV + 3;
+  /* ---------- problem 13: the iron oxide lab ---------- */
+  const OXIDES = [[1, 1, 'FeO'], [2, 3, 'Fe2O3'], [3, 4, 'Fe3O4']];
+  const MFE = D.ELEMENTS.Fe.mass, MO = D.ELEMENTS.O.mass, g2 = (c) => (c / 100).toFixed(2);
+  function labProblem() {
+    for (let guard = 0; guard < 200; guard++) {
+      const ox = P.pick(OXIDES), empty = P.rint(1800, 3499), fe = P.rint(120, 240), o = Math.round(fe / 100 / MFE * (ox[1] / ox[0]) * MO * 100);
+      const first = empty + fe + o - P.rint(6, 15), final = empty + fe + o, cFe = empty + fe;
+      const built = S.buildEmpirical({ items: [{ el: 'Fe', v: g2(fe), kind: 'g' }, { el: 'O', v: g2(o), kind: 'g' }] });
+      if (!built.res.ok || built.answer.formula !== ox[2] || first <= cFe) continue;
+      const d = { empty: empty / 100, cFe: cFe / 100, first: first / 100, final: final / 100, fe: fe / 100, o: o / 100, oxide: (fe + o) / 100 }, want = { fe: d.fe / MFE, o: d.o / MO };
+      const row = (t, v) => '<tr><td>' + t + '</td><td>' + v.toFixed(2) + ' g</td></tr>';
+      const table = '<table class="labt"><caption>Data table</caption>' + row('Mass of empty crucible and lid', d.empty) + row('Mass of crucible, lid and iron powder (before heating)', d.cFe) + row('Mass of crucible, lid and product after heating #1', d.first) + row('Mass of crucible, lid and product after heating #2', d.final) + row('Mass of crucible, lid and product after heating #3', d.final) + '</table>';
+      const stmt = '<p>In an iron oxide lab, a student placed iron powder in a crucible with a lid and heated it strongly. The iron reacted with oxygen in the air to form an iron oxide. The student heated, cooled and weighed the crucible three times, until the mass stopped changing. Use the data table to find the {f|empirical formula} of the iron oxide.</p>' + table;
+      const diff = (a, b) => S.G(a.toFixed(2) + ' g') + ' − ' + S.G(b.toFixed(2) + ' g') + ' = ' + S.F((a - b).toFixed(2) + ' g');
+      const dataStep = { id: 'masses', stage: 'plan', title: 'Subtract to find the masses', why: 'The balance reads the crucible <b>and</b> its contents together. Subtract the empty crucible to get the mass of just the contents. Use the <b>last</b> reading, because the mass had stopped changing (all the iron had reacted).',
+        html: '<table class="wk"><tbody><tr><td><b>iron</b></td><td>(crucible + iron) − empty crucible</td><td>' + diff(d.cFe, d.empty) + '</td></tr><tr><td><b>iron oxide</b></td><td>(crucible + oxide, heating #3) − empty crucible</td><td>' + diff(d.final, d.empty) + '</td></tr><tr><td><b>oxygen</b></td><td>iron oxide − iron</td><td>' + diff(d.oxide, d.fe) + '</td></tr></tbody></table><p class="note">The oxygen came from the air. Its mass is the mass the sample <b>gained</b>.</p>' };
+      const steps = [dataStep].concat(built.steps.map((x) => (x.id === 'identify' ? Object.assign({}, x, { stage: 'setup' }) : x)));
+      return { type: 'lab', label: 'iron oxide lab: empirical formula', statement: T(stmt), built, steps, d, want, formula: ox[2], empirical: ox[2], molecular: ox[2], mult: built.res.mult, elements: ['Fe', 'O'], engine: { empirical: built.answer.formula } };
+    }
+    throw new Error('could not build the lab problem');
+  }
+  /* the six answer boxes of problem 13; returns one verdict per box */
+  function checkLab(p, vals) {
+    const d = p.d, near = (u, v, t) => Math.abs(u - v) <= (t === undefined ? 0.006 : t), rel = (u, v) => Math.abs(u - v) / v <= 0.025, out = [];
+    const num = (k) => { const raw = vals[k].trim(); if (!raw) return { blank: true }; const u = C.parseNumber(raw); return isNaN(u) ? { bad: true } : { u }; };
+    const say = (k, ok, msg) => out[k] = { ok, msg };
+    const mass = (k, truth, hints) => { const r = num(k); if (r.blank) { out[k] = { blank: true }; return; } if (r.bad) { out[k] = { bad: true, msg: 'Type just the number.' }; return; } if (near(r.u, truth)) { say(k, true, ''); return; } let m = 'Not quite.'; for (const h of hints) if (near(r.u, h[0], 0.011)) { m = h[1]; break; } say(k, false, m); };
+    mass(0, d.fe, [[d.cFe, 'That is the crucible and the iron together. Subtract the empty crucible.'], [d.empty, 'That is only the empty crucible.'], [d.final, 'That is the crucible and the product. The iron is the earlier measurement.']]);
+    mass(1, d.oxide, [[d.final, 'That includes the crucible. Subtract the empty crucible.'], [d.first - d.empty, 'That uses heating #1, when the mass was still changing. Use the last reading.'], [d.first, 'That includes the crucible, and heating #1 was not the last reading.'], [d.cFe - d.empty, 'That is the mass of the iron, not of the oxide.']]);
+    mass(2, d.o, [[d.oxide + d.fe, 'You added. The oxygen is what the sample gained: oxide minus iron.'], [d.final - d.cFe, 'Good idea, but check your subtraction.'], [d.first - d.cFe, 'That uses heating #1. Use the last reading.'], [d.oxide, 'That is the whole oxide. Subtract the iron from it to find just the oxygen.'], [d.fe, 'That is the iron. The oxygen is oxide minus iron.']]);
+    const mol = (k, truth, g, M, other) => { const r = num(k); if (r.blank) { out[k] = { blank: true }; return; } if (r.bad) { out[k] = { bad: true, msg: 'Type just the number.' }; return; } if (rel(r.u, truth)) { say(k, true, ''); return; } let m = 'Not quite. Moles = grams ÷ molar mass.'; if (rel(r.u, g)) m = 'That is the mass. Divide by the molar mass to get moles.'; else if (rel(r.u, g * M)) m = 'You multiplied. Divide the grams by the molar mass.'; else if (rel(r.u, g / other)) m = 'Check the molar mass: use the one for THIS element.'; else if (k === 4 && rel(r.u, g / (2 * MO))) m = 'Count oxygen ATOMS: use 16.00 g/mol, not the 32.00 of O₂.'; say(k, false, m); };
+    mol(3, p.want.fe, d.fe, MFE, MO); mol(4, p.want.o, d.o, MO, MFE);
+    const raw = vals[5].trim();
+    if (!raw) out[5] = { blank: true }; else { const f = C.parseFormula(raw); if (!f.ok) out[5] = { bad: true, msg: f.error }; else { const r = checkFormula(p, 'emp', raw); out[5] = r.ok ? { ok: true, msg: '' } : { ok: false, msg: r.msg.replace('That is the molecular formula. ', '') }; } }
+    return out;
+  }
+
   function makeSet(seed) {
     P.setRng(P.seeded(seed));
     const kinds = shuffle(shuffle(ONE).slice(0, NCONV / 2).concat(shuffle(TWO).slice(0, NCONV / 2))), used = new Set();
     const list = kinds.map((k) => convProblem(k[0], k[1], used));
     list.push(formulaProblem(P.pick(WHOLE), P.rint(0, 1) ? 'pct' : 'g'));
     list.push(formulaProblem(P.pick(HALF), 'pct'));
+    list.push(labProblem());
     return list;
   }
 
-  const api = { ONE, TWO, WHOLE, HALF, GASES, NCONV, N, makeSet, checkFormula };
+  const api = { ONE, TWO, WHOLE, HALF, GASES, NCONV, N, OXIDES, makeSet, checkFormula, checkLab };
   root.MoleSet = api;
   if (typeof module !== 'undefined' && module.exports) { module.exports = api; return; }
 
@@ -94,7 +135,7 @@
   const newSeed = () => 10000 + Math.floor(Math.random() * 90000);
   const done = (it) => it.status !== 'open';
   const firstOpen = () => { const i = st.items.findIndex((it) => !done(it)); return i < 0 ? N : i; };
-  function start(seed) { st = { seed, name: st ? st.name : '', cur: 0, items: Array.from({ length: N }, () => ({ tries: 0, status: 'open', vals: ['', ''] })) }; set = makeSet(seed); save(); drawAll(); }
+  function start(seed) { st = { seed, name: st ? st.name : '', cur: 0, items: Array.from({ length: N }, () => ({ tries: 0, status: 'open', vals: ['', '', '', '', '', ''], fok: [] })) }; set = makeSet(seed); save(); drawAll(); }
 
   const score = () => st.items.filter((it) => it.status === 'solved').length;
   function header() {
@@ -114,7 +155,11 @@
   }
   function card(i) {
     const p = set[i], it = st.items[i], el = $('#p' + (i + 1)), locked = done(it), last = i === N - 1;
-    const input = p.type === 'conv'
+    const LAB = [['(a) Mass of iron used', 'g', 0], ['(b) Mass of iron oxide formed', 'g', 1], ['(c) Mass of oxygen that combined with the iron', 'g', 2], ['(d) Moles of iron, Fe', 'mol Fe', 3], ['Moles of oxygen, O', 'mol O', 4]];
+    const labRow = (t, u, k) => '<div class="lrow"><label for="in' + i + '-' + k + '">' + t + '</label><div class="lin"><input id="in' + i + '-' + k + '" class="pc-in" data-k="' + k + '" inputmode="decimal" autocomplete="off" spellcheck="false" value="' + UI.escapeHTML(it.vals[k]) + '"' + (locked || it.fok[k] ? ' disabled' : '') + '><span class="pc-unit">' + u + '</span><span class="lmark" aria-hidden="true">' + (it.fok[k] ? '✔' : '') + '</span></div><div class="lmsg" data-lmsg="' + k + '"></div></div>';
+    const input = p.type === 'lab'
+      ? '<div class="labform">' + LAB.map((r) => labRow(r[0], r[1], r[2])).join('') + '<div class="lrow"><label for="in' + i + '-5">(e) Empirical formula of the iron oxide</label><div class="lin"><input id="in' + i + '-5" class="pc-in wide" data-k="5" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="like C2H5" value="' + UI.escapeHTML(it.vals[5]) + '"' + (locked || it.fok[5] ? ' disabled' : '') + '><span class="mk" data-m="5"></span><span class="lmark" aria-hidden="true">' + (it.fok[5] ? '✔' : '') + '</span></div><div class="lmsg" data-lmsg="5"></div></div></div><div class="note">Subtract to find the masses first. Type subscripts as plain numbers: Fe2O3.</div>'
+      : p.type === 'conv'
       ? '<div class="pc-row"><label class="sr" for="in' + i + '">Your answer</label><input id="in' + i + '" class="pc-in" data-k="0" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="your answer" value="' + UI.escapeHTML(it.vals[0]) + '"' + (locked ? ' disabled' : '') + '><span class="pc-unit">' + p.unit + '</span></div><div class="note">Scientific notation: type 1.51e24 or 1.51 x 10^24.</div>'
       : '<div class="frm"><label>(a) Empirical formula <input class="pc-in wide" data-k="0" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="like C2H5" value="' + UI.escapeHTML(it.vals[0]) + '"' + (locked ? ' disabled' : '') + '><span class="mk" data-m="0"></span></label><label>(b) Molecular formula <input class="pc-in wide" data-k="1" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="like C4H10" value="' + UI.escapeHTML(it.vals[1]) + '"' + (locked ? ' disabled' : '') + '><span class="mk" data-m="1"></span></label></div><div class="note">Type subscripts as plain numbers: C6H12O6.</div>';
     const badge = it.status === 'solved' ? '<span class="ptag ok">✔ correct' + (it.tries === 1 ? ' · first try' : ' · ' + it.tries + ' tries') + '</span>' : it.status === 'revealed' ? '<span class="ptag no">solution shown · no credit</span>' : it.tries ? '<span class="ptag">' + it.tries + (it.tries === 1 ? ' try' : ' tries') + '</span>' : '';
@@ -126,6 +171,7 @@
       (locked ? '' : '<div class="note gate">' + (need > 0 ? 'The worked solution unlocks after ' + REVEAL + ' wrong attempts' + (it.tries ? ' (' + need + ' more).' : '.') : 'You can now show the worked solution, but the problem will not count as correct.') + '</div>') +
       '<div class="pc-fb" aria-live="polite"></div><div class="pc-hint"></div>';
     if (it.fb) fb(el, it.fb[0], it.fb[1]);
+    if (p.type === 'lab' && it.lmsg) it.lmsg.forEach((m, k) => { const e = $('[data-lmsg="' + k + '"]', el); if (e && m) e.textContent = m; });
     $$('.pc-in.wide', el).forEach(preview);
     const h = $('.pc-hint', el); if (locked && it.showSol) { h.innerHTML = '<div class="hint-label">Worked solution</div><div class="sol"></div>'; UI.stepper($('.sol', h), { steps: p.steps, statement: '' }, { all: true }); }
   }
@@ -135,6 +181,20 @@
   function check(i) {
     const p = set[i], it = st.items[i], el = $('#p' + (i + 1)); $$('.pc-in', el).forEach((inp) => { it.vals[+inp.dataset.k] = inp.value; });
     let ok, status, msg;
+    if (p.type === 'lab') {
+      const res = checkLab(p, it.vals), bad = res.filter((r) => r && r.bad), filled = res.filter((r) => r && !r.blank);
+      if (!filled.length) { fb(el, 'bad', 'Type at least one answer, then check.'); return; }
+      if (filled.every((r) => r.bad)) { fb(el, 'bad', bad[0].msg); return; }
+      res.forEach((r, k) => { if (r && r.ok) it.fok[k] = true; });
+      it.lmsg = res.map((r, k) => (r && !r.ok && !it.fok[k] ? r.msg : ''));
+      const right = [0, 1, 2, 3, 4, 5].filter((k) => it.fok[k]).length, wrong = res.filter((r) => r && r.ok === false).length;
+      ok = right === 6; if (ok) it.status = 'solved';
+      if (wrong || bad.length) it.tries++;
+      it.fb = ok ? ['ok', '<b>Correct!</b> The iron oxide is ' + fm(p.empirical) + '.'] : [wrong ? 'no' : 'bad', right + ' of 6 answers correct.' + (wrong ? ' Read the note under each wrong answer.' : ' Fill in the rest.')];
+      save(); card(i); header();
+      if (ok) $('#p' + (i + 1) + ' [data-act=next]').focus({ preventScroll: true });
+      return;
+    }
     if (p.type === 'conv') { const r = p.check(it.vals[0]); if (r.status === 'bad') { fb(el, 'bad', r.msg); return; } ok = r.status === 'ok'; status = r.status; msg = r.msg; }
     else {
       if (!it.vals[0].trim() || !it.vals[1].trim()) { fb(el, 'bad', 'Fill in both formulas, then check.'); return; }

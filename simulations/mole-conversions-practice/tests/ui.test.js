@@ -11,12 +11,12 @@ const plain = (t) => t.replace(' × 10', 'e').replace(/[⁰¹²³⁴⁵⁶⁷⁸
   const browser = await chromium.launch(); const errors = [];
   const open = async (q, w) => { const page = await browser.newPage({ viewport: { width: w || 1280, height: 900 } }); page.on('pageerror', (e) => errors.push(e.message)); page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); }); page.on('dialog', (d) => d.accept()); await page.goto(URL + (q || '')); await page.waitForTimeout(150); return page; };
   let page = await open('?set=24680');
-  const K = await page.evaluate(() => MolePractice.set.map((p) => (p.type === 'conv' ? { t: 'c', a: p.answer.fmt.text, v: p.answer.value } : { t: 'f', e: p.empirical, m: p.molecular, mult: p.mult })));
+  const K = await page.evaluate(() => MolePractice.set.map((p) => (p.type === 'conv' ? { t: 'c', a: p.answer.fmt.text, v: p.answer.value } : p.type === 'lab' ? { t: 'l', d: p.d, want: p.want, f: p.formula } : { t: 'f', e: p.empirical, m: p.molecular, mult: p.mult })));
   const card = () => page.locator('.prob');
   const cur = () => page.evaluate(() => MolePractice.state.cur);
   const ans = async (v) => { await card().locator('.pc-in').first().fill(String(v)); await card().locator('[data-act=check]').click(); };
-  expect((await page.locator('.prob').count()) === 1 && (await page.locator('#setNo').innerText()) === 'Set #24680' && (await page.locator('.dot').count()) === 12, 'one problem on screen, twelve dots, and ?set= picks the set');
-  expect((await card().locator('.pc-skill').innerText()).toLowerCase().includes('problem 1 of 12') && (await page.locator('#score').innerText()).startsWith('0 / 12'), 'the problem says "Problem 1 of 12"; score 0 / 12');
+  expect((await page.locator('.prob').count()) === 1 && (await page.locator('#setNo').innerText()) === 'Set #24680' && (await page.locator('.dot').count()) === 13, 'one problem on screen, thirteen dots, and ?set= picks the set');
+  expect((await card().locator('.pc-skill').innerText()).toLowerCase().includes('problem 1 of 13') && (await page.locator('#score').innerText()).startsWith('0 / 13'), 'the problem says "Problem 1 of 13"; score 0 / 13');
   expect((await card().locator('button:has-text("Hint")').count()) === 0 && !(await page.locator('body').innerText()).toLowerCase().includes('hint'), 'there are no hints anywhere');
   expect((await page.locator('.dot:not([disabled])').count()) === 1, 'later problems are locked');
   /* problem 1: wrong answers, gate, then right */
@@ -26,10 +26,10 @@ const plain = (t) => t.replace(' × 10', 'e').replace(/[⁰¹²³⁴⁵⁶⁷⁸
   await ans(K[0].v * 2.9); expect((await card().locator('.pc-fb').getAttribute('class')).includes('no') && (await card().locator('.ptag').innerText()).includes('1 try') && await card().locator('[data-act=reveal]').isDisabled() && (await card().locator('.gate').innerText()).includes('2 more'), 'attempt 1: marked wrong, still locked (2 more)');
   await ans(K[0].v * 0.31); expect(await card().locator('[data-act=reveal]').isDisabled(), 'attempt 2: still locked');
   await ans(plain(K[0].a)); expect((await card().getAttribute('class')).includes('solved') && (await card().locator('.ptag').innerText()).includes('3 tries') && await card().locator('.pc-in').isDisabled(), 'the right answer solves and locks the problem');
-  expect((await page.locator('#score').innerText()).startsWith('1 / 12') && (await cur()) === 0, 'score 1 / 12; stays on the problem until Next');
+  expect((await page.locator('#score').innerText()).startsWith('1 / 13') && (await cur()) === 0, 'score 1 / 12; stays on the problem until Next');
   await card().locator('[data-act=sol]').click(); expect((await card().locator('.sol .st-step').count()) >= 5, 'a finished problem can show its worked solution');
   await card().locator('[data-act=next]').click();
-  expect((await cur()) === 1 && (await card().locator('.pc-skill').innerText()).toLowerCase().includes('problem 2 of 12') && (await page.locator('.prob').count()) === 1, 'Next shows only problem 2');
+  expect((await cur()) === 1 && (await card().locator('.pc-skill').innerText()).toLowerCase().includes('problem 2 of 13') && (await page.locator('.prob').count()) === 1, 'Next shows only problem 2');
   /* going back */
   await page.locator('.dot[data-go="0"]').click(); expect((await cur()) === 0 && await card().locator('.pc-in').isDisabled(), 'a finished problem can be revisited with the dots');
   expect(await page.locator('.dot[data-go="5"]').isDisabled(), 'problems ahead stay locked'); await page.locator('.dot[data-go="1"]').click();
@@ -51,19 +51,33 @@ const plain = (t) => t.replace(' × 10', 'e').replace(/[⁰¹²³⁴⁵⁶⁷⁸
   const rounded = await page.evaluate(() => { const p = MolePractice.set[11], r = p.built.res.ratios; return p.built.pairs.map((x, i) => x.el + (Math.ceil(Math.round(r[i] * 2) / 2) > 1 ? Math.ceil(Math.round(r[i] * 2) / 2) : '')).join(''); });
   await fin().nth(0).fill(rounded); await fin().nth(1).fill(rounded); await card().locator('[data-act=check]').click(); expect((await card().locator('.pc-fb').innerText()).includes('multiply'), 'rounding 1.5 (' + rounded + ') is diagnosed');
   await fin().nth(0).fill(K[11].e); await fin().nth(1).fill(K[11].m); await card().locator('[data-act=check]').click();
+  await card().locator('[data-act=next]').click();
+  /* problem 13: the iron oxide lab, answered a part at a time */
+  const L = K[12], lab = (k) => card().locator('.pc-in').nth(k), labCheck = () => card().locator('[data-act=check]').click();
+  expect(L.t === 'l' && (await card().locator('.labt tr').count()) === 5 && (await card().locator('.pc-in').count()) === 6, 'problem 13 shows a 5-row data table and six answer boxes');
+  expect((await card().innerText()).includes(L.d.empty.toFixed(2)) && (await card().innerText()).includes(L.d.final.toFixed(2)), 'the table holds this student\u2019s own numbers');
+  await lab(0).fill(String(L.d.cFe)); await labCheck();
+  expect((await card().locator('[data-lmsg="0"]').innerText()).includes('together') && (await card().locator('.ptag').innerText()).includes('1 try'), 'part (a): giving the crucible + iron total is diagnosed and counted');
+  await lab(0).fill(String(L.d.fe)); await lab(1).fill(String(L.d.oxide)); await labCheck();
+  expect(await lab(0).isDisabled() && await lab(1).isDisabled() && (await card().locator('.lmark').first().innerText()).includes('\u2714') && (await card().locator('.ptag').innerText()).includes('1 try'), 'correct parts lock with a check mark, and a correct partial check costs no attempt');
+  await lab(2).fill(String(L.d.o)); await lab(3).fill(String(L.d.fe * 55.85)); await lab(4).fill(L.want.o.toPrecision(3)); await lab(5).fill(L.f); await labCheck();
+  expect((await card().locator('[data-lmsg="3"]').innerText()).includes('multiplied') && !(await card().getAttribute('class')).includes('solved') && (await card().locator('.pc-fb').innerText()).includes('5 of 6'), 'one wrong part keeps the problem open: 5 of 6 correct');
+  await lab(3).fill(L.want.fe.toPrecision(3)); await labCheck();
+  expect((await card().getAttribute('class')).includes('solved') && (await card().locator('[data-act=sol]').count()) === 1, 'all six parts correct solves problem 13');
+  await card().locator('[data-act=sol]').click(); expect((await card().locator('.sol .st-step').count()) >= 6 && (await card().locator('.sol').innerText()).includes('Subtract'), 'the lab solution begins with the subtraction step');
   expect((await card().locator('[data-act=next]').innerText()).includes('See my results'), 'the last problem offers "See my results"'); await card().locator('[data-act=next]').click(); await page.waitForTimeout(150);
   /* results */
-  expect(await page.locator('#finish').isVisible() && (await page.locator('.prob').count()) === 0 && (await page.locator('#finish .big').innerText()).trim() === '11 / 12', 'the results show 11 / 12');
-  expect((await page.locator('#finish .res tr').count()) === 13 && (await page.locator('.dot.solved').count()) === 11 && (await page.locator('.dot.revealed').count()) === 1, 'the results table and the dots match');
+  expect(await page.locator('#finish').isVisible() && (await page.locator('.prob').count()) === 0 && (await page.locator('#finish .big').innerText()).trim() === '12 / 13', 'the results show 12 / 13');
+  expect((await page.locator('#finish .res tr').count()) === 14 && (await page.locator('.dot.solved').count()) === 12 && (await page.locator('.dot.revealed').count()) === 1, 'the results table and the dots match');
   await page.fill('#nameIn', 'Test Student'); await page.reload(); await page.waitForTimeout(150);
-  expect((await page.locator('#finish .big').innerText()).trim() === '11 / 12' && (await page.inputValue('#nameIn')) === 'Test Student' && (await page.locator('#setNo').innerText()) === 'Set #24680', 'a reload keeps the set, the work and the name');
+  expect((await page.locator('#finish .big').innerText()).trim() === '12 / 13' && (await page.inputValue('#nameIn')) === 'Test Student' && (await page.locator('#setNo').innerText()) === 'Set #24680', 'a reload keeps the set, the work and the name');
   expect(!/NaN(?![A-Za-z])|undefined/.test(await page.locator('body').innerText()), 'no NaN or undefined anywhere');
   await page.click('#againBtn'); await page.waitForTimeout(150);
-  expect((await page.locator('#setNo').innerText()) !== 'Set #24680' && (await page.locator('#score').innerText()).startsWith('0 / 12') && !(await page.locator('#finish').isVisible()) && (await cur()) === 0, '"Try a new set" starts a different, fresh set');
+  expect((await page.locator('#setNo').innerText()) !== 'Set #24680' && (await page.locator('#score').innerText()).startsWith('0 / 13') && !(await page.locator('#finish').isVisible()) && (await cur()) === 0, '"Try a new set" starts a different, fresh set');
   await page.close();
   /* a reload in the middle comes back to the same problem */
   page = await open('?set=777'); const K2 = await page.evaluate(() => MolePractice.set.map((p) => p.type === 'conv' ? p.answer.fmt.text : '')); await ans(plain(K2[0])); await card().locator('[data-act=next]').click(); await page.reload(); await page.waitForTimeout(150);
-  expect((await cur()) === 1 && (await card().locator('.pc-skill').innerText()).toLowerCase().includes('problem 2 of 12'), 'a reload in the middle returns to the problem you were on'); await page.close();
+  expect((await cur()) === 1 && (await card().locator('.pc-skill').innerText()).toLowerCase().includes('problem 2 of 13'), 'a reload in the middle returns to the problem you were on'); await page.close();
   const a = await open(''), b = await open(''); await a.evaluate(() => localStorage.clear()); await a.reload(); const s1 = await a.locator('#setNo').innerText(); await b.evaluate(() => localStorage.clear()); await b.reload(); const s2 = await b.locator('#setNo').innerText();
   expect(/^Set #\d{5}$/.test(s1) && s1 !== s2, 'new visitors get their own random set (' + s1 + ', ' + s2 + ')'); await a.close(); await b.close();
   page = await open('?set=13579', 390); expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'nothing runs off the side of a phone screen'); await page.screenshot({ path: path.join(require('os').tmpdir(), 'mole-phone.png') }); await page.close();

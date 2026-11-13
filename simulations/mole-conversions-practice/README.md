@@ -3,10 +3,12 @@
 A practice set of eight problems that is different for every student. Open `index.html` in a browser. Nothing to install, no internet needed.
 
 ## What each student gets
-Twelve problems, shown **one at a time**:
+Thirteen problems, shown **one at a time**:
 - **Problems 1–10: mole conversions** between particles (atoms, molecules, formula units), moles, grams, and liters of gas at STP. There are 12 possible conversions (6 one-step, 6 two-step). Each set has 5 one-step and 5 two-step conversions, in random order, and never the same conversion twice. Each problem uses a different substance.
 - **Problem 11: empirical and molecular formula** where the mole ratio comes out in whole numbers.
 - **Problem 12: empirical and molecular formula** where the ratio comes out as 1 : 1.5, so everything has to be multiplied by 2.
+- **Problem 13: an iron oxide lab.** A data table gives crucible-and-lid readings (empty, with iron powder, and after three heatings). The student works through five parts: (a) the mass of iron, (b) the mass of iron oxide, (c) the mass of oxygen, (d) the moles of iron and of oxygen, and (e) the empirical formula. Masses come from subtracting the empty crucible, and the oxide uses the last reading, when the mass stopped changing (heating #1 is a trap on purpose).
+  The oxide is FeO, Fe₂O₃ or Fe₃O₄, picked per student, and the crucible and iron masses are random, so about every student has different numbers. Each part is checked on its own: correct parts lock with a check mark, a correct partial check costs no attempt, and each wrong part gets its own note (for example, "That is the crucible and the iron together").
 
 ## How it works for the student
 - Type an answer and press **Check**. Answers are accepted to the correct significant figures (a small rounding difference is fine).
@@ -14,7 +16,7 @@ Twelve problems, shown **one at a time**:
 - **Show solution** unlocks only after 3 wrong attempts on a problem. A problem whose solution was shown does not count as correct.
 - After a problem is finished, **Next problem** shows the next one. The numbered dots at the top let a student go back to finished problems, but not ahead.
 - No constants or atomic masses are shown. A short reminder tells students to use the mole conversion chart in their notes.
-- After problem 12, a results panel shows the score and the tries per problem, with a name box and a print button.
+- After problem 13, a results panel shows the score and the tries per problem, with a name box and a print button.
 - Work is saved in the browser, so a reload returns to the same set and the same problem. **New set** makes a fresh one.
 
 ## Set numbers

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chirality and Chair Conformations</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="bar">
+  <div class="bar-in">
+    <div class="ttl"><h1>Chirality and Chairs</h1><span id="setNo" class="setno"></span></div>
+    <nav id="dots" class="dots" aria-label="Problems"></nav>
+    <div class="right"><span id="score" class="score" role="status" aria-live="polite"></span><button type="button" class="btn" id="newSet">New set ↻</button></div>
+  </div>
+</header>
+<main class="wrap">
+  <div id="list"></div>
+  <div class="savebar"><span id="saved" aria-live="polite"></span><button type="button" class="btn" id="saveBtn">Save progress</button></div>
+  <section id="finish" class="finish" hidden aria-live="polite"></section>
+</main>
+<div id="modal" class="modal" hidden></div>
+<script src="js/cip.js"></script>
+<script src="js/molecules.js"></script>
+<script src="js/chair.js"></script>
+<script src="js/draw.js"></script>
+<script src="js/set.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

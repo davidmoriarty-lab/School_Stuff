@@ -3,19 +3,17 @@ html { scroll-padding-top: 5.5rem; }
 .bar { position: sticky; top: 0; z-index: 20; background: var(--panel); border-bottom: 1px solid var(--line); box-shadow: var(--shadow); }
 .bar-in { max-width: 60rem; margin: 0 auto; padding: .5rem 1rem; display: flex; align-items: center; gap: .8rem 1.2rem; flex-wrap: wrap; }
 .ttl h1 { margin: 0; font-size: 1.15rem; line-height: 1.2; } .setno { font-size: .8rem; color: var(--muted); font-weight: 600; }
-.dots { display: flex; gap: .3rem; flex: 1; justify-content: center; flex-wrap: wrap; }
-.dot { cursor: pointer; font: inherit; width: 1.9rem; height: 1.9rem; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: .9rem; text-decoration: none; color: var(--ink2); border: 2px solid var(--line); background: var(--panel2); }
+.dots { display: flex; gap: .22rem; flex: 1; justify-content: center; flex-wrap: wrap; }
+.dot { cursor: pointer; font: inherit; width: 1.7rem; height: 1.7rem; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: .82rem; text-decoration: none; color: var(--ink2); border: 2px solid var(--line); background: var(--panel2); }
 .dot:disabled { opacity: .4; cursor: not-allowed; } .dot.here { outline: 3px solid var(--accent); outline-offset: 2px; }
-.dot.solved { background: var(--good); border-color: var(--good); color: #fff; } .dot.revealed { background: var(--bad); border-color: var(--bad); color: #fff; }
+.dot.solved { background: var(--good); border-color: var(--good); color: #fff; } .dot.shown { background: var(--bad); border-color: var(--bad); color: #fff; }
 .right { display: flex; align-items: center; gap: .7rem; } .bar .score { font-weight: 800; font-size: 1rem; color: var(--ink); margin: 0; }
 .wrap { max-width: 60rem; margin: 0 auto; padding: 1rem 1rem 5rem; }
 .intro { margin: .2rem 0 .8rem; }
 .ref { background: var(--panel); border: 1px solid var(--line); border-left: 5px solid var(--accent); border-radius: 12px; padding: .6rem .9rem; }
-.refrow { display: flex; gap: .4rem 1.6rem; flex-wrap: wrap; margin: .2rem 0; }
-.masses { display: flex; flex-wrap: wrap; gap: .3rem .5rem; margin: .35rem 0; } .masses span { border: 1px solid var(--line); border-radius: 8px; padding: .05rem .5rem; background: var(--panel2); font-variant-numeric: tabular-nums; }
 .note { font-size: .85rem; color: var(--muted); margin-top: .3rem; }
 .part { font-size: 1.15rem; margin: 1.4rem 0 .2rem; } .part small { font-weight: 500; color: var(--muted); font-size: .85rem; margin-left: .4rem; }
-.prob { margin: .7rem 0; } .prob.solved { border-color: var(--good); } .prob.revealed { border-color: var(--bad); }
+.prob { margin: .7rem 0; } .prob.solved { border-color: var(--good); } .prob.shown { border-color: var(--bad); }
 .ptag { margin-left: auto; font-size: .8rem; font-weight: 700; padding: .1rem .6rem; border-radius: 999px; background: var(--panel2); border: 1px solid var(--line); color: var(--ink2); }
 .ptag.ok { background: var(--good); border-color: var(--good); color: #fff; } .ptag.no { background: var(--bad); border-color: var(--bad); color: #fff; }
 .frm { display: grid; gap: .5rem; } .frm label { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; font-weight: 600; } .mk { font-weight: 500; color: var(--ink2); } .mk .err { color: var(--bad); }
@@ -26,5 +24,21 @@ html { scroll-padding-top: 5.5rem; }
 .finish input { padding: .4rem .6rem; border-radius: 8px; border: 2px solid var(--line); font: inherit; background: var(--panel2); color: var(--ink); }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 #list .pcard { margin-top: 1rem; }
+/* on a phone the header wraps to about a quarter of the screen, so it scrolls away instead of staying on top */
+@media (max-width: 700px) { .bar { position: static; } html { scroll-padding-top: 0; } }
 @media (max-width: 560px) { .dots { order: 3; flex-basis: 100%; } .pc-in.wide { width: 100%; } }
 @media print { .bar .btn, .pc-actions, .gate, .ref, .intro, #againBtn, #printBtn { display: none !important; } .bar { position: static; box-shadow: none; } .finish { border-color: #000; } .prob { break-inside: avoid; } }
+
+/* problem 13: the lab data table and the answer rows */
+.labt { border-collapse: collapse; margin: .6rem 0; width: 100%; max-width: 38rem; background: var(--panel2); } .labt caption { text-align: left; font-weight: 700; padding: .2rem 0; }
+.labt td { border: 1px solid var(--line); padding: .3rem .6rem; } .labt td:last-child { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: 600; }
+.labform { display: grid; gap: .5rem; margin-top: .5rem; } .lrow label { display: block; font-weight: 600; margin-bottom: .15rem; } .lin { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.lmark { font-weight: 900; color: var(--good); min-width: 1.2rem; } .lmsg { color: var(--bad); font-size: .9rem; margin-top: .15rem; }
+.remind { margin-top: .7rem; padding: .5rem .8rem; border-radius: 10px; background: color-mix(in srgb, var(--accent) 10%, transparent); border: 1px solid var(--accent); }
+.rxn { font-size: 1.15rem; text-align: center; margin: .3rem 0; padding: .4rem; background: var(--panel2); border-radius: 10px; letter-spacing: .02em; }
+
+/* the save bar under each problem */
+.savebar { display: flex; align-items: center; justify-content: flex-end; gap: .8rem; flex-wrap: wrap; margin-top: .8rem; color: var(--muted); font-size: .9rem; }
+#saved.flash { color: var(--good); font-weight: 700; } .reported { color: var(--good); font-weight: 700; }
+@media print { .savebar { display: none !important; } }
+.similar { margin: .3rem 0 .5rem; padding: .5rem .8rem; border-radius: 10px; background: color-mix(in srgb, var(--accent) 10%, transparent); border: 1px solid var(--accent); }

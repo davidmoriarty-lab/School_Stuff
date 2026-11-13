@@ -3,16 +3,17 @@ const M = require('../js/assignment.js'), C = require('../js/chem.js'), S = requ
 const problems = []; let checks = 0; const ok = (c, m) => { checks++; if (!c) problems.push(m); };
 const key = (p) => p.from + '>' + p.to, one = new Set(M.ONE.map((k) => k.join('>'))), two = new Set(M.TWO.map((k) => k.join('>')));
 ok(M.ONE.length === 6 && M.TWO.length === 6 && new Set([...one, ...two]).size === 12, 'there are 12 different conversions');
-const seen = { kinds: new Set(), whole: new Set(), half: new Set() };
+const seen = { kinds: new Set(), whole: new Set(), half: new Set(), oxides: new Set() }, labSigs = new Set();
 for (let seed = 10000; seed < 12500; seed++) {
   const s = M.makeSet(seed), conv = s.slice(0, 10), tag = 'set ' + seed + ': ';
-  ok(s.length === 12 && conv.every((p) => p.type === 'conv') && s[10].type === 'formula' && s[11].type === 'formula', tag + '10 conversions then 2 formula problems');
+  ok(s.length === 13 && conv.every((p) => p.type === 'conv') && s[10].type === 'formula' && s[11].type === 'formula' && s[12].type === 'lab', tag + '10 conversions, 2 formula problems, then the lab');
   ok(new Set(conv.map(key)).size === 10, tag + 'no conversion appears twice');
   ok(conv.filter((p) => one.has(key(p))).length === 5 && conv.filter((p) => two.has(key(p))).length === 5, tag + '5 one-step and 5 two-step conversions');
   ok(new Set(conv.map((p) => p.formula)).size === 10, tag + 'ten different substances');
   for (const p of conv) {
     seen.kinds.add(key(p)); const gas = p.from === 'L' || p.to === 'L';
     ok(!gas || M.GASES.includes(p.formula), tag + 'liters are only asked for real gases (' + p.formula + ')');
+    ok(!/formula unit/i.test(p.statement + p.unit) && /atom|molecule/.test(p.statement + p.unit) === (p.from === 'part' || p.to === 'part'), tag + 'particles are atoms or molecules, never formula units (' + p.formula + ')');
     ok(gas === /STP/.test(p.statement), tag + 'STP is mentioned exactly when liters are involved');
     ok(isFinite(p.answer.value) && p.answer.value > 0 && (p.answer.sf === 3 || p.answer.sf === 4) && p.steps.length >= 5 && !/gas gas|undefined|NaN(?![A-Za-z])/.test(p.statement), tag + 'answer and steps exist');
     ok(p.check(p.answer.fmt.text.replace(' × 10', 'e').replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]/g, (c) => '0123456789-'['⁰¹²³⁴⁵⁶⁷⁸⁹⁻'.indexOf(c)])).status === 'ok', tag + 'the key answer is accepted: ' + p.answer.fmt.text);
@@ -31,14 +32,61 @@ for (let seed = 10000; seed < 12500; seed++) {
     ok(!M.checkFormula(p, 'mol', p.empirical).ok && /empirical formula/.test(M.checkFormula(p, 'mol', p.empirical).msg), tag + 'empirical typed as molecular is explained');
     ok(M.checkFormula(p, 'emp', 'Xx2').bad === true, tag + 'a nonsense formula is rejected');
   }
+  /* problem 13: the iron oxide lab */
+  const L = s[12], d = L.d, c2 = (x) => Math.round(x * 100);
+  ok(M.OXIDES.some((o) => o[2] === L.formula) && C.sameFormula(L.engine.empirical, L.formula), tag + 'lab: the data give a known iron oxide (' + L.formula + ')');
+  ok(c2(d.cFe) - c2(d.empty) === c2(d.fe) && c2(d.final) - c2(d.empty) === c2(d.oxide) && c2(d.oxide) - c2(d.fe) === c2(d.o), tag + 'lab: the subtractions are exact');
+  ok(d.first < d.final && d.first > d.cFe && d.empty >= 18 && d.fe >= 1.2 && d.fe <= 2.4 && d.o > 0.25, tag + 'lab: heating #1 is below the constant mass but above the iron reading');
+  ok(L.statement.includes(d.empty.toFixed(2)) && L.statement.includes(d.final.toFixed(2)) && (L.statement.match(new RegExp(d.final.toFixed(2).replace('.', '\\.') + ' g', 'g')) || []).length === 2, tag + 'lab: the table shows the constant mass twice');
+  ok(Math.abs(L.want.fe - d.fe / 55.85) < 1e-12 && Math.abs(L.want.o - d.o / 16.00) < 1e-12, tag + 'lab: moles are mass / molar mass');
+  const keyAns = [String(d.fe), String(d.oxide), String(d.o), L.want.fe.toPrecision(3), L.want.o.toPrecision(3), L.formula];
+  ok(M.checkLab(L, keyAns).every((r) => r.ok), tag + 'lab: the key answers are all accepted');
+  ok(M.checkLab(L, ['', '', '', '', '', '']).every((r) => r.blank), tag + 'lab: blank boxes are not marked wrong');
+  const wrong = M.checkLab(L, [String(d.cFe), String(d.first - d.empty), String(d.oxide + d.fe), String(d.fe * 55.85), String(d.o / 32), 'Xx2']);
+  ok(wrong[0].msg.includes('together') && wrong[1].msg.includes('heating #1') && wrong[2].msg.includes('added') && wrong[3].msg.includes('multiplied') && wrong[4].msg.includes('ATOMS') && wrong[5].bad, tag + 'lab: typical slips each get their own message');
+  ok(L.steps.length >= 6 && L.steps[0].id === 'masses' && /−/.test(L.steps[0].html), tag + 'lab: the solution starts with the subtractions');
+  labSigs.add([d.empty, d.fe, L.formula].join('|'));
   const r = h.built.res.ratios, pairs = h.built.pairs, up = C.formulaString(pairs.map((x, i) => ({ el: x.el, n: Math.round(r[i] + 0.001) })));
   ok(/multiply/.test(M.checkFormula(h, 'emp', up).msg), tag + 'rounding 1.5 up (' + up + ') gets the "multiply by 2" message');
 }
 ok(seen.kinds.size === 12, 'across many sets, all 12 conversions are used');
+ok(labSigs.size > 2400, 'the lab data differ from student to student (' + labSigs.size + ' different in 2500 sets)');
 ok(seen.whole.size === M.WHOLE.length && seen.half.size === M.HALF.length, 'every formula compound is used (' + seen.whole.size + ' whole, ' + seen.half.size + ' with 1.5)');
 /* the same set number gives the same problems; different numbers give different ones */
 const sig = (n) => M.makeSet(n).map((p) => p.statement).join('|');
 ok(sig(31415) === sig(31415), 'a set number always rebuilds the same set'); ok(sig(31415) !== sig(31416), 'different set numbers differ');
 ok(new Set(Array.from({ length: 300 }, (_, i) => sig(20000 + i))).size === 300, '300 set numbers give 300 different sets');
+/* ---- similar problems: what a student gets after using the solution ---- */
+{ const C2 = require('../js/chem.js'), strip = (t) => t.replace(/<[^>]+>/g, '');
+  let made = 0;
+  for (let seed = 30000; seed < 30400; seed++) {
+    const base = M.makeSet(seed);
+    for (let i = 0; i < 13; i++) {
+      const b = base[i], tag = 'seed ' + seed + ' slot ' + (i + 1) + ': '; const seenStm = new Set([strip(b.statement)]), seenSub = new Set([b.formula]);
+      for (let v = 1; v <= (seed < 30060 ? 8 : 2); v++) {
+        const q = M.similar(seed, base, i, v); made++;
+        ok(q.type === b.type, tag + 'a similar problem is the same type');
+        ok(JSON.stringify(M.similar(seed, base, i, v).statement) === JSON.stringify(q.statement), tag + 'similar problem ' + v + ' is rebuilt identically');
+        ok(!seenStm.has(strip(q.statement)), tag + 'similar problem ' + v + ' is not a repeat of an earlier one'); seenStm.add(strip(q.statement));
+        if (b.type === 'conv') {
+          ok(q.from === b.from && q.to === b.to, tag + 'same conversion (' + b.from + '>' + b.to + ')');
+          ok(!seenSub.has(q.formula) || v > 6, tag + 'a new substance each time (' + q.formula + ')'); seenSub.add(q.formula);
+          ok(!/formula unit/i.test(q.statement) && !/NaN(?![A-Za-z])|undefined/.test(q.statement), tag + 'clean wording');
+          const gas = q.from === 'L' || q.to === 'L'; ok(!gas || M.GASES.includes(q.formula), tag + 'liters only for real gases');
+          ok(q.check(q.answer.fmt.text.replace(' × 10', 'e').replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]/g, (c) => '0123456789-'['⁰¹²³⁴⁵⁶⁷⁸⁹⁻'.indexOf(c)])).status === 'ok', tag + 'its key answer is accepted');
+        } else if (b.type === 'formula') {
+          ok(q.pool === b.pool && (b.pool === 'half' ? q.mult === 2 : q.mult === 1) && C2.sameFormula(q.engine.empirical, q.empirical) && C2.sameFormula(q.engine.molecular, q.molecular), tag + 'same kind of formula problem (' + q.empirical + ' / ' + q.molecular + ', x' + q.mult + ')');
+          ok(M.checkFormula(q, 'emp', q.empirical).ok && M.checkFormula(q, 'mol', q.molecular).ok, tag + 'key formulas accepted');
+        } else {
+          ok(M.OXIDES.some((o) => o[2] === q.formula) && M.checkLab(q, [String(q.d.fe), String(q.d.oxide), String(q.d.o), q.want.fe.toPrecision(3), q.want.o.toPrecision(3), q.formula]).every((r) => r.ok), tag + 'the lab similar problem has valid data and key');
+          ok(q.d.empty !== b.d.empty || q.d.fe !== b.d.fe, tag + 'new lab numbers');
+        }
+      }
+    }
+  }
+  ok(made > 12000, 'many similar problems checked (' + made + ')');
+  /* a slot can need many similar problems without running out */
+  const base = M.makeSet(31337); let hang = 0; for (let i = 0; i < 13; i++) { try { M.similar(31337, base, i, 25); } catch (e) { hang++; } } ok(hang === 0, 'even 25 similar problems in one slot can be built');
+}
 if (problems.length) { console.error(problems.length + ' of ' + checks + ' checks FAILED:\n  ' + problems.slice(0, 25).join('\n  ')); process.exit(1); }
 console.log('set: all ' + checks + ' checks passed');

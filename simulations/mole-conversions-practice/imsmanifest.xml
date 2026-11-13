@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="mole-conversions-practice" version="1.0"
+  xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"
+  xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.imsproject.org/xsd/imscp_rootv1p1p2 imscp_rootv1p1p2.xsd http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd http://www.adlnet.org/xsd/adlcp_rootv1p2 adlcp_rootv1p2.xsd">
+  <metadata>
+    <schema>ADL SCORM</schema>
+    <schemaversion>1.2</schemaversion>
+  </metadata>
+  <organizations default="mole-practice-org">
+    <organization identifier="mole-practice-org">
+      <title>Mole Conversions Practice</title>
+      <item identifier="mole-practice-item" identifierref="mole-practice-res" isvisible="true">
+        <title>Mole Conversions Practice</title>
+      </item>
+    </organization>
+  </organizations>
+  <resources>
+    <resource identifier="mole-practice-res" type="webcontent" adlcp:scormtype="sco" href="index.html">
+      <file href="index.html"/>
+      <file href="css/base.css"/>
+      <file href="css/practice.css"/>
+      <file href="js/data.js"/>
+      <file href="js/chem.js"/>
+      <file href="js/steps.js"/>
+      <file href="js/problems.js"/>
+      <file href="js/diagrams.js"/>
+      <file href="js/ui.js"/>
+      <file href="js/scorm.js"/>
+      <file href="js/assignment.js"/>
+    </resource>
+  </resources>
+</manifest>

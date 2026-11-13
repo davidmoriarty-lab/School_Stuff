@@ -11,8 +11,6 @@ html { scroll-padding-top: 5.5rem; }
 .wrap { max-width: 60rem; margin: 0 auto; padding: 1rem 1rem 5rem; }
 .intro { margin: .2rem 0 .8rem; }
 .ref { background: var(--panel); border: 1px solid var(--line); border-left: 5px solid var(--accent); border-radius: 12px; padding: .6rem .9rem; }
-.refrow { display: flex; gap: .4rem 1.6rem; flex-wrap: wrap; margin: .2rem 0; }
-.masses { display: flex; flex-wrap: wrap; gap: .3rem .5rem; margin: .35rem 0; } .masses span { border: 1px solid var(--line); border-radius: 8px; padding: .05rem .5rem; background: var(--panel2); font-variant-numeric: tabular-nums; }
 .note { font-size: .85rem; color: var(--muted); margin-top: .3rem; }
 .part { font-size: 1.15rem; margin: 1.4rem 0 .2rem; } .part small { font-weight: 500; color: var(--muted); font-size: .85rem; margin-left: .4rem; }
 .prob { margin: .7rem 0; } .prob.solved { border-color: var(--good); } .prob.revealed { border-color: var(--bad); }

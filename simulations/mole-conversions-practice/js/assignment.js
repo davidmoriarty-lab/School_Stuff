@@ -102,9 +102,9 @@
     $('#setNo').textContent = 'Set #' + st.seed; $('#score').textContent = score() + ' / ' + N + ' correct';
     $('#dots').innerHTML = st.items.map((it, i) => '<button type="button" class="dot ' + it.status + (i === st.cur ? ' here' : '') + '" data-go="' + i + '"' + (i > reach ? ' disabled' : '') + ' aria-label="Problem ' + (i + 1) + ': ' + (it.status === 'solved' ? 'correct' : it.status === 'revealed' ? 'solution shown' : i > reach ? 'locked' : 'not finished') + '"' + (i === st.cur ? ' aria-current="step"' : '') + '>' + (i + 1) + '</button>').join('');
   }
+  /* No constants or atomic masses are given: students use the mole conversion chart in their notes. */
   function reference() {
-    const p = set[st.cur], box = $('#ref'); if (!p) { box.hidden = true; return; } box.hidden = false;
-    box.innerHTML = '<b>Reference</b><div class="refrow"><span>1 mol = <b>6.022 × 10²³</b> particles</span><span>1 mol of gas at STP = <b>22.4 L</b></span></div><div class="masses">' + [...p.elements].sort().map((e) => '<span><b>' + e + '</b> ' + D.ELEMENTS[e].mass.toFixed(2) + '</span>').join('') + '</div><div class="note">Atomic masses in g/mol. Round your answer to the correct significant figures only at the end.</div>';
+    $('#ref').innerHTML = '<b>Remember:</b> you have the <b>mole conversion chart</b> in your notes. Use it to plan each conversion.';
   }
   function results() {
     const first = st.items.filter((it) => it.status === 'solved' && it.tries === 1).length, fin = $('#finish');

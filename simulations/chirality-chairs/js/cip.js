@@ -97,7 +97,7 @@
     br.sort((p, q) => -cmp(p.tree, q.tree).r);
     const ties = []; for (let i = 0; i < 3; i++) if (cmp(br[i].tree, br[i + 1].tree).r === 0) ties.push([i, i + 1]);
     const reasons = []; for (let i = 0; i < 3; i++) { const r = cmp(br[i].tree, br[i + 1].tree); if (r.r !== 0) reasons.push({ upper: i, lower: i + 1, sphere: r.sphere, A: r.A, B: r.B }); }
-    return { groups: br.map((x, i) => ({ priority: i + 1, atom: x.e.j, bond: x.e.bond, label: describe(x.tree), tree: x.tree })), ties, reasons, stereo: ties.length === 0 };
+    return { groups: br.map((x, i) => ({ priority: i + 1, id: x.e.j === null ? 'H0' : x.e.j, atom: x.e.j, bond: x.e.bond, label: describe(x.tree), tree: x.tree })), ties, reasons, stereo: ties.length === 0 };
   }
   function chiralCenters(mol) { const g = graph(mol), out = []; mol.atoms.forEach((a, i) => { const r = rank(mol, i, g); if (r && r.stereo) out.push(i); }); return out; }
   /* why is atom c NOT a center? name the identical groups, e.g. "two hydrogen atoms" */
@@ -132,9 +132,28 @@
     const det = p.x * (q.y * s.z - q.z * s.y) - p.y * (q.x * s.z - q.z * s.x) + p.z * (q.x * s.y - q.y * s.x);
     return { config: det < 0 ? 'R' : 'S', det, lowestZ: d.z, ranking: r, dir: v };
   }
+  /* The groups on carbon c as a student sees them in the pop-up: every drawn neighbor, plus each undrawn hydrogen.
+   * id = the neighbor's atom number, or 'H0', 'H1' for undrawn hydrogens; v = the 3D direction from the picture. */
+  function groups(mol, c, g) {
+    g = g || graph(mol); const nbs = neighbours(g, c), explicit = nbs.filter((e) => e.j !== null), out = [];
+    explicit.forEach((e) => out.push({ id: e.j, atom: e.j, order: e.order, v: vec(mol, c, e) }));
+    const sum = out.reduce((t, x) => ({ x: t.x + x.v.x, y: t.y + x.v.y, z: t.z + x.v.z }), { x: 0, y: 0, z: 0 }), nh = nbs.length - explicit.length;
+    for (let k = 0; k < nh; k++) out.push({ id: 'H' + k, atom: null, order: 1, v: { x: -sum.x / nh, y: -sum.y / nh, z: -sum.z / nh } });
+    return out;
+  }
+  /* R or S for a ranking the STUDENT chose: ids listed from priority 1 to priority 4 */
+  function configFromOrder(mol, c, ids, g) {
+    const gs = groups(mol, c, g || graph(mol)); if (gs.length !== 4 || ids.length !== 4) return null;
+    const byId = {}; gs.forEach((x) => { byId[x.id] = x; }); if (ids.some((id) => !byId[id]) || new Set(ids).size !== 4) return null;
+    const [a, b, cc, d] = ids.map((id) => byId[id].v), sub = (p, q) => ({ x: p.x - q.x, y: p.y - q.y, z: p.z - q.z }), p = sub(a, d), q = sub(b, d), t = sub(cc, d);
+    const det = p.x * (q.y * t.z - q.z * t.y) - p.y * (q.x * t.z - q.z * t.x) + p.z * (q.x * t.y - q.y * t.x);
+    return det < 0 ? 'R' : 'S';
+  }
+  const truthOrder = (mol, c) => { const r = rank(mol, c); return r && r.stereo ? r.groups.map((x) => x.id) : null; };
+
   function allConfigs(mol) { const g = graph(mol), out = {}; chiralCenters(mol).forEach((c) => { out[c] = config(mol, c, g).config; }); return out; }
 
-  const api = { Z, graph, rank, chiralCenters, whyNot, config, allConfigs, describe, neighbours };
+  const api = { Z, graph, rank, chiralCenters, whyNot, config, allConfigs, describe, neighbours, groups, configFromOrder, truthOrder };
   root.Cip = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof self !== 'undefined' ? self : this);

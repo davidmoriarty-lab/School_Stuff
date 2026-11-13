@@ -24,52 +24,94 @@ let SEED = 0; for (let s = 5000; s < 9000 && !SEED; s++) if (SetMod.plan(s)[1].i
   expect((await page.locator('#setNo').innerText()) === 'Set #' + SEED && (await page.locator('.prob').count()) === 1 && (await page.locator('#score').innerText()).startsWith('0 / 12'), 'set number, one problem on screen, 0 / 12');
   expect((await page.locator('.dot:not([disabled])').count()) === 1, 'later problems are locked');
 
-  /* ---------- problem 1: marking centers, wrong answers, the gate, the solution, a similar problem ---------- */
-  const d0 = await ev(() => { const d = ChiralApp.data[0]; return { centers: d.centers, atoms: d.mol.atoms.map((a, i) => [a.el, i]).filter((x) => x[0] === 'C').map((x) => x[1]), name: d.name }; });
-  const notCenter = d0.atoms.find((i) => d0.centers.indexOf(i) < 0), center = d0.centers[0];
+  /* ---------- the pop-up window for one chiral center ---------- */
+  const modal = page.locator('#modal');
+  const modalOpen = async () => !(await modal.getAttribute('hidden') !== null);
+  const slot = (id) => page.locator('.dlg .slot[data-gid="' + id + '"]');
+  const truthInfo = (i) => ev((k) => { const d = ChiralApp.data[k]; return { centers: d.centers, order: d.centers.map((c) => Cip.truthOrder(d.mol, c)), cfg: d.centers.map((c) => d.cfg[c].config), carbons: d.mol.atoms.map((a, j) => [a.el, j]).filter((x) => x[0] === 'C').map((x) => x[1]), name: d.name }; }, i);
+  /* answer one center like a student: open its window, number the groups in order, choose a letter, press Done */
+  async function doCenter(atom, order, letter) {
+    await card.locator('.atom[data-atom="' + atom + '"]').click(); await modal.waitFor({ state: 'visible' });
+    await page.locator('.dlg [data-mact=clear]').click(); for (const id of order) await slot(id).click();
+    await page.locator('[data-mcfg="' + letter + '"]').click(); await page.locator('[data-mact=done]').click(); await modal.waitFor({ state: 'hidden' });
+  }
+  async function solveChiral() {
+    const k = await cur(), t = await truthInfo(k);
+    if (!t.centers.length) await card.locator('[data-none]').check();
+    else for (let n = 0; n < t.centers.length; n++) await doCenter(t.centers[n], t.order[n], t.cfg[n]);
+    await card.locator('[data-act=check]').click();
+  }
+
+  /* ---------- problem 1: windows, wrong answers, the gate, the solution, a similar problem ---------- */
+  const T0 = await truthInfo(0), center = T0.centers[0], notCenter = T0.carbons.find((c) => T0.centers.indexOf(c) < 0);
   expect(await card.locator('[data-act=reveal]').isDisabled() && (await card.locator('.gate').innerText()).includes('after 3 wrong attempts'), 'the solution is locked at first');
-  await card.locator('[data-act=check]').click(); expect((await fb()).includes('Click the chiral centers') && (await tries()) === 0, 'checking with nothing marked asks for an answer (not counted)');
-  await card.locator('.atom[data-atom="' + notCenter + '"]').click(); expect((await card.locator('.crow').count()) === 1 && (await card.locator('.badge').count()) === 1, 'clicking a carbon marks it and adds a row');
-  await card.locator('[data-act=check]').click(); expect((await fb()).includes('Choose R or S') && (await tries()) === 0, 'a marked center without R/S is not checked');
-  await card.locator('[data-cfg="' + notCenter + '"][data-v="R"]').click(); await card.locator('[data-act=check]').click();
-  expect((await fb()).includes('not') && (await fb()).includes('chiral center') && (await card.locator('.mark.no').count()) === 1 && (await tries()) === 1, 'marking a non-center is explained and circled in red (1 wrong try): ' + (await fb()).slice(0, 90));
-  await card.locator('.atom[data-atom="' + notCenter + '"]').click(); expect((await card.locator('.crow').count()) === 0, 'clicking again unmarks it');
-  await card.locator('[data-none]').check(); await card.locator('[data-act=check]').click(); expect((await fb()).includes('does') && (await tries()) === 2, 'claiming "no chiral centers" on a molecule that has one is refused (2 wrong tries)');
-  await card.locator('[data-none]').uncheck(); await card.locator('.atom[data-atom="' + center + '"]').click();
-  const truth0 = await ev(() => ChiralApp.data[0].cfg[ChiralApp.data[0].centers[0]].config), wrong0 = truth0 === 'R' ? 'S' : 'R';
-  await card.locator('[data-cfg="' + center + '"][data-v="' + wrong0 + '"]').click(); await card.locator('[data-act=check]').click();
-  expect((await fb()).includes('wrong') && (await tries()) === 3 && !(await card.locator('[data-act=reveal]').isDisabled()), 'the right center with the wrong letter is refused; after 3 wrong tries the solution unlocks');
-  const nameBefore = await ev(() => ChiralApp.data[0].name);
-  await card.locator('[data-act=reveal]').click();
+  await card.locator('[data-act=check]').click(); expect((await fb()).includes('Click a chiral center') && (await tries()) === 0, 'checking with nothing marked asks for an answer (not counted)');
+  await card.locator('.atom[data-atom="' + center + '"]').click();
+  expect(await modal.isVisible() && (await page.locator('.dlg h3').innerText()) === 'Chiral center 1' && (await page.locator('.dlg .slot').count()) === 4, 'clicking a center opens a window for that center, with its four groups to rank');
+  expect((await page.locator('.dlg .mark.focus').count()) === 1 && (await page.locator('.dlg .slot.on').count()) === 0, 'the window highlights that one carbon and starts with no numbers');
+  await page.locator('[data-mact=done]').click(); expect((await page.locator('.dlg .pc-fb').innerText()).includes('all four groups') && await modal.isVisible(), 'Done is refused until all four groups are numbered');
+  await slot(T0.order[0][0]).click(); await slot(T0.order[0][1]).click();
+  expect((await page.locator('.dlg .slot.on').count()) === 2 && (await slot(T0.order[0][0]).textContent()).trim() === '1' && (await slot(T0.order[0][1]).textContent()).trim() === '2', 'clicking groups numbers them 1, 2 in the order clicked');
+  await slot(T0.order[0][0]).click(); expect((await page.locator('.dlg .slot.on').count()) === 1 && (await slot(T0.order[0][1]).textContent()).trim() === '1', 'clicking a numbered group takes its number off and the rest move up');
+  await page.locator('[data-mact=clear]').click(); expect((await page.locator('.dlg .slot.on').count()) === 0, '"Clear the numbers" removes them all');
+  for (const id of T0.order[0]) await slot(id).click(); await page.locator('[data-mact=done]').click(); expect((await page.locator('.dlg .pc-fb').innerText()).includes('R or S'), 'Done is also refused until R or S is chosen');
+  await page.keyboard.press('Escape'); expect(!(await modal.isVisible()), 'Esc closes the window');
+  expect((await card.locator('.crow').count()) === 1 && (await card.locator('.cstat').innerText()).includes('still needed'), 'the center stays marked in the list, saying it still needs R/S');
+  await card.locator('[data-act=check]').click(); expect((await fb()).includes('Finish chiral center 1') && (await tries()) === 0, 'checking with an unfinished center asks to finish it (not counted)');
+  await card.locator('[data-remove="' + center + '"]').click(); expect((await card.locator('.crow').count()) === 0, 'the ✕ button takes a center off the list');
+  /* a carbon that is not a chiral center: it has four groups, so the window opens; the check explains why it is not */
+  await card.locator('.atom[data-atom="' + notCenter + '"]').click(); const gs = await ev((a) => Cip.groups(ChiralApp.data[0].mol, a).length, notCenter);
+  if (gs === 4) { const ng = await ev((a) => Cip.groups(ChiralApp.data[0].mol, a).map((x) => x.id), notCenter); for (const id of ng) await slot(id).click(); await page.locator('[data-mcfg="R"]').click(); await page.locator('[data-mact=done]').click(); await card.locator('[data-act=check]').click();
+    expect((await fb()).includes('not') && (await fb()).includes('chiral center') && (await card.locator('.mark.no').count()) === 1 && (await tries()) === 1, 'numbering a carbon that is not a chiral center is explained and circled in red (1 wrong try): ' + (await fb()).slice(0, 90)); await card.locator('[data-remove="' + notCenter + '"]').click(); }
+  else { await page.locator('[data-mact=remove]').click(); }
+  const t1 = await tries(); await card.locator('[data-none]').check(); await card.locator('[data-act=check]').click(); expect((await fb()).includes('does') && (await tries()) === t1 + 1, 'claiming "no chiral centers" on a molecule that has one is refused');
+  await card.locator('[data-none]').uncheck();
+  /* the right center and the right priorities, but the wrong letter */
+  const wrong0 = T0.cfg[0] === 'R' ? 'S' : 'R'; await doCenter(center, T0.order[0], wrong0); await card.locator('[data-act=check]').click();
+  expect((await fb()).includes('R/S is wrong') && (await tries()) === 3 && !(await card.locator('[data-act=reveal]').isDisabled()), 'right priorities with the wrong letter: "R/S is wrong"; after 3 wrong tries the solution unlocks');
+  const nameBefore = T0.name; await card.locator('[data-act=reveal]').click();
   expect((await card.getAttribute('class')).includes('shown') && (await card.locator('.ptag').innerText()).includes('does not count') && (await card.locator('[data-act=next]').count()) === 0 && (await card.locator('.why').count()) === 1, 'showing the solution: marked "does not count", only "Try a similar problem", with the explanation');
-  expect((await card.locator('.prio').count()) === 4 * d0.centers.length && (await card.locator('.why li').count()) >= 4, 'the drawing shows the priority numbers 1-4 for each center, and the explanation lists them');
+  expect((await card.locator('.prio').count()) === 4 && (await card.locator('.why li').count()) >= 4, 'the drawing shows the priority numbers 1-4 and the explanation lists them');
   expect((await page.locator('#score').innerText()).startsWith('0 / 12') && (await page.locator('.dot.shown').count()) === 1, 'it is not counted');
   await card.locator('[data-act=retry]').click();
   const nameAfter = await ev(() => ChiralApp.data[0].name); expect(nameAfter !== nameBefore && (await card.locator('.similar').count()) === 1 && (await cur()) === 0, 'a similar problem (' + nameAfter + ') replaces ' + nameBefore + ' in spot 1');
-
-  /* a helper that answers the chirality problem on screen by clicking, like a student */
-  async function solveChiral() {
-    const d = await ev(() => { const i = ChiralApp.state.cur, d = ChiralApp.data[i]; return { centers: d.centers, cfg: d.centers.map((c) => d.cfg[c].config) }; });
-    if (!d.centers.length) await card.locator('[data-none]').check();
-    else for (let k = 0; k < d.centers.length; k++) { await card.locator('.atom[data-atom="' + d.centers[k] + '"]').click(); await card.locator('[data-cfg="' + d.centers[k] + '"][data-v="' + d.cfg[k] + '"]').click(); }
-    await card.locator('[data-act=check]').click();
-  }
-  await solveChiral(); expect((await card.getAttribute('class')).includes('solved') && (await card.locator('.ptag').innerText()).includes('correct') && (await card.locator('.mark.ok').count()) >= 1, 'the similar problem, answered by clicking, is correct');
+  await solveChiral(); expect((await card.getAttribute('class')).includes('solved') && (await card.locator('.ptag').innerText()).includes('correct') && (await card.locator('.mark.ok').count()) >= 1, 'the similar problem, answered through the window, is correct');
   await card.locator('[data-act=next]').click();
 
   /* ---------- problem 2: no chiral centers ---------- */
   expect((await ev(() => ChiralApp.data[1].centers.length)) === 0, 'problem 2 is the molecule with no chiral centers');
-  const c2 = await ev(() => ChiralApp.data[1].mol.atoms.map((a, i) => [a.el, i]).filter((x) => x[0] === 'C')[2][1]);
-  await card.locator('.atom[data-atom="' + c2 + '"]').click(); await card.locator('[data-cfg="' + c2 + '"][data-v="S"]').click(); await card.locator('[data-act=check]').click();
-  expect((await fb()).includes('two') && (await fb()).includes('identical') || (await fb()).includes('hydrogen'), 'carbon with two identical groups: explained (' + (await fb()).slice(0, 80) + ')');
-  await card.locator('.atom[data-atom="' + c2 + '"]').click(); await card.locator('[data-none]').check();
-  await card.locator('.atom[data-atom="' + c2 + '"]').click(); expect(!(await card.locator('[data-none]').isChecked()) || true, 'marking an atom while "none" is ticked');
-  await card.locator('.atom[data-atom="' + c2 + '"]').click(); await card.locator('[data-none]').check(); expect((await card.locator('.crow').count()) === 0, 'ticking "no chiral centers" clears the marks');
+  const T1 = await truthInfo(1), c2 = T1.carbons[2];
+  await card.locator('.atom[data-atom="' + c2 + '"]').click(); const g2 = await ev((a) => Cip.groups(ChiralApp.data[1].mol, a).map((x) => x.id), c2);
+  for (const id of g2) await slot(id).click(); await page.locator('[data-mcfg="S"]').click(); await page.locator('[data-mact=done]').click(); await card.locator('[data-act=check]').click();
+  expect((await fb()).includes('two') && ((await fb()).includes('identical') || (await fb()).includes('hydrogen')), 'a carbon with two identical groups: explained (' + (await fb()).slice(0, 80) + ')');
+  await card.locator('[data-remove="' + c2 + '"]').click(); await card.locator('[data-none]').check(); expect((await card.locator('.crow').count()) === 0, 'ticking "no chiral centers" with nothing marked');
   await card.locator('[data-act=check]').click(); expect((await card.getAttribute('class')).includes('solved') && (await page.locator('#score').innerText()).startsWith('2 / 12'), '"no chiral centers" is correct here: 2 / 12');
   await card.locator('[data-act=next]').click();
 
-  /* ---------- problems 3-8: every molecule, answered by clicking ---------- */
-  for (let i = 2; i < 8; i++) { expect((await cur()) === i, 'on problem ' + (i + 1)); await solveChiral(); expect((await card.getAttribute('class')).includes('solved'), 'problem ' + (i + 1) + ' (' + (await ev((k) => ChiralApp.data[k].name, i)) + ') is solved by clicking its real centers'); await card.locator('[data-act=next]').click(); }
+  /* ---------- problem 3: a carbon with a double bond, wrong priorities, a letter that disagrees with them ---------- */
+  { const k = await cur(), t = await truthInfo(k), sp2 = await ev((i) => { const m = ChiralApp.data[i].mol; return m.atoms.map((a, j) => [a, j]).filter(([a, j]) => a.el === 'C' && Cip.groups(m, j).some((x) => x.order > 1)).map((x) => x[1])[0]; }, k);
+    if (sp2 !== undefined) { await card.locator('.atom[data-atom="' + sp2 + '"]').click(); expect((await page.locator('.dlg').innerText()).includes('does not have four single-bonded groups') && (await page.locator('.dlg .slot').count()) === 0, 'a carbon with a double bond: the window says it cannot be a chiral center'); await page.locator('[data-mact=remove]').click(); expect((await card.locator('.crow').count()) === 0 && !(await modal.isVisible()), '"Take my mark off" removes it'); }
+    const c = t.centers[0], bad = t.order[0].slice(); [bad[0], bad[1]] = [bad[1], bad[0]];
+    const own = await ev(([a, o, i]) => Cip.configFromOrder(ChiralApp.data[i].mol, a, o), [c, bad, k]);
+    await doCenter(c, bad, own === 'R' ? 'S' : 'R'); await card.locator('[data-act=check]').click();
+    expect((await fb()).includes('priority order') && (await fb()).includes('does not match the order you numbered') && (await tries()) === 1, 'wrong priorities plus a letter that does not match them: both are pointed out');
+    await doCenter(c, bad, own); await card.locator('[data-act=check]').click(); expect((await fb()).includes('priority order') && !(await fb()).includes('does not match') && (await tries()) === 2, 'wrong priorities with a consistent letter: only the priority order is flagged (and the answer is not revealed)');
+    await card.locator('[data-edit="' + c + '"]').click(); expect((await page.locator('.dlg .slot.on').count()) === 4 && (await modal.isVisible()), '"Edit" reopens the window with the numbers still there'); await page.keyboard.press('Escape'); }
+  await solveChiral(); expect((await card.getAttribute('class')).includes('solved'), 'problem 3 is solved once the priorities and letter are right'); await card.locator('[data-act=next]').click();
+
+  /* ---------- problems 4-8, including two chiral centers side by side ---------- */
+  for (let i = 3; i < 8; i++) {
+    expect((await cur()) === i, 'on problem ' + (i + 1)); const t = await truthInfo(i);
+    if (t.centers.length > 1) {
+      await card.locator('.atom[data-atom="' + t.centers[0] + '"]').click(); for (const id of t.order[0]) await slot(id).click(); await page.locator('[data-mcfg="' + t.cfg[0] + '"]').click(); await page.locator('[data-mact=done]').click();
+      await card.locator('.atom[data-atom="' + t.centers[1] + '"]').click();
+      expect((await page.locator('.dlg h3').innerText()) === 'Chiral center 2' && (await page.locator('.dlg .slot.on').count()) === 0 && (await page.locator('.dlg .slot').count()) === 4 && (await page.locator('.dlg .mark.focus').count()) === 1, 'side-by-side centers: center 2 opens its OWN window, with only its four groups and none of center 1’s numbers (' + t.name + ')');
+      await page.keyboard.press('Escape'); expect((await card.locator('.crow').count()) === 2, 'both centers are listed separately');
+    }
+    await solveChiral(); expect((await card.getAttribute('class')).includes('solved'), 'problem ' + (i + 1) + ' (' + t.name + ') is solved through the windows');
+    if (t.centers.length > 1) { expect((await card.locator('.ctabs button').count()) === t.centers.length && (await card.locator('.prio').count()) === 4, 'the solution shows ONE center’s priorities at a time (4 numbers), with a tab per center'); await card.locator('.ctabs button').nth(1).click(); expect((await card.locator('.prio').count()) === 4 && (await card.locator('.ctabs button[aria-pressed=true]').innerText()) === 'Center 2', 'switching tabs shows the other center’s numbers'); }
+    await card.locator('[data-act=next]').click();
+  }
 
   /* ---------- the chair problems ---------- */
   const spotCircle = (k, type) => page.locator('.board.live .spot[data-k="' + k + '"][data-type="' + type + '"] circle.ring');

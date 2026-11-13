@@ -16,7 +16,8 @@
     const spanX = Math.max.apply(null, A.map((a) => a.x)) - Math.min.apply(null, A.map((a) => a.x)), spanY = Math.max.apply(null, A.map((a) => a.y)) - Math.min.apply(null, A.map((a) => a.y));
     const L = Math.max(46, Math.min(72, 380 / Math.max(spanX, spanY * 1.3, 2.5)));   // small molecules are drawn larger
     const xs = A.map((a) => a.x * L), ys = A.map((a) => a.y * L);
-    const x0 = Math.min.apply(null, xs) - PAD, y0 = Math.min.apply(null, ys) - PAD, W = Math.max.apply(null, xs) - x0 + PAD, H = Math.max.apply(null, ys) - y0 + PAD;
+    const pad = o.slots || (o.priorities && o.priorities.length) ? 78 : PAD;   // room for the numbered slots and the hydrogen labels
+    const x0 = Math.min.apply(null, xs) - pad, y0 = Math.min.apply(null, ys) - pad, W = Math.max.apply(null, xs) - x0 + pad, H = Math.max.apply(null, ys) - y0 + pad;
     const P = A.map((a, i) => ({ x: xs[i] - x0, y: ys[i] - y0 }));
     const labeled = (i) => A[i].el !== 'C';
     const dirTo = (i, j) => { const dx = P[j].x - P[i].x, dy = P[j].y - P[i].y, d = Math.hypot(dx, dy) || 1; return { x: dx / d, y: dy / d, d }; };
@@ -40,6 +41,14 @@
       } else if (b.order === 3) { s += line(p1, p2) + line({ x: p1.x + nx * 3.6, y: p1.y + ny * 3.6 }, { x: p2.x + nx * 3.6, y: p2.y + ny * 3.6 }) + line({ x: p1.x - nx * 3.6, y: p1.y - ny * 3.6 }, { x: p2.x - nx * 3.6, y: p2.y - ny * 3.6 }); }
       else s += line(p1, p2);
     });
+    /* Where to put an undrawn hydrogen's label around center c: the direction it really points if that is clear of the
+     * drawn bonds, otherwise the emptiest direction (so labels never sit on top of each other). */
+    const freeDir = (c, want, taken) => {
+      const ang = (x, y) => Math.atan2(y, x), diff = (a, b) => { let d = Math.abs(a - b) % (2 * Math.PI); return Math.min(d, 2 * Math.PI - d); };
+      const used = g.nb[c].map((e) => ang(P[e.j].x - P[c].x, P[e.j].y - P[c].y)).concat(taken), sep = (a) => Math.min.apply(null, used.map((u) => diff(a, u)).concat([Math.PI]));
+      if (want) { const w = ang(want.x, want.y); if (sep(w) > 0.75) return w; }
+      let best = 0, bs = -1; for (let k = 0; k < 72; k++) { const a = k * Math.PI / 36, sc = sep(a); if (sc > bs + 1e-9) { bs = sc; best = a; } } return best;
+    };
     /* heteroatom labels, with their hydrogens on the side away from the bond */
     A.forEach((a, i) => {
       if (a.el === 'C') return; const h = g.hs[i], nbs = g.nb[i]; let leftward = false;
@@ -53,12 +62,26 @@
     let overlay = '';
     if (o.interactive) A.forEach((a, i) => { if (a.el === 'C') overlay += '<circle class="atom" data-atom="' + i + '" cx="' + f(P[i].x) + '" cy="' + f(P[i].y) + '" r="15" tabindex="0" role="button" aria-label="carbon atom ' + (i + 1) + '"/>'; });
     (o.marks || []).forEach((m, n) => { const i = m.atom, bad = m.state; overlay += '<circle class="mark ' + (bad || '') + '" cx="' + f(P[i].x) + '" cy="' + f(P[i].y) + '" r="14"/><g class="badge ' + (bad || '') + '"><circle cx="' + f(P[i].x + 15) + '" cy="' + f(P[i].y - 15) + '" r="9"/><text x="' + f(P[i].x + 15) + '" y="' + f(P[i].y - 11.5) + '" text-anchor="middle" font-size="11" font-weight="700">' + (n + 1) + '</text></g>'; });
+    if (o.focus !== undefined) overlay += '<circle class="mark focus" cx="' + f(P[o.focus].x) + '" cy="' + f(P[o.focus].y) + '" r="15"/>';
+    if (o.slots) {   // the four groups on one center, each a button that gets a number when clicked
+      const c = o.slots.center, gs = Cip.groups(mol, c, g), usedH = []; let hi = 0;
+      gs.forEach((gr) => {
+        const n = o.slots.nums[gr.id]; let q, extra = '';
+        if (gr.atom !== null) { const u = dirTo(c, gr.atom), far = u.d + (labeled(gr.atom) ? 22 : 19); q = { x: P[c].x + u.x * far, y: P[c].y + u.y * far }; }
+        else {
+          const hx = gr.v.x, hy = -gr.v.y, d = Math.hypot(hx, hy), ang = freeDir(c, d < 0.2 ? null : { x: hx, y: hy }, usedH); usedH.push(ang); hi++;
+          q = { x: P[c].x + Math.cos(ang) * 40, y: P[c].y + Math.sin(ang) * 40 }; extra = '<text x="' + f(q.x + Math.cos(ang) * 25) + '" y="' + f(q.y + Math.sin(ang) * 25 + 5) + '" text-anchor="middle" font-size="15" font-weight="600" fill="#6b7a88">H</text>';
+        }
+        overlay += extra + '<g class="slot' + (n ? ' on' : '') + '" data-gid="' + gr.id + '" tabindex="0" role="button" aria-label="' + (gr.atom === null ? 'hydrogen that is not drawn' : A[gr.atom].el + ' group') + (n ? ', priority ' + n : '') + '"><circle cx="' + f(q.x) + '" cy="' + f(q.y) + '" r="13"/><text x="' + f(q.x) + '" y="' + f(q.y + 5) + '" text-anchor="middle" font-size="14" font-weight="800">' + (n || '') + '</text></g>';
+      });
+    }
     (o.priorities || []).forEach((pr) => {   // { center, groups:[{priority, atom}], hdir }
       const badge = (x, y, n) => '<g class="prio p' + n + '"><circle cx="' + f(x) + '" cy="' + f(y) + '" r="9"/><text x="' + f(x) + '" y="' + f(y + 4) + '" text-anchor="middle" font-size="11.5" font-weight="700">' + n + '</text></g>';
+      const usedP = [];
       pr.groups.forEach((gr) => {
         if (gr.atom === null) {   // an undrawn hydrogen: show it where it points, with its number
-          const hd = pr.hdir || { x: 0.7, y: -0.7 }, d = Math.hypot(hd.x, hd.y) || 1, ux = d < 0.2 ? 0.7 : hd.x / d, uy = d < 0.2 ? -0.7 : hd.y / d, qx = P[pr.center].x + ux * 30, qy = P[pr.center].y + uy * 30;
-          overlay += '<text x="' + f(qx + (ux >= 0 ? 15 : -15)) + '" y="' + f(qy + 5) + '" text-anchor="middle" font-size="14" font-weight="600" fill="#6b7a88">H</text>' + badge(qx, qy, gr.priority);
+          const hd = pr.hdir || { x: 0, y: 0 }, d = Math.hypot(hd.x, hd.y), ang = freeDir(pr.center, d < 0.2 ? null : hd, usedP), ux = Math.cos(ang), uy = Math.sin(ang), qx = P[pr.center].x + ux * 30, qy = P[pr.center].y + uy * 30; usedP.push(ang);
+          overlay += '<text x="' + f(qx + ux * 17) + '" y="' + f(qy + uy * 17 + 5) + '" text-anchor="middle" font-size="14" font-weight="600" fill="#6b7a88">H</text>' + badge(qx, qy, gr.priority);
         } else { const u = dirTo(pr.center, gr.atom), far = u.d + (labeled(gr.atom) ? 18 : 15); overlay += badge(P[pr.center].x + u.x * far, P[pr.center].y + u.y * far, gr.priority); }
       });
     });

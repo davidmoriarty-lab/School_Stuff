@@ -78,5 +78,46 @@ for (const flip of [1, -1]) {
 /* flipping changes which carbons are up: the first chair has carbon 0 up, the flipped chair has it down */
 ok(Chair.carbonSide(0, 1) === 1 && Chair.carbonSide(0, -1) === -1 && Chair.faceOf(0, 'ax', 1) === 1 && Chair.faceOf(0, 'eq', 1) === -1, 'carbon 0: axial up, equatorial down in chair A; reversed in chair B');
 
+/* ---------- an independent check, straight from 3D coordinates ----------
+ * The checker above uses a rule ("axial points the way its carbon points"). Here we rebuild the same answers from real
+ * 3D geometry instead, without using that rule: carbon positions, bond direction vectors, and the sign of each vector's
+ * height above the ring's middle plane. If the rule and the geometry ever disagreed, these would fail. */
+const sub3 = (a, b) => ({ x: a.x - b.x, y: a.y - b.y, z: a.z - b.z }), cross = (a, b) => ({ x: a.y * b.z - a.z * b.y, y: a.z * b.x - a.x * b.z, z: a.x * b.y - a.y * b.x }), len3 = (a) => Math.hypot(a.x, a.y, a.z), dot3 = (a, b) => a.x * b.x + a.y * b.y + a.z * b.z;
+for (const flip of [1, -1]) {
+  const g = Chair.geometry(flip, {}), P = g.p3, tag = ' (chair ' + (flip === 1 ? 'A' : 'B') + ')';
+  for (let k = 0; k < 6; k++) {
+    const v = g.vectors[k], z = Math.sign(P[k].z);
+    ok(Math.abs(P[k].z) > 0.05 && z === Chair.carbonSide(k, flip), 'carbon ' + k + ' sits above/below the ring plane exactly as the rule says' + tag);
+    ok(v.ax.x === 0 && v.ax.y === 0 && v.ax.z === z, 'carbon ' + k + ': the axial bond is vertical and points away from the middle plane, on its carbon’s side' + tag);
+    ok(Math.sign(v.eq.z) === -z, 'carbon ' + k + ': the equatorial bond tilts to the OPPOSITE side from the axial bond (z ' + v.eq.z.toFixed(2) + ')' + tag);
+    const radial = { x: P[k].x, y: P[k].y, z: 0 }; ok(dot3({ x: v.eq.x, y: v.eq.y, z: 0 }, radial) > 0.3, 'carbon ' + k + ': the equatorial bond points outward, away from the ring' + tag);
+    // the textbook picture: an equatorial bond is parallel to the two ring bonds one step away on either side
+    for (const [a, b] of [[(k + 1) % 6, (k + 2) % 6], [(k + 5) % 6, (k + 4) % 6]]) { const bond = sub3(P[b], P[a]); ok(len3(cross(v.eq, bond)) / (len3(v.eq) * len3(bond)) < 1e-9, 'carbon ' + k + ': the equatorial bond is parallel to ring bond ' + a + '-' + b + tag); }
+    // the angle between the axial and equatorial bond on a carbon is the tetrahedral-ish angle, not 0 or 180
+    const ang = Math.acos(dot3(v.ax, v.eq) / (len3(v.ax) * len3(v.eq))) * 180 / Math.PI; ok(ang > 90 && ang < 125, 'carbon ' + k + ': axial/equatorial angle looks tetrahedral (' + ang.toFixed(0) + ' degrees)' + tag);
+  }
+}
+/* the oracle: same question, answered from the 3D vectors */
+function oracleOk(target, placed, flip, prevTypes) {
+  const g = Chair.geometry(flip, {}), face = (pl) => Math.sign(g.vectors[pl.k][pl.type].z), subs = target.subs;
+  const ks = subs.map((s) => placed[s.id].k); if (new Set(ks).size !== ks.length) return false;
+  const dist = (a, b) => { const d = Math.abs(a - b); return Math.min(d, 6 - d); };
+  for (let i = 0; i < subs.length; i++) for (let j = i + 1; j < subs.length; j++) { if (dist(subs[i].c, subs[j].c) !== dist(placed[subs[i].id].k, placed[subs[j].id].k)) return false; if ((subs[i].face === subs[j].face) !== (face(placed[subs[i].id]) === face(placed[subs[j].id]))) return false; }
+  if (prevTypes) for (const s of subs) if (placed[s.id].type === prevTypes[s.id]) return false;
+  return true;
+}
+{ const rng = seeded(99); let compared = 0, accepted = 0;
+  for (const pat of ['p12', 'p13', 'p14', 'tri']) for (let n = 0; n < 40; n++) {
+    let t = Chair.makeTarget(rng, pat); t = { subs: t.subs.map((s, i) => Object.assign({}, s, { group: 'G' + i })) };   // all groups different, so no swapping to consider
+    for (const flip of [1, -1]) {
+      const prev = flip === -1 ? Chair.typesOf(Chair.solve(t, 1)) : undefined, positions = []; for (let k = 0; k < 6; k++) for (const type of ['ax', 'eq']) positions.push({ k, type });
+      const pick = (i, cur) => { if (i === t.subs.length) { const placed = {}; t.subs.forEach((s, j) => { placed[s.id] = cur[j]; }); const a = Chair.check(t, placed, flip, prev).ok, b = oracleOk(t, placed, flip, prev); compared++; if (a) accepted++; ok(a === b, pat + ' ' + JSON.stringify(t.subs.map((s) => [s.c, s.face])) + ' flip ' + flip + ': the checker and the 3D oracle disagree on ' + JSON.stringify(cur)); return; } positions.forEach((pos) => { if (cur.some((c) => c.k === pos.k)) return; pick(i + 1, cur.concat([pos])); }); };
+      pick(0, []);
+    }
+  }
+  ok(compared > 100000 && accepted > 500, 'compared the checker with the 3D oracle on ' + compared + ' placements (' + accepted + ' accepted)'); }
+/* the checker never accepts a placement the oracle rejects when two groups are identical either (swapping allowed) */
+{ const t = { subs: [{ id: 'a', group: 'X', c: 0, face: 1 }, { id: 'b', group: 'X', c: 2, face: -1 }] }; let both = 0; for (let k1 = 0; k1 < 6; k1++) for (let k2 = 0; k2 < 6; k2++) for (const t1 of ['ax', 'eq']) for (const t2 of ['ax', 'eq']) { if (k1 === k2) continue; const pl = { a: { k: k1, type: t1 }, b: { k: k2, type: t2 } }, sw = { a: pl.b, b: pl.a }; ok(Chair.check(t, pl, 1).ok === Chair.check(t, sw, 1).ok, 'identical groups: swapping the two chips never changes the verdict'); both += Chair.check(t, pl, 1).ok ? 1 : 0; } ok(both > 0, 'identical groups: some placements are accepted'); }
+
 if (problems.length) { console.error(problems.length + ' of ' + checks + ' checks FAILED:\n  ' + problems.slice(0, 30).join('\n  ')); process.exit(1); }
 console.log('chair: all ' + checks + ' checks passed');

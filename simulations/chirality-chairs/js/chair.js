@@ -121,7 +121,8 @@
       return { k, ax: proj(ax), eq: proj(eq), axFace: faceOf(k, 'ax', flip), eqFace: faceOf(k, 'eq', flip) };
     });
     const bonds = []; for (let k = 0; k < 6; k++) { const a = carbons[k], b = carbons[(k + 1) % 6]; bonds.push({ a: k, b: (k + 1) % 6, depth: (a.depth + b.depth) / 2 }); }
-    return { carbons, lines, bonds };
+    const vectors = P.map((pt, k) => ({ k, ax: { x: 0, y: 0, z: Math.sign(pt.z) }, eq: E[k] }));   // 3D directions of the two bonds on each carbon
+    return { carbons, lines, bonds, p3: P, vectors };
   }
 
   const api = { carbonSide, faceOf, ringDist, check, solve, typesOf, explain, makeTarget, describe, geometry, GROUPS, PATTERNS, SIDE };

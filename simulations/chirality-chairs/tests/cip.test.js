@@ -105,5 +105,22 @@ for (const p of Mol.POOL) {
 /* the explanation text */
 { const r = Cip.config(Mol.byId.alanine.mol, 1).ranking; ok(r.groups.map((g) => g.label).join(' ') === 'N(H,H) C(O,O,(O)) C(H,H,H) H', 'alanine priorities: ' + r.groups.map((g) => g.label).join(' ')); }
 
+/* ---------- 5. R/S from a ranking the student chose ---------- */
+for (const p of Mol.POOL) {
+  const g = Cip.graph(p.mol);
+  for (const c of Cip.chiralCenters(p.mol)) {
+    const ord = Cip.truthOrder(p.mol, c), real = Cip.config(p.mol, c, g).config;
+    ok(ord.length === 4 && new Set(ord).size === 4, p.name + ' center ' + c + ': four distinct groups in the true order');
+    ok(Cip.configFromOrder(p.mol, c, ord, g) === real, p.name + ' center ' + c + ': the true order gives the true letter');
+    // swapping any two neighbours in the ranking reverses the letter (a basic fact about R/S)
+    for (let i = 0; i < 4; i++) for (let j = i + 1; j < 4; j++) { const sw = ord.slice(); [sw[i], sw[j]] = [sw[j], sw[i]]; ok(Cip.configFromOrder(p.mol, c, sw, g) === (real === 'R' ? 'S' : 'R'), p.name + ' center ' + c + ': swapping ranks ' + (i + 1) + ' and ' + (j + 1) + ' reverses R/S'); }
+    // a cyclic rotation of the top three leaves the letter alone
+    ok(Cip.configFromOrder(p.mol, c, [ord[1], ord[2], ord[0], ord[3]], g) === real, p.name + ' center ' + c + ': rotating the top three groups keeps the letter');
+    const gs = Cip.groups(p.mol, c, g); ok(gs.length === 4 && gs.filter((x) => x.atom === null).length <= 1, p.name + ' center ' + c + ': the pop-up shows four groups');
+  }
+}
+ok(Cip.configFromOrder(Mol.byId.butan2ol.mol, 1, [1, 1, 1, 1]) === null, 'a ranking that repeats a group is not accepted');
+ok(Cip.groups(Mol.byId.butan2ol.mol, 0).length === 4 && Cip.groups(Mol.byId.butan2ol.mol, 0).filter((x) => x.atom === null).length === 3, 'a CH3 carbon shows its three undrawn hydrogens');
+
 if (problems.length) { console.error(problems.length + ' of ' + checks + ' checks FAILED:\n  ' + problems.slice(0, 40).join('\n  ')); process.exit(1); }
 console.log('cip: all ' + checks + ' checks passed');

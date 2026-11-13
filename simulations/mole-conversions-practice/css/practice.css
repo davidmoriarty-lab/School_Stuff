@@ -3,8 +3,8 @@ html { scroll-padding-top: 5.5rem; }
 .bar { position: sticky; top: 0; z-index: 20; background: var(--panel); border-bottom: 1px solid var(--line); box-shadow: var(--shadow); }
 .bar-in { max-width: 60rem; margin: 0 auto; padding: .5rem 1rem; display: flex; align-items: center; gap: .8rem 1.2rem; flex-wrap: wrap; }
 .ttl h1 { margin: 0; font-size: 1.15rem; line-height: 1.2; } .setno { font-size: .8rem; color: var(--muted); font-weight: 600; }
-.dots { display: flex; gap: .3rem; flex: 1; justify-content: center; flex-wrap: wrap; }
-.dot { cursor: pointer; font: inherit; width: 1.9rem; height: 1.9rem; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: .9rem; text-decoration: none; color: var(--ink2); border: 2px solid var(--line); background: var(--panel2); }
+.dots { display: flex; gap: .22rem; flex: 1; justify-content: center; flex-wrap: wrap; }
+.dot { cursor: pointer; font: inherit; width: 1.7rem; height: 1.7rem; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: .82rem; text-decoration: none; color: var(--ink2); border: 2px solid var(--line); background: var(--panel2); }
 .dot:disabled { opacity: .4; cursor: not-allowed; } .dot.here { outline: 3px solid var(--accent); outline-offset: 2px; }
 .dot.solved { background: var(--good); border-color: var(--good); color: #fff; } .dot.revealed { background: var(--bad); border-color: var(--bad); color: #fff; }
 .right { display: flex; align-items: center; gap: .7rem; } .bar .score { font-weight: 800; font-size: 1rem; color: var(--ink); margin: 0; }

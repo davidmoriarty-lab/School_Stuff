@@ -12,6 +12,7 @@ Guided notes for the courses, as Word documents, with the code that builds the h
 | `Honors Chemistry/_packet_builder/` | The Python scripts that build a packet (`lib.py` helpers, `make.py` and `build_gases.py` for Gases, `make_moles.py`, `build_moles.py` and `figs_moles.py` for Moles, `figs.py` for the figures, `img/` for the images). They use the Unit 5 packet as a template and compute every answer in code. Needs python-docx, Pillow, NumPy and Matplotlib. |
 | `Honors Chemistry/PDF Sources/` | The topic homework PDFs the packets follow. |
 | `Honors Chemistry/Nomenclature/` | Nomenclature notes. |
+| `AP Chemistry/Acids Bases and Buffers/` | Answer key with explanations for the Acid–Base and Buffer sample test (20 multiple choice, 5 free response), written the way College Board scoring guidelines expect, with suggested points, common errors and model sketches. Built by `_build/make_answer_key.py`. |
 | `AP Chemistry/Equilibrium/` | Equilibrium guided notes (student and key), a notes outline, ICE tables and K, and Le Chatelier's principle. |
 
 **This repository is public.** The teacher editions and keys are readable by anyone who finds them. If the packets are meant to be seen

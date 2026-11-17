@@ -24,7 +24,7 @@ M_H2O = mm("H2O")
 # ------------------------------------------------------------------ the three versions
 VERSIONS = [
     dict(ver="A",
-         metal="chromium", sym="Cr", oxide="Cr₂O₃", sub=(2, 3), crucible=21.35, m_metal=1.50,
+         metal="chromium", sym="Cr", oxide="Cr₂O₃", sub=(2, 3), crucible=21.35, m_metal=1.50, metal_given=True,
          eq="4 Cr + 3 O₂ → 2 Cr₂O₃",
          salt="barium chloride", salt_f="BaCl₂", salt_mm=mm("BaCl2"), x=2, hyd_name="barium chloride dihydrate",
          hyd_f="BaCl₂ · xH₂O", hyd_c=23.88, m_hyd=3.00,
@@ -32,7 +32,7 @@ VERSIONS = [
          err_dir="low",
          err_why="Less water was driven off, so the measured mass of water lost is too small and the mass left (counted as BaCl₂) is too large. Moles of water ÷ moles of BaCl₂ then comes out too small, so x is too low."),
     dict(ver="B",
-         metal="vanadium", sym="V", oxide="V₂O₅", sub=(2, 5), crucible=19.87, m_metal=1.20,
+         metal="vanadium", sym="V", oxide="V₂O₅", sub=(2, 5), crucible=19.87, m_metal=1.20, metal_given=True,
          eq="4 V + 5 O₂ → 2 V₂O₅",
          salt="magnesium sulfate", salt_f="MgSO₄", salt_mm=mm("MgSO4"), x=7, hyd_name="magnesium sulfate heptahydrate",
          hyd_f="MgSO₄ · xH₂O", hyd_c=22.46, m_hyd=3.00,

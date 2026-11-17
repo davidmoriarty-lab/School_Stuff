@@ -24,7 +24,7 @@ M_H2O = mm("H2O")
 # ------------------------------------------------------------------ the three versions
 VERSIONS = [
     dict(ver="A",
-         metal="chromium", sym="Cr", oxide="Cr₂O₃", sub=(2, 3), crucible=21.35, m_metal=1.50,
+         metal="chromium", sym="Cr", oxide="Cr₂O₃", sub=(2, 3), crucible=21.35, m_metal=1.50, metal_given=True,
          eq="4 Cr + 3 O₂ → 2 Cr₂O₃",
          salt="barium chloride", salt_f="BaCl₂", salt_mm=mm("BaCl2"), x=2, hyd_name="barium chloride dihydrate",
          hyd_f="BaCl₂ · xH₂O", hyd_c=23.88, m_hyd=3.00,
@@ -32,7 +32,7 @@ VERSIONS = [
          err_dir="low",
          err_why="Less water was driven off, so the measured mass of water lost is too small and the mass left (counted as BaCl₂) is too large. Moles of water ÷ moles of BaCl₂ then comes out too small, so x is too low."),
     dict(ver="B",
-         metal="vanadium", sym="V", oxide="V₂O₅", sub=(2, 5), crucible=19.87, m_metal=1.20,
+         metal="vanadium", sym="V", oxide="V₂O₅", sub=(2, 5), crucible=19.87, m_metal=1.20, metal_given=True,
          eq="4 V + 5 O₂ → 2 V₂O₅",
          salt="magnesium sulfate", salt_f="MgSO₄", salt_mm=mm("MgSO4"), x=7, hyd_name="magnesium sulfate heptahydrate",
          hyd_f="MgSO₄ · xH₂O", hyd_c=22.46, m_hyd=3.00,
@@ -40,7 +40,7 @@ VERSIONS = [
          err_dir="low",
          err_why="The final mass is too large, so the calculated mass of water lost is too small and the calculated mass of MgSO₄ is too large. Moles of water ÷ moles of MgSO₄ then comes out too small, so x is too low."),
     dict(ver="C",
-         metal="manganese", sym="Mn", oxide="Mn₃O₄", sub=(3, 4), crucible=20.64, m_metal=1.50,
+         metal="manganese", sym="Mn", oxide="Mn₃O₄", sub=(3, 4), crucible=20.64, m_metal=1.50, metal_given=True,
          eq="3 Mn + 2 O₂ → Mn₃O₄",
          salt="cobalt(II) chloride", salt_f="CoCl₂", salt_mm=mm("CoCl2"), x=6, hyd_name="cobalt(II) chloride hexahydrate",
          hyd_f="CoCl₂ · xH₂O", hyd_c=24.11, m_hyd=3.00,
@@ -150,13 +150,22 @@ def build_student(v):
     rich(p, "A student heats a sample of %s metal, %s, in a crucible with a lid in the presence of excess oxygen gas, O₂(g), until it has "
             "completely reacted to form a solid oxide. The student measures the masses below, heating the oxide until its mass is constant."
          % (v["metal"], v["sym"]), 10)
-    data_table(d, [
-        ("Mass of empty crucible and lid", "%.2f g" % v["crucible"]),
-        ("Mass of crucible, lid and %s" % v["metal"], "%.2f g" % v["c_metal"]),
-        ("Mass of crucible, lid and %s oxide (after heating to constant mass)" % v["metal"], "%.2f g" % v["c_oxide"]),
-    ])
-    part(d, "a.", "Calculate the mass of %s and the mass of oxygen that reacted." % v["metal"], 2, 0.42)
-    part(d, "b.", "How many atoms of %s were in the sample? (Use your answer from part a.)" % v["metal"], 2, 0.50)
+    if v.get("metal_given"):        # the metal's mass is measured and given; students only find the oxygen
+        data_table(d, [
+            ("Mass of %s sample" % v["metal"], "%.2f g" % v["g_metal"]),
+            ("Mass of empty crucible and lid", "%.2f g" % v["crucible"]),
+            ("Mass of crucible, lid and %s oxide (after heating to constant mass)" % v["metal"], "%.2f g" % v["c_oxide"]),
+        ])
+        part(d, "a.", "Calculate the mass of oxygen that reacted.", 2, 0.42)
+        part(d, "b.", "How many atoms of %s were in the sample?" % v["metal"], 2, 0.50)
+    else:
+        data_table(d, [
+            ("Mass of empty crucible and lid", "%.2f g" % v["crucible"]),
+            ("Mass of crucible, lid and %s" % v["metal"], "%.2f g" % v["c_metal"]),
+            ("Mass of crucible, lid and %s oxide (after heating to constant mass)" % v["metal"], "%.2f g" % v["c_oxide"]),
+        ])
+        part(d, "a.", "Calculate the mass of %s and the mass of oxygen that reacted." % v["metal"], 2, 0.42)
+        part(d, "b.", "How many atoms of %s were in the sample? (Use your answer from part a.)" % v["metal"], 2, 0.50)
     part(d, "c.", "Determine the empirical formula of the oxide. Show your work.", 4, 1.10)
     part(d, "d.", "Write the balanced equation for the reaction of %s with O₂(g), using the empirical formula from part c and the "
                   "smallest whole-number coefficients." % v["metal"], 2, 0.38)
@@ -211,9 +220,13 @@ def build_key():
 
         ratio = v["ratio"]
         block("Question 1: oxide of %s (10 pts)" % v["metal"], [
-            ("a.", "Masses of metal and oxygen. (2 pts)",
-             "Metal: %.2f − %.2f = **%.2f g %s** (1 pt)\nOxygen: %.2f − %.2f = **%.2f g O** (1 pt)"
-             % (v["c_metal"], v["crucible"], v["g_metal"], v["sym"], v["c_oxide"], v["c_metal"], v["g_O"])),
+            (("a.", "Mass of oxygen (the mass of %s, %.2f g, is given). (2 pts)" % (v["sym"], v["g_metal"]),
+              "Mass of oxide = %.2f − %.2f = %.2f g (1 pt)\nOxygen: %.2f − %.2f = **%.2f g O** (1 pt)"
+              % (v["c_oxide"], v["crucible"], v["g_oxide"], v["g_oxide"], v["g_metal"], v["g_O"]))
+             if v.get("metal_given") else
+             ("a.", "Masses of metal and oxygen. (2 pts)",
+              "Metal: %.2f − %.2f = **%.2f g %s** (1 pt)\nOxygen: %.2f − %.2f = **%.2f g O** (1 pt)"
+              % (v["c_metal"], v["crucible"], v["g_metal"], v["sym"], v["c_oxide"], v["c_metal"], v["g_O"]))),
             ("b.", "Atoms of metal. (2 pts)",
              "%.2f g %s × (1 mol / %.2f g) × (6.022 × 10²³ atoms / 1 mol) = **%s atoms of %s**\n(1 pt for grams → moles, 1 pt for moles → atoms)"
              % (v["g_metal"], v["sym"], mM, sci(v["atoms"], 3), v["sym"])),

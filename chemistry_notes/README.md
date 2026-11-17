@@ -14,6 +14,7 @@ Guided notes for the courses, as Word documents, with the code that builds the h
 | `Honors Chemistry/PDF Sources/` | The topic homework PDFs the packets follow. |
 | `Honors Chemistry/Nomenclature/` | Nomenclature notes. |
 | `AP Chemistry/Acids Bases and Buffers/` | Answer key with explanations for the Acid–Base and Buffer sample test (20 multiple choice, 5 free response), written the way College Board scoring guidelines expect, with suggested points, common errors and model sketches. Built by `_build/make_answer_key.py`. |
+| `AP Chemistry/Thermochemistry and Free Energy/` | Condensed AP notes for the first part of thermodynamics (CED topics 6.1 to 6.9 and 9.1 to 9.6, stopping before electrochemistry): 9 sections, worked examples with work space, no fill-in-the-blank statements, and 20 warm-up multiple-choice questions at the back. Includes a teacher key with every example solved. Built by `_build/make_notes.py`, which computes every number. |
 | `AP Chemistry/Equilibrium/` | Equilibrium guided notes (student and key), a notes outline, ICE tables and K, and Le Chatelier's principle. |
 
 **This repository is public.** The teacher editions and keys are readable by anyone who finds them. If the packets are meant to be seen

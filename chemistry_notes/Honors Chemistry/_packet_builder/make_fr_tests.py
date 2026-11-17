@@ -40,8 +40,9 @@ VERSIONS = [
          err_dir="low",
          err_why="The final mass is too large, so the calculated mass of water lost is too small and the calculated mass of MgSO₄ is too large. Moles of water ÷ moles of MgSO₄ then comes out too small, so x is too low."),
     dict(ver="C",
-         metal="manganese", sym="Mn", oxide="Mn₃O₄", sub=(3, 4), crucible=20.64, m_metal=1.50, metal_given=True,
-         eq="3 Mn + 2 O₂ → Mn₃O₄",
+         metal="manganese", sym="Mn", oxide="Mn₂O₃", sub=(2, 3), crucible=20.64, m_metal=1.40, metal_given=True,
+         split=True, no_err=True,                 # Q1 part a is split (solid, then oxygen); Q2 has no error-analysis part
+         eq="4 Mn + 3 O₂ → 2 Mn₂O₃",
          salt="cobalt(II) chloride", salt_f="CoCl₂", salt_mm=mm("CoCl2"), x=6, hyd_name="cobalt(II) chloride hexahydrate",
          hyd_f="CoCl₂ · xH₂O", hyd_c=24.11, m_hyd=3.00,
          err="While the hydrate was heated, a few small pieces of solid spattered out of the crucible.",
@@ -93,7 +94,7 @@ def compute(v):
 
 for _v in VERSIONS:
     compute(_v)
-assert len({v["sub"] for v in VERSIONS}) == 3 and len({v["x"] for v in VERSIONS}) == 3
+assert len({v["x"] for v in VERSIONS}) == 3 and len({v["sym"] for v in VERSIONS}) == 3
 assert len({(v["c_metal"], v["c_oxide"], v["h_with"], v["h_after"]) for v in VERSIONS}) == 3
 
 
@@ -150,7 +151,19 @@ def build_student(v):
     rich(p, "A student heats a sample of %s metal, %s, in a crucible with a lid in the presence of excess oxygen gas, O₂(g), until it has "
             "completely reacted to form a solid oxide. The student measures the masses below, heating the oxide until its mass is constant."
          % (v["metal"], v["sym"]), 10)
-    if v.get("metal_given"):        # the metal's mass is measured and given; students only find the oxygen
+    if v.get("split"):              # metal mass given; mass of the solid and mass of oxygen are separate parts
+        data_table(d, [
+            ("Mass of %s sample" % v["metal"], "%.2f g" % v["g_metal"]),
+            ("Mass of empty crucible and lid", "%.2f g" % v["crucible"]),
+            ("Mass of crucible, lid and %s oxide (after heating to constant mass)" % v["metal"], "%.2f g" % v["c_oxide"]),
+        ])
+        part(d, "a.", "Calculate the mass of the solid %s oxide that formed." % v["metal"], 1, 0.36)
+        part(d, "b.", "Calculate the mass of oxygen that reacted.", 1, 0.36)
+        part(d, "c.", "How many atoms of %s were in the sample?" % v["metal"], 2, 0.50)
+        part(d, "d.", "Determine the empirical formula of the oxide. Show your work.", 4, 1.10)
+        part(d, "e.", "Write the balanced equation for the reaction of %s with O₂(g), using the empirical formula from part d and the "
+                      "smallest whole-number coefficients." % v["metal"], 2, 0.38)
+    elif v.get("metal_given"):      # the metal's mass is measured and given; students only find the oxygen
         data_table(d, [
             ("Mass of %s sample" % v["metal"], "%.2f g" % v["g_metal"]),
             ("Mass of empty crucible and lid", "%.2f g" % v["crucible"]),
@@ -166,9 +179,10 @@ def build_student(v):
         ])
         part(d, "a.", "Calculate the mass of %s and the mass of oxygen that reacted." % v["metal"], 2, 0.42)
         part(d, "b.", "How many atoms of %s were in the sample? (Use your answer from part a.)" % v["metal"], 2, 0.50)
-    part(d, "c.", "Determine the empirical formula of the oxide. Show your work.", 4, 1.10)
-    part(d, "d.", "Write the balanced equation for the reaction of %s with O₂(g), using the empirical formula from part c and the "
-                  "smallest whole-number coefficients." % v["metal"], 2, 0.38)
+    if not v.get("split"):
+        part(d, "c.", "Determine the empirical formula of the oxide. Show your work.", 4, 1.10)
+        part(d, "d.", "Write the balanced equation for the reaction of %s with O₂(g), using the empirical formula from part c and the "
+                      "smallest whole-number coefficients." % v["metal"], 2, 0.38)
 
     p = fmt(d.add_paragraph(), before=1, after=1); rule(p)
 
@@ -183,10 +197,15 @@ def build_student(v):
         ("Mass of crucible and hydrate (before heating)", "%.2f g" % v["h_with"]),
         ("Mass of crucible and solid (after heating to constant mass)", "%.2f g" % v["h_after"]),
     ])
-    part(d, "a.", "Calculate the mass of water lost and the percent by mass of water in the hydrate.", 2, 0.55)
-    part(d, "b.", "Calculate the moles of water lost and the moles of anhydrous %s, %s, remaining." % (v["salt"], v["salt_f"]), 3, 0.85)
-    part(d, "c.", "Determine the value of x. Then write the formula of the hydrate and name it.", 3, 0.62)
-    part(d, "d.", v["err"] + " Will the calculated value of x be too high, too low, or unchanged? Justify your answer.", 2, 0.55)
+    if v.get("no_err"):
+        part(d, "a.", "Calculate the mass of the hydrate used, the mass of water lost, and the percent by mass of water in the hydrate.", 3, 0.70)
+        part(d, "b.", "Calculate the moles of water lost and the moles of anhydrous %s, %s, remaining." % (v["salt"], v["salt_f"]), 3, 0.90)
+        part(d, "c.", "Determine the value of x. Then write the formula of the hydrate and name it.", 4, 0.85)
+    else:
+        part(d, "a.", "Calculate the mass of water lost and the percent by mass of water in the hydrate.", 2, 0.55)
+        part(d, "b.", "Calculate the moles of water lost and the moles of anhydrous %s, %s, remaining." % (v["salt"], v["salt_f"]), 3, 0.85)
+        part(d, "c.", "Determine the value of x. Then write the formula of the hydrate and name it.", 3, 0.62)
+        part(d, "d.", v["err"] + " Will the calculated value of x be too high, too low, or unchanged? Justify your answer.", 2, 0.55)
     return d
 
 
@@ -219,7 +238,23 @@ def build_key():
                     rich(p, line, 9)
 
         ratio = v["ratio"]
-        block("Question 1: oxide of %s (10 pts)" % v["metal"], [
+        q1_split = [
+            ("a.", "Mass of the solid oxide. (1 pt)",
+             "%.2f − %.2f = **%.2f g %s oxide** (1 pt)" % (v["c_oxide"], v["crucible"], v["g_oxide"], v["metal"])),
+            ("b.", "Mass of oxygen (the mass of %s, %.2f g, is given). (1 pt)" % (v["sym"], v["g_metal"]),
+             "%.2f − %.2f = **%.2f g O** (1 pt)" % (v["g_oxide"], v["g_metal"], v["g_O"])),
+            ("c.", "Atoms of metal. (2 pts)",
+             "%.2f g %s × (1 mol / %.2f g) × (6.022 × 10²³ atoms / 1 mol) = **%s atoms of %s**\n(1 pt for grams → moles, 1 pt for moles → atoms)"
+             % (v["g_metal"], v["sym"], mM, sci(v["atoms"], 3), v["sym"])),
+            ("d.", "Empirical formula. (4 pts)",
+             "Moles %s: %.2f g ÷ %.2f g/mol = %s mol (1 pt)\nMoles O: %.2f g ÷ 16.00 g/mol = %s mol (1 pt)\n"
+             "Ratio, dividing by the smaller (%s mol): %s : O = 1 : %s (1 pt)\nThe ratio is not whole-number, so multiply by %d: %s : O = %d : %d → **%s** (1 pt)"
+             % (v["sym"], v["g_metal"], mM, sf(v["n_metal"], 4), v["g_O"], sf(v["n_O"], 4), sf(v["n_metal"], 4),
+                v["sym"], sf(ratio, 3), a, v["sym"], a, b, v["oxide"])),
+            ("e.", "Balanced equation. (2 pts)",
+             "**%s**   (1 pt for the correct formula as the product, 1 pt for balanced with whole-number coefficients)" % v["eq"]),
+        ]
+        block("Question 1: oxide of %s (10 pts)" % v["metal"], q1_split if v.get("split") else [
             (("a.", "Mass of oxygen (the mass of %s, %.2f g, is given). (2 pts)" % (v["sym"], v["g_metal"]),
               "Mass of oxide = %.2f − %.2f = %.2f g (1 pt)\nOxygen: %.2f − %.2f = **%.2f g O** (1 pt)"
               % (v["c_oxide"], v["crucible"], v["g_oxide"], v["g_oxide"], v["g_metal"], v["g_O"]))
@@ -239,7 +274,20 @@ def build_key():
              "**%s**   (1 pt for the correct formula as the product, 1 pt for balanced with whole-number coefficients)" % v["eq"]),
         ])
         pw = v["pct_water"]
-        block("Question 2: %s hydrate (10 pts)" % v["salt"], [
+        q2_noerr = [
+            ("a.", "Mass of hydrate, mass of water lost, percent water. (3 pts)",
+             "Mass of hydrate = %.2f − %.2f = **%.2f g** (1 pt)\nMass of water lost = %.2f − %.2f = **%.2f g** (1 pt)\n"
+             "Percent water = %.2f g ÷ %.2f g × 100 = **%s%%** (1 pt)"
+             % (v["h_with"], v["hyd_c"], v["g_hyd"], v["h_with"], v["h_after"], v["g_water"], v["g_water"], v["g_hyd"], sf(pw, 3))),
+            ("b.", "Moles of water and of anhydrous salt. (3 pts)",
+             "Mass of anhydrous %s = %.2f − %.2f = %.2f g (1 pt)\nMoles H₂O = %.2f g ÷ 18.02 g/mol = **%s mol** (1 pt)\n"
+             "Moles %s = %.2f g ÷ %.2f g/mol = **%s mol** (1 pt)"
+             % (v["salt_f"], v["h_after"], v["hyd_c"], v["g_salt"], v["g_water"], sf(v["n_water"], 3), v["salt_f"], v["g_salt"], v["salt_mm"], sf(v["n_salt"], 3))),
+            ("c.", "x, formula and name. (4 pts)",
+             "Ratio: %s mol H₂O ÷ %s mol %s = %s (1 pt)\nx = **%d** (rounded to a whole number) (1 pt)\nFormula: **%s** (1 pt)\nName: **%s** (1 pt)"
+             % (sf(v["n_water"], 3), sf(v["n_salt"], 3), v["salt_f"], sf(v["x_calc"], 3), v["x"], v["hyd_f"].replace("xH", "%dH" % v["x"]), v["hyd_name"])),
+        ]
+        block("Question 2: %s hydrate (10 pts)" % v["salt"], q2_noerr if v.get("no_err") else [
             ("a.", "Mass of water lost and percent water. (2 pts)",
              "Mass of hydrate = %.2f − %.2f = %.2f g;  mass of water lost = %.2f − %.2f = **%.2f g** (1 pt)\n"
              "Percent water = %.2f g ÷ %.2f g × 100 = **%s%%** (1 pt)"

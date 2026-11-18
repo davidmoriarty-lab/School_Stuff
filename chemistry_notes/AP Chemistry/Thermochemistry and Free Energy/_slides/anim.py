@@ -27,7 +27,7 @@ class Effect:
 
     @property
     def end(self):
-        return self.delay + self.dur
+        return self.delay + (1 if self.kind == "jiggle" else self.dur)
 
 
 class Timeline:
@@ -73,6 +73,20 @@ class Timeline:
 
     def pulse(self, *shapes, scale=1.12, dur=600, delay=0):
         return self._add("pulse", shapes, dur, delay, scale=scale)
+
+    def jiggle(self, shape, dx, dy, dur=800, delay=0):
+        """Endless back-and-forth wobble (a looping motion path).  Put these in the LAST stage of a click, never before another stage."""
+        return self._add("jiggle", [shape], dur, delay, dx=dx, dy=dy)
+
+    def swap(self, old, new, out_dur=300, in_dur=400):
+        """Replace old shapes by new ones WITHOUT showing both at once: old fades out, then (after previous) new fades in.
+        Leaves the timeline in the second stage so further effects of this click run with the new shapes."""
+        if old:
+            self.out(*old, dur=out_dur)
+        self.then()
+        if new:
+            self.fade(*new, dur=in_dur)
+        return self
 
     # ----------------------------------------------------------------- notes for the presenter
     def click_list(self):
@@ -182,6 +196,12 @@ class Timeline:
                     '<p:attrNameLst><p:attrName>ppt_x</p:attrName><p:attrName>ppt_y</p:attrName></p:attrNameLst></p:cBhvr></p:animMotion>'
                     % (path, "A" * len(pts), self._id(), e.dur, self._tgt(e)))
             return (head % (0, "path", 0, ' accel="30000" decel="30000"')) + body + tail
+        if k == "jiggle":
+            path = "M 0 0 L %.5f %.5f E" % (e.kw["dx"] / sw, e.kw["dy"] / sh)
+            body = ('<p:animMotion origin="layout" path="%s" pathEditMode="relative" rAng="0" ptsTypes="AA"><p:cBhvr><p:cTn id="%d" dur="%d" autoRev="1" fill="hold"/>%s'
+                    '<p:attrNameLst><p:attrName>ppt_x</p:attrName><p:attrName>ppt_y</p:attrName></p:attrNameLst></p:cBhvr></p:animMotion>'
+                    % (path, self._id(), e.dur, self._tgt(e)))
+            return (head % (0, "path", 0, ' repeatCount="indefinite"')) + body + tail
         if k == "pulse":
             pct = int(round(e.kw["scale"] * 100000))
             body = ('<p:animScale><p:cBhvr><p:cTn id="%d" dur="%d" autoRev="1" fill="hold"/>%s</p:cBhvr><p:by x="%d" y="%d"/></p:animScale>'
@@ -189,19 +209,48 @@ class Timeline:
             return (head % (6, "emph", 0, "")) + body + tail
         raise ValueError(k)
 
-    # ----------------------------------------------------------------- QA: draw the slide as it looks after the last click
-    def apply_final_state(self):
+    # ----------------------------------------------------------------- QA: what the audience sees after k clicks
+    def _initially_hidden(self):
+        first = {}
         for c in self.clicks:
             for st in c["stages"]:
                 for e in st:
-                    if e.kind in ("fade_out", "vanish"):
-                        el = e.shape._element
-                        if el.getparent() is not None:
-                            el.getparent().remove(el)
+                    first.setdefault(id(e.shape._element), e.kind)
+        return {sid for sid, kind in first.items() if kind in ("fade_in", "wipe", "appear")}
+
+    def state(self, k):
+        """(hidden element ids, {element id: (dx, dy) EMU}) after k clicks."""
+        hidden = self._initially_hidden()
+        offs = {}
+        for c in self.clicks[:k]:
+            for st in c["stages"]:
+                for e in st:
+                    sid = id(e.shape._element)
+                    if e.kind in ("fade_in", "wipe", "appear"):
+                        hidden.discard(sid)
+                    elif e.kind in ("fade_out", "vanish"):
+                        hidden.add(sid)
+                    elif e.kind == "move":
+                        offs[sid] = e.kw["points"][-1]
+        return hidden, offs
+
+    def apply_state(self, k):
+        hidden, offs = self.state(k)
+        seen = set()
         for c in self.clicks:
             for st in c["stages"]:
                 for e in st:
-                    if e.kind == "move" and e.shape._element.getparent() is not None:
-                        dx, dy = e.kw["points"][-1]
+                    el = e.shape._element
+                    sid = id(el)
+                    if sid in seen:
+                        continue
+                    seen.add(sid)
+                    if sid in hidden and el.getparent() is not None:
+                        el.getparent().remove(el)
+                    elif sid in offs and el.getparent() is not None:
+                        dx, dy = offs[sid]
                         e.shape.left = int(e.shape.left + dx)
                         e.shape.top = int(e.shape.top + dy)
+
+    def apply_final_state(self):
+        self.apply_state(len(self.clicks))

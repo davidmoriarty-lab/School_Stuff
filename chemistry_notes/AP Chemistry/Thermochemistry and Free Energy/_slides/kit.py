@@ -57,6 +57,14 @@ def set_bg(slide, color):
     f.solid(); f.fore_color.rgb = rgb(color)
 
 
+def set_alpha(shape, pct):
+    """Make a shape's solid fill partly see-through (pct = opacity 0-100) so text underneath stays readable."""
+    clr = shape._element.spPr.find(".//{%s}solidFill/{%s}srgbClr" % (NS_A, NS_A))
+    if clr is not None:
+        etree.SubElement(clr, "{%s}alpha" % NS_A, val=str(int(pct * 1000)))
+    return shape
+
+
 def nostyle(shape):
     st = shape._element.find("{http://schemas.openxmlformats.org/presentationml/2006/main}style")
     if st is not None:

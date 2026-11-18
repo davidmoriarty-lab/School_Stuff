@@ -1,4 +1,5 @@
 """Front matter and Sections 1-3."""
+import math
 from scenes import *
 
 
@@ -115,7 +116,7 @@ def s1_profiles(prs):
         b = ball(s, bx + 0.1, by - 0.18, 0.17, col)
         off = path_offsets([(x + 0.1, y - 0.18) for x, y in pts], 40)
         # labels
-        txt(s, px + 0.35, Y(e_r) - 0.45, 1.5, 0.3, "reactants", 13, MUTE, bold=True)
+        txt(s, px + 0.8, Y(e_r) - 0.45, 1.5, 0.3, "reactants", 13, MUTE, bold=True)
         txt(s, px + 3.5, Y(e_p) + (0.1 if e_p < e_r else -0.45), 1.6, 0.3, "products", 13, MUTE, bold=True, align="r")
         mid_x = px + 0.2 + 5.0 * 0.5
         ea = line(s, mid_x, Y(e_r), mid_x, Y(e_pk), INK, 2.5, head=True, tail=True)
@@ -187,19 +188,20 @@ def s2_hot_cold(prs):
     water_lab_a = txt(s, 5.4, 4.45, 3.0, 0.4, "**21 °C**", 20, "1864AB", align="c")
     water_lab_b = txt(s, 5.4, 4.45, 3.0, 0.4, "**25 °C**", 20, "1864AB", align="c")
     arrows = [arrow(s, 3.5, y, 5.2, y, EMBER, 4) for y in (2.9, 3.35, 3.8)]
-    txt(s, 3.45, 2.3, 1.8, 0.4, "heat q", 15, EMBER, bold=True, align="c")
-    th_m = Thermometer(s, 9.35, 1.95, 2.3, 0.85, 0.3, RED)
-    th_w = Thermometer(s, 10.75, 1.95, 2.3, 0.3, 0.45, ICE)
+    heatq = txt(s, 3.45, 2.3, 1.8, 0.4, "heat q", 15, tcol(EMBER), bold=True, align="c")
+    lvl = lambda T: 0.08 + 0.84 * T / 100.0            # one temperature scale for both tubes: equal temperatures give equal heights
+    th_m = Thermometer(s, 9.35, 1.95, 2.5, lvl(95), lvl(25), RED)
+    th_w = Thermometer(s, 10.75, 1.95, 2.5, lvl(21), lvl(25), ICE)
     txt(s, 9.0, 4.75, 1.0, 0.3, "metal", 13, MUTE, align="c")
     txt(s, 10.4, 4.75, 1.0, 0.3, "water", 13, MUTE, align="c")
     eq = card_text(s, 0.55, 5.75, 8.4, 1.0, "Energy is conserved:  **q**_{lost by metal} = −**q**_{gained by water}", 20, SOFT[GOLD], INK, "c", "m", line=GOLD, pad=0.15)
     eqd = card_text(s, 9.15, 5.4, 3.65, 1.35, "Same final temperature = **thermal equilibrium**", 17, SOFT[GREEN], INK, "c", "m", line=GREEN, pad=0.15)
     tl.click("Heat flows from the hotter object to the colder one")
     tl.wipe(*arrows, direction="left", dur=1200)
+    tl.fade(heatq, dur=600)
     tl.fade(metal_mid, dur=2400); tl.fade(water_mid, dur=2400)
-    tl.fade(metal_lab_b, dur=2400); tl.out(metal_lab_a, dur=2400)
-    tl.fade(water_lab_b, dur=2400); tl.out(water_lab_a, dur=2400)
     tl.wipe(th_m.cover, direction="top", dur=2400); tl.wipe(th_w.rise, direction="bottom", dur=2400)
+    tl.then(); tl.swap([metal_lab_a, water_lab_a], [metal_lab_b, water_lab_b])
     tl.click("At equilibrium both are at the same temperature")
     tl.fade(eqd)
     tl.click("Energy is conserved")
@@ -304,65 +306,117 @@ def s2_ex24(prs):
 
 
 # ================================================================== section 3
-def _states(s, cx, cy, w, h):
-    """Five particle sets in a box: solid, melting, liquid, boiling, gas.  Returns the sets."""
+PHASE_COL = {"s": "7FB2F0", "l": "4DABF7", "g": "F59F00"}
+PHASE_AMP = {"s": 0.035, "l": 0.12, "g": 0.2}
+PHASE_DUR = {"s": (170, 260), "l": (700, 1000), "g": (900, 1400)}
+
+
+def _state_positions(cx, cy, w, h, n=18):
+    """Particle positions for the five states of a heating curve: solid, melting, liquid, boiling, gas (+ the phase of each particle)."""
     x0, y0 = cx - w / 2, cy - h / 2
-    r = 0.15
-    solid = [(x0 + 0.45 + i * 0.36, y0 + h - 0.35 - j * 0.36) for j in range(3) for i in range(int((w - 0.5) // 0.36))]
-    n = len(solid)
-    liquid = scatter(n, x0 + 0.25, y0 + h - 1.55, x0 + w - 0.25, y0 + h - 0.25, 0.34, 11)
-    gas = scatter(n, x0 + 0.25, y0 + 0.25, x0 + w - 0.25, y0 + h - 0.25, 0.5, 12)
-    melting = solid[: n // 2] + liquid[: n - n // 2]
-    boiling = liquid[: n // 2] + gas[: n - n // 2]
-    sets = {}
-    for name, pts, col in (("solid", solid, "7FB2F0"), ("melting", melting, "9ED0C5"), ("liquid", liquid, "74C0FC"), ("boiling", boiling, "F2B84B"), ("gas", gas, "F59F00")):
-        sets[name] = dots(s, pts, r, col)
-    return sets
+    gx = x0 + (w - 5 * 0.44) / 2
+    solid = [(gx + (i % 6) * 0.44, y0 + h - 0.3 - (i // 6) * 0.44) for i in range(n)]
+    liquid = scatter(n, x0 + 0.3, y0 + h - 1.5, x0 + w - 0.3, y0 + h - 0.3, 0.36, 11)
+    gas = scatter(n, x0 + 0.3, y0 + 0.3, x0 + w - 0.3, y0 + h - 0.3, 0.55, 12)
+    assert len(liquid) == n and len(gas) == n, (len(liquid), len(gas))
+    h2 = n // 2
+    melt_l = scatter(n - h2, x0 + 0.3, y0 + h - 1.5, x0 + w - 0.3, y0 + h - 0.3, 0.36, 21, avoid=solid[:h2], avoid_d=0.36)
+    boil_g = scatter(n - h2, x0 + 0.3, y0 + 0.3, x0 + w - 0.3, y0 + h - 0.3, 0.55, 22, avoid=liquid[:h2], avoid_d=0.5)
+    assert len(melt_l) == n - h2 and len(boil_g) == n - h2, (len(melt_l), len(boil_g))
+    return {"solid": (solid, ["s"] * n), "melt": (solid[:h2] + melt_l, ["s"] * h2 + ["l"] * (n - h2)),
+            "liquid": (liquid, ["l"] * n), "boil": (liquid[:h2] + boil_g, ["l"] * h2 + ["g"] * (n - h2)), "gas": (gas, ["g"] * n)}
 
 
-def s3_curve(prs):
-    s = new_slide(prs, "Heating curve: temperature vs energy added", 3)
+def _curve_slide(prs, cooling):
+    import random
+    rnd = random.Random(7 if not cooling else 8)
+    title = "Cooling curve: the same curve with energy removed" if cooling else "Heating curve: temperature vs energy added"
+    s = new_slide(prs, title, 3)
     tl = Timeline(s)
-    # axes and curve
     card(s, 0.55, 1.45, 7.9, 5.3, WHITE, 0.1, line=LINE)
-    axes(s, 1.2, 1.8, 6.9, 4.3, "energy added (time)", "temperature (°C)")
-    P = {"A": (1.6, 5.4), "B": (2.9, 4.2), "C": (4.5, 4.2), "D": (6.2, 2.7), "E": (7.1, 2.7), "F": (7.9, 2.0)}
-    segs = [("A", "B", EMBER, "solid warms", "q = mc_{solid}ΔT", "solid"), ("B", "C", TEAL, "melting", "q = nΔH_{fus}", "melting"),
-            ("C", "D", EMBER, "liquid warms", "q = mc_{liquid}ΔT", "liquid"), ("D", "E", TEAL, "boiling", "q = nΔH_{vap}", "boiling"),
-            ("E", "F", EMBER, "gas warms", "q = mc_{gas}ΔT", "gas")]
+    axes(s, 1.2, 1.8, 6.9, 4.3, "energy removed (time)" if cooling else "energy added (time)", "temperature (°C)")
+    if not cooling:
+        P = {"A": (1.6, 5.4), "B": (2.9, 4.2), "C": (4.5, 4.2), "D": (6.2, 2.7), "E": (7.1, 2.7), "F": (7.9, 2.0)}
+        segs = [("A", "B", EMBER, "solid warms", "q = mc_{solid}ΔT", "solid"), ("B", "C", TEAL, "melting: solid + liquid", "q = nΔH_{fus}", "melt"),
+                ("C", "D", EMBER, "liquid warms", "q = mc_{liquid}ΔT", "liquid"), ("D", "E", TEAL, "boiling: liquid + gas", "q = nΔH_{vap}", "boil"),
+                ("E", "F", EMBER, "gas warms", "q = mc_{gas}ΔT", "gas")]
+    else:
+        P = {"A": (1.6, 2.0), "B": (2.4, 2.7), "C": (3.3, 2.7), "D": (5.0, 4.2), "E": (6.6, 4.2), "F": (7.9, 5.4)}
+        segs = [("A", "B", ICE, "gas cools", "q = mc_{gas}ΔT   (negative)", "gas"), ("B", "C", TEAL, "condensing: gas + liquid", "q = −nΔH_{vap}", "boil"),
+                ("C", "D", ICE, "liquid cools", "q = mc_{liquid}ΔT   (negative)", "liquid"), ("D", "E", TEAL, "freezing: liquid + solid", "q = −nΔH_{fus}", "melt"),
+                ("E", "F", ICE, "solid cools", "q = mc_{solid}ΔT   (negative)", "solid")]
     for a, b, *_ in segs:
         line(s, *P[a], *P[b], "CED4DA", 4)
     for k, v in P.items():
-        txt(s, v[0] - 0.12, v[1] + (0.12 if k in "ACE" else -0.42), 0.3, 0.3, "**%s**" % k, 14, MUTE, align="c")
-    # particle box and equation card
-    box = card(s, 8.8, 1.45, 4.0, 3.3, "F8FAFC", 0.08, line=LINE)
-    sets = _states(s, 10.8, 3.1, 3.5, 2.9)
-    eqc = {}
-    label = {}
+        up = k in "BDF" if not cooling else k in "ACE"
+        txt(s, v[0] - 0.12, v[1] + (-0.42 if up else 0.12), 0.3, 0.3, "**%s**" % k, 14, MUTE, align="c")
+    # particle box
+    bx, by, bw, bh = 8.8, 1.45, 4.0, 3.3
+    card(s, bx, by, bw, bh, "F8FAFC", 0.08, line=LINE)
+    pos = _state_positions(bx + bw / 2, by + bh / 2, bw, bh)
+    r = 0.14
+
+    def dotset(key):
+        ps, ph = pos[key]
+        return [circle(s, x, y, r, PHASE_COL[p], "495057", 1.0) for (x, y), p in zip(ps, ph)]
+    order = [sg[5] for sg in segs]
+    rest = {k: dotset(k) for k in order}                      # resting dots: they jiggle
+    movers = {}                                               # dots that travel between two states
+    for a, b in zip(order, order[1:]):
+        pa, pha = pos[a]
+        movers[(a, b)] = [circle(s, x, y, r, PHASE_COL[p], "495057", 1.0) for (x, y), p in zip(pa, pha)]
+    names, eqs = {}, {}
     for a, b, col, name, eq, key in segs:
-        eqc[key] = txt(s, 8.8, 4.95, 4.0, 0.5, "**%s**" % name, 18, col, align="c", anchor="m")
-    eqr = {}
-    for a, b, col, name, eq, key in segs:
-        g, w, h = eqrow(s, 10.8 - 1.35, 5.55, eq, 22, INK)
-        eqr[key] = g
-    note = card_text(s, 8.8, 6.15, 4.0, 0.6, "Temperature is **constant** during a phase change", 14, SOFT[TEAL], INK, "c", "m", pad=0.08, radius=0.12)
-    prev = None
+        names[key] = txt(s, bx, 4.95, bw, 0.5, "**%s**" % name, 18, tcol(col), align="c", anchor="m")
+        g, w_, h_ = eqrow(s, bx + bw / 2 - 1.5, 5.5, eq, 22, INK, max_w=3.8)
+        eqs[key] = g
+    note = card_text(s, bx, 6.15, bw, 0.6, "Temperature is **constant** during a phase change", 14, SOFT[TEAL], INK, "c", "m", pad=0.08, radius=0.12)
+    prev, prev_dot, shown_note = None, None, False
     for k, (a, b, col, name, eq, key) in enumerate(segs):
         x1, y1 = P[a]; x2, y2 = P[b]
         seg = line(s, x1, y1, x2, y2, col, 6)
         dot = circle(s, x1, y1, 0.12, col, WHITE, 1.5)
-        tl.click("%s (%s → %s)" % (name, a, b))
+        tl.click(name)
         tl.wipe(seg, direction="left", dur=1600)
+        tl.appear(dot)
         tl.move(dot, [(0, 0), (E(x2 - x1), E(y2 - y1))], 1600)
-        if prev:
-            tl.out(*sets[prev], dur=500)
-            tl.out(eqc[prev], eqr[prev], dur=500)
-        tl.fade(*sets[key], dur=700)
-        tl.fade(eqc[key], eqr[key], dur=700)
-        if key in ("melting", "boiling"):
-            tl.fade(note, dur=700) if key == "melting" else None
-        prev = key
-    finish(s, tl, "Slopes: energy raises the average kinetic energy (temperature). Plateaus: energy separates particles (potential energy), so the temperature holds steady.", "Heating curve")
+        if prev_dot is not None:
+            tl.vanish(prev_dot)
+        if prev is None:
+            tl.fade(*rest[key], dur=500)
+        else:
+            tl.out(names[prev], eqs[prev], dur=300)
+            tl.vanish(*rest[prev])
+            mv = movers[(prev, key)]
+            tl.appear(*mv)
+            (ps0, _), (ps1, _) = pos[prev], pos[key]
+            for d, p0, p1 in zip(mv, ps0, ps1):
+                if abs(p1[0] - p0[0]) + abs(p1[1] - p0[1]) > 0.02:
+                    tl.move(d, [(0, 0), delta(p0, p1)], 1500)
+        tl.then()
+        if prev is not None:
+            tl.vanish(*movers[(prev, key)])
+            tl.appear(*rest[key])
+        tl.fade(names[key], eqs[key], dur=400)
+        if key in ("melt", "boil") and not shown_note:
+            tl.fade(note, dur=400); shown_note = True
+        for d, ph in zip(rest[key], pos[key][1]):
+            ang = rnd.uniform(0, math.pi)
+            amp = PHASE_AMP[ph] * rnd.uniform(0.7, 1.0)
+            lo, hi = PHASE_DUR[ph]
+            tl.jiggle(d, E(amp * math.cos(ang)), E(amp * math.sin(ang)), rnd.randint(lo, hi))
+        prev, prev_dot = key, dot
+    finish(s, tl, "Particles in every state keep jiggling (more violently as the temperature rises); at each plateau the particles are pulled apart or pushed together instead of speeding up. "
+                  + ("Cooling is the heating curve run in reverse: energy leaves, so q is negative." if cooling else "Slopes raise the average kinetic energy; plateaus change the potential energy."),
+           title)
+
+
+def s3_curve(prs):
+    _curve_slide(prs, False)
+
+
+def s3_cooling(prs):
+    _curve_slide(prs, True)
 
 
 def s3_two_kinds(prs):

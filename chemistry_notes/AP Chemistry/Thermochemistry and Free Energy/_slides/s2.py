@@ -127,10 +127,10 @@ def s4_calorimeter(prs):
     cx, cy = 1.0, 2.35
     cup = poly(s, [(cx, cy), (cx + 3.6, cy), (cx + 3.15, cy + 3.5), (cx + 0.45, cy + 3.5)], "868E96", 4, "FFFFFF", closed=True)
     water = poly(s, [(cx + 0.1, cy + 0.95), (cx + 3.5, cy + 0.95), (cx + 3.15 - 0.03, cy + 3.44), (cx + 0.48, cy + 3.44)], "A5D8FF", 1, "A5D8FF", closed=True)
-    txt(s, cx, cy - 0.5, 3.6, 0.4, "**Coffee-cup calorimeter**", 15, MUTE, align="c")
+    txt(s, cx, cy + 3.62, 3.6, 0.4, "**Coffee-cup calorimeter**", 15, MUTE, align="c")
     pellet = circle(s, cx + 1.8, cy - 0.15, 0.2, "F8F9FA", "495057", 2)
     glow = [arrow(s, cx + 1.8, cy + 2.0, cx + 1.8 + dx, cy + 2.0 + dy, EMBER, 4) for dx, dy in ((-1.0, -0.4), (1.0, -0.4), (-0.9, 0.7), (0.9, 0.7))]
-    th = Thermometer(s, cx + 4.45, 2.3, 2.5, 0.35, 0.8, RED)
+    th = Thermometer(s, cx + 4.45, 2.3, 2.5, 0.05 + 0.9 * 25.0 / 50, 0.05 + 0.9 * 38.4 / 50, RED)      # one scale: 0 to 50 °C
     t_a = txt(s, cx + 3.95, 5.25, 1.35, 0.35, "**25.0 °C**", 16, MUTE, align="c")
     t_b = txt(s, cx + 3.95, 5.25, 1.35, 0.35, "**38.4 °C**", 16, tcol(EMBER), align="c")
     cards = [card_text(s, 8.1, 1.45 + k * 1.5, 4.7, 1.3, t, 17, SOFT[c], INK, "l", "m", pad=0.25, radius=0.14)
@@ -142,7 +142,7 @@ def s4_calorimeter(prs):
     tl.click("The reaction releases energy into the water")
     tl.wipe(*glow, direction="left", dur=600)
     tl.wipe(th.rise, direction="bottom", dur=1800)
-    tl.fade(t_b, dur=1800); tl.out(t_a, dur=1800)
+    tl.then(); tl.swap([t_a], [t_b])
     tl.click("Measure the water: q = mcΔT")
     tl.fade(cards[0])
     tl.click("The reaction's energy is the opposite of the water's")

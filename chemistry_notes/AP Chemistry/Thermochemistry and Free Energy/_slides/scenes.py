@@ -78,14 +78,16 @@ def combustion_scene(s, tl, quant, label_y=5.3):
 
 
 # ------------------------------------------------------------------ particles
-def scatter(n, x0, y0, x1, y1, min_d, seed):
+def scatter(n, x0, y0, x1, y1, min_d, seed, avoid=(), avoid_d=0.4):
+    """n random points in a box, at least min_d apart and avoid_d away from any point in `avoid`."""
     rnd = random.Random(seed)
     pts = []
     tries = 0
-    while len(pts) < n and tries < 4000:
+    while len(pts) < n and tries < 8000:
         tries += 1
         c = (rnd.uniform(x0, x1), rnd.uniform(y0, y1))
-        if all(math.hypot(c[0] - q[0], c[1] - q[1]) >= min_d for q in pts):
+        if all(math.hypot(c[0] - q[0], c[1] - q[1]) >= min_d for q in pts) and \
+           all(math.hypot(c[0] - q[0], c[1] - q[1]) >= avoid_d for q in avoid):
             pts.append(c)
     return pts
 

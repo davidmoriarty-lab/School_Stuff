@@ -36,7 +36,7 @@ def s7_microstates(prs):
         tl.fade(*m, dur=500)
     tl.fade(*labs)
     tl.click("Count the ways to get each arrangement")
-    tl.fade(baseline)
+    tl.fade(baseline, axl)
     for b, n in zip(bars, nums):
         tl.wipe(b, direction="bottom", dur=500); tl.fade(n, dur=500)
     tl.click("The even split has the most microstates (6 of 16)")
@@ -165,8 +165,7 @@ def s8_tug(prs):
     base = line(s, 0.9, y0, 7.6, y0, INK, 2.5)
     xs = [1.4, 3.6, 5.8]
     names = ["ΔH", "TΔS", "ΔG = ΔH − TΔS"]
-    for x, nme in zip(xs, names):
-        txt(s, x + 0.55 - 1.2, 6.1, 2.4, 0.4, "**%s**" % nme, 15, MUTE, align="c")
+    name_tx = [txt(s, x + 0.55 - 1.2, 6.1, 2.4, 0.4, "**%s**" % nme, 15, MUTE, align="c") for x, nme in zip(xs, names)]
     dh = 50.0
     bar_dh = card(s, xs[0], y0 - dh * k, 1.1, dh * k, ICE, 0.03)
     lab_dh = txt(s, xs[0] - 0.2, y0 - dh * k - 0.4, 1.5, 0.35, "**+50 kJ**", 16, tcol(ICE), align="c")
@@ -200,13 +199,14 @@ def s8_tug(prs):
     crossc = card(s, 8.25, 4.75, 4.55, 1.2, WHITE, 0.14, line=GOLD)
     sp = crossc._element.getparent(); sp.remove(crossc._element); sp.insert(list(sp).index(cross._element), crossc._element)
     tl.click("Setup: an endothermic reaction that increases entropy")
-    tl.wipe(base, direction="left", dur=500); tl.fade(bar_dh, lab_dh, eq)
+    tl.wipe(base, direction="left", dur=500); tl.fade(bar_dh, lab_dh, eq, *name_tx)
     prev = None
     for i, (T, shapes) in enumerate(zip((200, 417, 600), scen)):
         tl.click("T = %d K" % T)
         if prev:
-            tl.out(*prev, dur=400)
-        tl.fade(*shapes, dur=600)
+            tl.swap(prev, shapes, out_dur=350, in_dur=500)
+        else:
+            tl.fade(*shapes, dur=600)
         if i == 0:
             tl.fade(why)
         if i == 1:
@@ -390,12 +390,12 @@ def s9_k_valleys(prs):
         bx, by, bw = x + 0.45, 4.15, cw - 0.9
         rb = card(s, bx, by, bw, 0.42, "ADB5BD", 0.06)
         pb_ = card(s, bx + bw * (1 - frac_p), by, bw * frac_p, 0.42, GREEN, 0.06)
-        txt(s, bx, by + 0.45, bw / 2, 0.3, "reactants", 11, MUTE, align="l")
-        txt(s, bx + bw / 2, by + 0.45, bw / 2, 0.3, "products", 11, MUTE, align="r")
+        lr = txt(s, bx, by + 0.45, bw / 2, 0.3, "reactants", 11, MUTE, align="l")
+        lp = txt(s, bx + bw / 2, by + 0.45, bw / 2, 0.3, "products", 11, MUTE, align="r")
         head = txt(s, x + 0.3, 4.75, cw - 0.6, 0.4, "**%s  ·  %s**" % (a, b), 17, tcol(col) if col != "868E96" else INK, align="c")
         words = txt(s, x + 0.3, 5.05, cw - 0.6, 0.35, c, 14, MUTE, align="c")
         tl.click("%s: %s" % (a, c))
-        tl.fade(bg, *ax, cur, dot, rb, pb_, head, words)
+        tl.fade(bg, *ax, cur, dot, rb, pb_, head, words, lr, lp)
     row, w, h = eqrow(s, 2.3, 5.9, "ΔG° = −RT ln K        ΔG° = −20.0 kJ/mol  →  K = 3.2 × 10^{3}  (at 298 K)", 20, INK, max_w=8.6)
     eqc = card(s, 0.55, 5.6, W - 1.1, 1.0, WHITE, 0.14, line=LINE)
     sp = eqc._element.getparent(); sp.remove(eqc._element); sp.insert(list(sp).index(row._element), eqc._element)
@@ -512,7 +512,7 @@ def appendix_divider(prs):
     finish(s, tl, "One warm-up per class period works well. These match the 20 questions at the back of the student notes.", "Warm-up divider")
 
 
-def warmups(prs):
-    for n, (topic, q, right, wrong, why) in enumerate(D.MC, 1):
-        lst = list(wrong); lst.insert(D.POS[n - 1], right)
-        mc_slide(prs, n, topic, q, lst, D.POS[n - 1], why)
+def warmup(prs, n):
+    topic, q, right, wrong, why = D.MC[n - 1]
+    lst = list(wrong); lst.insert(D.POS[n - 1], right)
+    mc_slide(prs, n, topic, q, lst, D.POS[n - 1], why)

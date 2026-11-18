@@ -307,8 +307,20 @@ def s2_ex24(prs):
 
 # ================================================================== section 3
 PHASE_COL = {"s": "7FB2F0", "l": "4DABF7", "g": "F59F00"}
-PHASE_AMP = {"s": 0.035, "l": 0.12, "g": 0.2}
-PHASE_DUR = {"s": (170, 260), "l": (700, 1000), "g": (900, 1400)}
+PHASE_AMP = {"s": 0.10, "l": 0.24, "g": 0.42}                      # inches: how far a particle wanders from its spot (large enough to see)
+PHASE_DUR = {"s": (900, 1400), "l": (3200, 4600), "g": (2600, 3800)}   # ms for one closed loop (it then repeats forever)
+PHASE_PTS = {"s": 7, "l": 6, "g": 6}
+
+
+def _wander(rnd, phase):
+    """A closed wandering loop: start at (0, 0), visit random nearby points, come back to (0, 0)."""
+    amp = PHASE_AMP[phase]
+    pts = [(0, 0)]
+    for _ in range(PHASE_PTS[phase]):
+        r, a = amp * math.sqrt(rnd.uniform(0.25, 1.0)), rnd.uniform(0, 2 * math.pi)
+        pts.append((E(r * math.cos(a)), E(r * math.sin(a))))
+    pts.append((0, 0))
+    return pts
 
 
 def _state_positions(cx, cy, w, h, n=18):
@@ -316,12 +328,12 @@ def _state_positions(cx, cy, w, h, n=18):
     x0, y0 = cx - w / 2, cy - h / 2
     gx = x0 + (w - 5 * 0.44) / 2
     solid = [(gx + (i % 6) * 0.44, y0 + h - 0.3 - (i // 6) * 0.44) for i in range(n)]
-    liquid = scatter(n, x0 + 0.3, y0 + h - 1.5, x0 + w - 0.3, y0 + h - 0.3, 0.36, 11)
-    gas = scatter(n, x0 + 0.3, y0 + 0.3, x0 + w - 0.3, y0 + h - 0.3, 0.55, 12)
+    liquid = scatter(n, x0 + 0.4, y0 + h - 1.6, x0 + w - 0.4, y0 + h - 0.4, 0.36, 11)
+    gas = scatter(n, x0 + 0.55, y0 + 0.55, x0 + w - 0.55, y0 + h - 0.55, 0.52, 12)
     assert len(liquid) == n and len(gas) == n, (len(liquid), len(gas))
     h2 = n // 2
-    melt_l = scatter(n - h2, x0 + 0.3, y0 + h - 1.5, x0 + w - 0.3, y0 + h - 0.3, 0.36, 21, avoid=solid[:h2], avoid_d=0.36)
-    boil_g = scatter(n - h2, x0 + 0.3, y0 + 0.3, x0 + w - 0.3, y0 + h - 0.3, 0.55, 22, avoid=liquid[:h2], avoid_d=0.5)
+    melt_l = scatter(n - h2, x0 + 0.4, y0 + h - 1.6, x0 + w - 0.4, y0 + h - 0.4, 0.36, 21, avoid=solid[:h2], avoid_d=0.36)
+    boil_g = scatter(n - h2, x0 + 0.55, y0 + 0.55, x0 + w - 0.55, y0 + h - 0.55, 0.52, 22, avoid=liquid[:h2], avoid_d=0.5)
     assert len(melt_l) == n - h2 and len(boil_g) == n - h2, (len(melt_l), len(boil_g))
     return {"solid": (solid, ["s"] * n), "melt": (solid[:h2] + melt_l, ["s"] * h2 + ["l"] * (n - h2)),
             "liquid": (liquid, ["l"] * n), "boil": (liquid[:h2] + boil_g, ["l"] * h2 + ["g"] * (n - h2)), "gas": (gas, ["g"] * n)}
@@ -401,10 +413,8 @@ def _curve_slide(prs, cooling):
         if key in ("melt", "boil") and not shown_note:
             tl.fade(note, dur=400); shown_note = True
         for d, ph in zip(rest[key], pos[key][1]):
-            ang = rnd.uniform(0, math.pi)
-            amp = PHASE_AMP[ph] * rnd.uniform(0.7, 1.0)
             lo, hi = PHASE_DUR[ph]
-            tl.jiggle(d, E(amp * math.cos(ang)), E(amp * math.sin(ang)), rnd.randint(lo, hi))
+            tl.jiggle(d, _wander(rnd, ph), rnd.randint(lo, hi))
         prev, prev_dot = key, dot
     finish(s, tl, "Particles in every state keep jiggling (more violently as the temperature rises); at each plateau the particles are pulled apart or pushed together instead of speeding up. "
                   + ("Cooling is the heating curve run in reverse: energy leaves, so q is negative." if cooling else "Slopes raise the average kinetic energy; plateaus change the potential energy."),

@@ -4,10 +4,17 @@ A 25-slide animated PowerPoint (`Intro_to_Chemistry.pptx`) that tours the whole 
 with a click-by-click script (`Intro_to_Chemistry_Script.docx`, also stored as speaker notes in the .pptx).
 Two demo slides are built in: methane bubbles (slide 14) and thermite (slide 20).
 
-## Story order
-Atoms, sizes, protons, periodic table, electrons, flame tests, atoms approaching (energy released), bond types, reactions,
-**demo**, the mole, stoichiometry, gases, intermolecular forces, thermodynamics, **demo**, kinetics and equilibrium,
-acids and bases, electrochemistry, nuclear, wrap-up.
+## Story order (each slide sets up the next)
+Atoms and their sizes, protons, **states of matter** (how do atoms behave?), **what holds them together** (attractions),
+**atoms approaching** (the bond valley), **who bonds** (periodic table, party gag, alkali metals, sodium gag), **why**
+(electron levels, flame tests, outer electrons), bond types, "two ways to study chemistry" gag, reactions, **methane demo**, the mole,
+stoichiometry, energy in and out, **thermite demo**, "this is fine" gag, speed and balance, acids and bases, **batteries**
+(harnessing the energy), nuclear, wrap-up. 30 slides.
+
+## Motion and memes
+- Animated GIFs (orbiting atom, flickering flame tests and demo flames, sodium racing on water, pulsing sun) are drawn by `build_images.py`.
+- Cartoon atom mascots (love, shocked, sunglasses, grumpy, sweating) star in the gag slides and cameo on others.
+- Native PowerPoint animations include looping jitter (states of matter, nervous halogens, shaking phone), motion paths and click reveals.
 
 ## Rebuilding
 ```

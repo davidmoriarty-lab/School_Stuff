@@ -36,9 +36,10 @@ def smoothstep(a, b, x):
 
 
 # ---------------------------------------------------------------- flames
-def flame(color_hex, seed=0.0, W=600, H=1000):
+def flame(color_hex, seed=0.0, W=600, H=1000, hs=1.0):
     ys, xs = np.mgrid[0:H, 0:W].astype(float)
-    base, tip = 0.84 * H, 0.04 * H
+    base = 0.84 * H
+    tip = base - (base - 0.04 * H) * hs
     v = (base - ys) / (base - tip)                    # 0 at burner, 1 at tip
     xn = (xs - W / 2) / W
     sway = 0.035 * np.sin(5.5 * v + seed) * np.clip(v, 0, None) ** 1.2 + 0.02 * np.sin(11 * v + 2 * seed) * v
@@ -377,6 +378,236 @@ def background(name, base_hex, seed, tints):
 
 background("bg_navy.png", "0B1030", 5, ["22D3EE", "B66DFF", "FF7A1A", "5BE584"])
 background("bg_demo.png", "2B0A18", 9, ["FF7A1A", "FF4D6D", "FFD23F", "B66DFF"])
+
+
+# ================================================================ MASCOTS (cartoon atoms with faces)
+def heart(d, x, y, s, fill):
+    d.ellipse([x - 0.5 * s, y - 0.4 * s, x + 0.0 * s, y + 0.1 * s], fill=fill)
+    d.ellipse([x + 0.0 * s, y - 0.4 * s, x + 0.5 * s, y + 0.1 * s], fill=fill)
+    d.polygon([(x - 0.49 * s, y - 0.12 * s), (x + 0.49 * s, y - 0.12 * s), (x, y + 0.55 * s)], fill=fill)
+
+
+def mascot(name, body_hex, mood, S=600):
+    k = 2
+    B = S * k
+    cx = cy = B / 2
+    R = B * 0.34
+    ys, xs = np.mgrid[0:B, 0:B].astype(float)
+    r = np.hypot(xs - cx, ys - cy) / R
+    base = np.array(hex2rgb(body_hex), float)
+    hl = np.clip(0.7 - np.hypot(xs - (cx - 0.35 * R), ys - (cy - 0.4 * R)) / R, 0, 1)
+    col = base[None, None, :] * (0.72 + 0.34 * (1 - np.clip(r, 0, 1)))[..., None] + 70 * hl[..., None]
+    alpha = 1 - smoothstep(0.985, 1.0, r)
+    arr = np.zeros((B, B, 4))
+    arr[..., :3] = np.clip(col, 0, 255)
+    arr[..., 3] = alpha * 255
+    body = Image.fromarray(arr.astype("uint8"), "RGBA")
+    halo = np.zeros((B, B, 4)); halo[..., :3] = base; halo[..., 3] = alpha * 255
+    halo_i = Image.fromarray(halo.astype("uint8"), "RGBA").filter(ImageFilter.GaussianBlur(B * 0.035))
+    ha = np.asarray(halo_i).astype(float); ha[..., 3] *= 0.5
+    img = over(Image.fromarray(ha.astype("uint8"), "RGBA"), body)
+    d = ImageDraw.Draw(img)
+    ink = (20, 22, 44, 255)
+    lw = int(0.055 * R)
+    ex, ey = 0.34 * R, -0.10 * R
+
+    def eye(sign, er, pr, look=(0, 0)):
+        x, y = cx + sign * ex, cy + ey
+        d.ellipse([x - er, y - er, x + er, y + er], fill=(255, 255, 255, 255), outline=ink, width=int(lw * 0.5))
+        px, py = x + look[0] * er * 0.5, y + look[1] * er * 0.5
+        d.ellipse([px - pr, py - pr, px + pr, py + pr], fill=ink)
+        d.ellipse([px - pr * 0.35 + pr * 0.3, py - pr * 0.6, px + pr * 0.35 + pr * 0.3, py - pr * 0.1], fill=(255, 255, 255, 255))
+
+    def smile(w=0.30, top=0.02, bot=0.5, a0=20, a1=160):
+        d.arc([cx - w * R, cy + top * R, cx + w * R, cy + bot * R], a0, a1, fill=ink, width=lw)
+
+    def sweat():
+        x, y = cx + 0.78 * R, cy - 0.42 * R
+        d.polygon([(x, y - 0.32 * R), (x - 0.14 * R, y), (x + 0.14 * R, y)], fill=(120, 200, 255, 255))
+        d.ellipse([x - 0.14 * R, y - 0.12 * R, x + 0.14 * R, y + 0.16 * R], fill=(120, 200, 255, 255))
+
+    if mood == "happy":
+        eye(-1, 0.2 * R, 0.09 * R); eye(1, 0.2 * R, 0.09 * R); smile()
+    elif mood == "smug":
+        for sgn in (-1, 1):
+            x, y = cx + sgn * ex, cy + ey
+            d.rounded_rectangle([x - 0.26 * R, y - 0.16 * R, x + 0.26 * R, y + 0.2 * R], radius=int(0.08 * R), fill=(10, 10, 20, 255))
+            d.line([x - 0.16 * R, y - 0.08 * R, x - 0.04 * R, y - 0.08 * R], fill=(255, 255, 255, 200), width=int(0.035 * R))
+        d.line([cx - 0.12 * R, cy + ey - 0.05 * R, cx + 0.12 * R, cy + ey - 0.05 * R], fill=(10, 10, 20, 255), width=lw)
+        d.arc([cx - 0.12 * R, cy + 0.1 * R, cx + 0.38 * R, cy + 0.42 * R], 10, 120, fill=ink, width=lw)
+    elif mood == "shocked":
+        eye(-1, 0.26 * R, 0.06 * R, (0.4, 0.3)); eye(1, 0.26 * R, 0.06 * R, (-0.4, 0.3))
+        d.ellipse([cx - 0.12 * R, cy + 0.28 * R, cx + 0.12 * R, cy + 0.58 * R], fill=ink)
+        sweat()
+    elif mood == "love":
+        for sgn in (-1, 1):
+            heart(d, cx + sgn * ex, cy + ey, 0.5 * R, (255, 70, 110, 255))
+        d.arc([cx - 0.34 * R, cy + 0.0 * R, cx + 0.34 * R, cy + 0.55 * R], 15, 165, fill=ink, width=lw)
+    elif mood == "grumpy":
+        eye(-1, 0.19 * R, 0.09 * R, (0, 0.7)); eye(1, 0.19 * R, 0.09 * R, (0, 0.7))
+        d.line([cx - 0.58 * R, cy - 0.40 * R, cx - 0.14 * R, cy - 0.26 * R], fill=ink, width=lw)
+        d.line([cx + 0.58 * R, cy - 0.40 * R, cx + 0.14 * R, cy - 0.26 * R], fill=ink, width=lw)
+        d.arc([cx - 0.28 * R, cy + 0.32 * R, cx + 0.28 * R, cy + 0.72 * R], 200, 340, fill=ink, width=lw)
+    elif mood == "fine":
+        eye(-1, 0.24 * R, 0.035 * R); eye(1, 0.24 * R, 0.035 * R)
+        d.rounded_rectangle([cx - 0.30 * R, cy + 0.22 * R, cx + 0.30 * R, cy + 0.46 * R], radius=int(0.08 * R), fill=(255, 255, 255, 255), outline=ink, width=int(lw * 0.6))
+        for i in range(1, 5):
+            xx = cx - 0.30 * R + i * 0.12 * R
+            d.line([xx, cy + 0.22 * R, xx, cy + 0.46 * R], fill=ink, width=int(lw * 0.3))
+        sweat()
+    img = img.resize((S, S), Image.LANCZOS)
+    img.save(os.path.join(OUT, f"mascot_{name}.png"))
+
+
+mascot("alkali", "FF4D6D", "love")
+mascot("halogen", "5BE584", "shocked")
+mascot("noble", "7DD3FC", "smug")
+mascot("sodium", "C084FC", "smug")
+mascot("h", "7DD3FC", "happy")
+mascot("grumpy", "9AA7E0", "grumpy")
+mascot("cool", "22D3EE", "smug")
+mascot("fine", "FFD23F", "fine")
+
+# ================================================================ ANIMATED GIFs
+NAVY = (11, 16, 48)
+
+
+def to_gif(frames, name, ms, colors=200):
+    """Animated GIF with real transparency (pixels that are nearly see-through become transparent),
+    so the picture sits on the slide background without a visible box."""
+    out = []
+    for fr in frames:
+        a = np.asarray(fr.convert("RGBA"))
+        bg = Image.new("RGBA", fr.size, NAVY + (255,))
+        rgb = over(bg, fr).convert("RGB")
+        q = rgb.quantize(colors=min(colors, 254), method=Image.MEDIANCUT, dither=Image.NONE)
+        arr = np.asarray(q).copy()
+        arr[a[..., 3] < 40] = 255
+        pal = q.getpalette()[:765]
+        pal = pal + [0] * (765 - len(pal)) + [0, 0, 0]
+        im = Image.fromarray(arr, "P")
+        im.putpalette(pal)
+        out.append(im)
+    out[0].save(os.path.join(OUT, name), save_all=True, append_images=out[1:], duration=ms, loop=0, disposal=2,
+                transparency=255, optimize=False)
+
+
+# flickering flames (one per element + a big orange one for the demos)
+for key, (c, s_) in FLAMES.items():
+    n = 12
+    fr = []
+    for f in range(n):
+        ph = 2 * math.pi * f / n
+        fr.append(flame(c, s_ + ph, 360, 600, 1.0 + 0.05 * math.sin(2 * ph + s_)))
+    to_gif(fr, f"flame_{key}.gif", 80)
+
+
+# orbiting atom for the title slide
+def orbit_gif(S=640, n=40):
+    ang = (0, 60, 120)
+    cols = [(34, 211, 238), (255, 122, 26), (182, 109, 255)]
+    a_, b_ = S * 0.46, S * 0.17
+    base = Image.new("RGBA", (S * 2, S * 2), (0, 0, 0, 0))
+    d = ImageDraw.Draw(base)
+    c = S
+    for i, an in enumerate(ang):
+        pts = []
+        for k in range(361):
+            t = math.radians(k)
+            x, y = a_ * 2 * math.cos(t), b_ * 2 * math.sin(t)
+            r = math.radians(an)
+            pts.append((c + x * math.cos(r) - y * math.sin(r), c + x * math.sin(r) + y * math.cos(r)))
+        d.line(pts, fill=cols[i] + (255,), width=8)
+    base = glow(base.resize((S, S), Image.LANCZOS), 7, 1.3)
+    frames = []
+    for f in range(n):
+        fr = base.copy()
+        top = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+        dt = ImageDraw.Draw(top)
+        for i, an in enumerate(ang):
+            t = math.radians(40 + 100 * i + f * 360 / n * (1 if i != 1 else -1))
+            x, y = a_ * math.cos(t), b_ * math.sin(t)
+            r = math.radians(an)
+            px, py = S / 2 + x * math.cos(r) - y * math.sin(r), S / 2 + x * math.sin(r) + y * math.cos(r)
+            dt.ellipse([px - 13, py - 13, px + 13, py + 13], fill=cols[i] + (255,))
+        top = glow(top, 8, 1.5)
+        nuc = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+        dn = ImageDraw.Draw(nuc)
+        pr = 1 + 0.12 * math.sin(2 * math.pi * f / n)
+        for rr, col in ((24 * pr, (255, 122, 26, 255)), (15 * pr, (255, 214, 120, 255)), (7 * pr, (255, 255, 255, 255))):
+            dn.ellipse([S / 2 - rr, S / 2 - rr, S / 2 + rr, S / 2 + rr], fill=col)
+        nuc = glow(nuc, 14, 1.8)
+        frames.append(over(over(fr, top), nuc))
+    to_gif(frames, "atom_orbit.gif", 60, 160)
+
+
+orbit_gif()
+
+
+# sodium ball racing around on water (fizz, bubbles, sparks)
+def sodium_gif(W=720, H=400, n=36):
+    rng = np.random.default_rng(4)
+    frames = []
+    water_y = int(H * 0.55)
+    ys, xs = np.mgrid[0:H, 0:W].astype(float)
+    wcol = np.zeros((H, W, 4))
+    depth = np.clip((ys - water_y) / (H - water_y), 0, 1)
+    wcol[..., 0] = 20 + 10 * (1 - depth)
+    wcol[..., 1] = 110 + 50 * (1 - depth)
+    wcol[..., 2] = 200 - 40 * depth
+    wcol[..., 3] = (ys > water_y) * 255
+    water = Image.fromarray(wcol.astype("uint8"), "RGBA")
+    sparks_state = []
+    for f in range(n):
+        t = f / n
+        fr = water.copy()
+        d = ImageDraw.Draw(fr)
+        # wavy surface
+        for x in range(0, W, 4):
+            yy = water_y + 4 * math.sin((x / 40.0) + 2 * math.pi * t * 2)
+            d.line([(x, yy), (x + 4, yy)], fill=(200, 235, 255, 255), width=3)
+        bx = W * (0.5 + 0.36 * math.sin(2 * math.pi * t * 2))
+        by = water_y - 12 + 6 * math.sin(2 * math.pi * t * 6)
+        # fizz bubbles behind
+        for j in range(10):
+            ph = (t * 3 + j * 0.13) % 1
+            x = bx - 40 * math.cos(2 * math.pi * t * 2) * ph * 2 + rng.normal(0, 8)
+            y = water_y + 18 + ph * 90
+            rr = 4 + 5 * (1 - ph)
+            d.ellipse([x - rr, y - rr, x + rr, y + rr], outline=(230, 250, 255, 200), width=2)
+        # silver ball
+        d.ellipse([bx - 20, by - 20, bx + 20, by + 20], fill=(210, 215, 230, 255), outline=(255, 255, 255, 255), width=2)
+        d.ellipse([bx - 11, by - 12, bx - 2, by - 3], fill=(255, 255, 255, 255))
+        # orange-yellow sparks
+        for j in range(8):
+            a = rng.uniform(0, 2 * math.pi)
+            ln_ = rng.uniform(14, 36)
+            x0, y0 = bx + math.cos(a) * 24, by + math.sin(a) * 24
+            if math.sin(a) > 0.4:
+                continue
+            d.line([x0, y0, x0 + math.cos(a) * ln_, y0 + math.sin(a) * ln_], fill=(255, rng.integers(150, 230), 30, 255), width=3)
+        frames.append(glow(fr, 5, 1.0))
+    to_gif(frames, "sodium_water.gif", 70, 200)
+
+
+sodium_gif()
+
+
+# pulsing sun
+def sun_gif(S=480, n=18):
+    sun_img = Image.open(os.path.join(OUT, "sun.png")).convert("RGBA").resize((S, S), Image.LANCZOS)
+    frames = []
+    for f in range(n):
+        sc = 1 + 0.035 * math.sin(2 * math.pi * f / n)
+        sz = int(S * sc)
+        im = sun_img.resize((sz, sz), Image.LANCZOS)
+        canvas = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+        canvas.paste(im, ((S - sz) // 2, (S - sz) // 2), im)
+        frames.append(canvas)
+    to_gif(frames, "sun_pulse.gif", 90, 200)
+
+
+sun_gif()
 
 with open(os.path.join(OUT, "meta.json"), "w") as f:
     json.dump(META, f)

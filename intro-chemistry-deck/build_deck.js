@@ -114,6 +114,10 @@ function chip(s, name, text, x, y, w, h, fill, color, o) {
 function card(s, name, x, y, w, h, o) {
   shp(s, ST.roundRect, name, x, y, w, h, Object.assign({ fill: C.text2, rectRadius: 0.18, line: { color: HEX.cardLine, width: 1.25 } }, o || {}));
 }
+function speech(s, name, text, x, y, w, h, o) {
+  s.addText(runs(text), Object.assign({ shape: ST.wedgeRoundRectCallout, x, y, w, h, fill: { color: "FFFFFF" }, line: { color: HEX.navy, width: 2 },
+    objectName: name, color: C.text1, fontSize: 20, bold: true, align: "center", valign: "middle", margin: 0.1 }, o || {}));
+}
 function glowShadow(hex, blur) { return { type: "outer", color: hex, blur: blur || 14, offset: 0, angle: 0, opacity: 0.65 }; }
 function note(text, title, extra) {
   curSlide.addNotes(text.trim());
@@ -136,13 +140,13 @@ async function main() {
     ["user", "FaUser", "FFFFFF"], ["micro", "FaMicroscope", "FFFFFF"], ["dna", "FaDna", "FFFFFF"], ["atom", "FaAtom", "FFFFFF"],
     ["hourglass", "FaHourglassHalf", HEX.yellow], ["drop", "FaTint", HEX.cyan], ["scale", "FaBalanceScale", HEX.green],
     ["paw", "FaPaw", HEX.green], ["bolt", "FaBolt", HEX.yellow], ["radiation", "FaRadiation", HEX.yellow], ["firew", "FaFire", "FFFFFF"],
-    ["snowc", "FaSnowflake", HEX.cyan], ["dropc", "FaTint", HEX.cyan], ["flask", "FaFlask", HEX.green],
+    ["snowc", "FaSnowflake", HEX.cyan], ["no", "FaTimesCircle", HEX.pink], ["yes", "FaCheckCircle", HEX.green], ["dropc", "FaTint", HEX.cyan], ["flask", "FaFlask", HEX.green],
   ]);
 
-  // ============================================================ 1. TITLE
+  // ============================================================ 1. old 1
   pres.addSection({ title: "Welcome" });
   let s = newSlide("TITLE", "Welcome", "Chemistry", "title");
-  s.addImage({ path: IMG("orbits.png"), x: 6.9, y: 0.95, w: 5.9, h: 5.9, objectName: "orbits" });
+  s.addImage({ path: IMG("atom_orbit.gif"), x: 6.9, y: 0.95, w: 5.9, h: 5.9, objectName: "orbits" });
   txt(s, "tag", "DAY ONE", 0.8, 1.45, 3.4, 0.45, { fontSize: 18, bold: true, color: C.accent1, charSpacing: 8 });
   txt(s, "subtitle", "Why does anything\ndo anything?", 0.8, 4.05, 6.2, 1.7, { fontSize: 40, bold: true, color: C.accent3, valign: "top" });
   txt(s, "tagline", "A 15-minute tour of the whole course", 0.8, 6.05, 6.2, 0.5, { fontSize: 20, color: C.background2 });
@@ -159,7 +163,7 @@ Welcome to chemistry! Before we do syllabus, seating charts, or bathroom-pass ru
 Why does a match burst into flame? Why does iron rust? Why does baking soda fizz in vinegar? By the end of the year you won't just know THAT these things happen. You'll be able to explain why. And I promise: we start with fire. Nobody has ever fallen asleep during fire.
 `, "Chemistry: Why does anything do anything?");
 
-  // ============================================================ 2. MACRO
+  // ============================================================ 2. old 2
   s = newSlide("CONTENT", "Welcome", "Here is the world you already know");
   const macro = [["fire", "Fire burns", HEX.orange], ["cogs", "Iron rusts", HEX.pink], ["snow", "Ice melts", HEX.cyan], ["cake", "Cake rises", HEX.yellow]];
   macro.forEach(([k, label, col], i) => {
@@ -185,7 +189,7 @@ Why does iron rust but gold sits there looking smug for thousands of years? Why 
 Chemistry is basically the answer to every little kid's favorite question, "but why?", except in here we actually get to answer it.
 `, "The world you already know");
 
-  // ============================================================ 3. ZOOM
+  // ============================================================ 3. old 3
   pres.addSection({ title: "Atoms" });
   s = newSlide("CONTENT", "Atoms", "So let's zoom in…");
   const zoomItems = [
@@ -211,7 +215,7 @@ So let's zoom in. [CLICK] Start with you: about a meter tall. [CLICK] Zoom in on
 [CLICK] Everything you have ever touched, your phone, your shoes, your lunch, is made of atoms. And yes, that includes the lunch you're hoping this talk doesn't delay.
 `, "Zoom in to atoms");
 
-  // ============================================================ 4. ATOM SIZES
+  // ============================================================ 4. old 4
   s = newSlide("CONTENT", "Atoms", "…but not all atoms are alike");
   txt(s, "s4sub", "Relative sizes, drawn to scale", 0.6, 1.3, 12.1, 0.45, { fontSize: 20, color: C.background2 });
   const atoms = [["He", "Helium", 28, "FDE68A"], ["H", "Hydrogen", 31, "7DD3FC"], ["O", "Oxygen", 66, "FF5A6E"], ["C", "Carbon", 76, "B0B6C8"],
@@ -235,7 +239,7 @@ But here's the twist: not all atoms are the same. [CLICK] Here are a few, drawn 
 [CLICK] And it's not only size. Different atoms behave differently. Some atoms never react with anything. Some will explode if they so much as meet water. Atoms have personalities, just like you, except with fewer social media accounts.
 `, "Not all atoms are alike");
 
-  // ============================================================ 5. INSIDE THE ATOM
+  // ============================================================ 5. old 5
   s = newSlide("CONTENT", "Atoms", "What is an atom made of?");
   s.addImage({ path: IMG("cloud.png"), x: 0.3, y: 1.45, w: 5.6, h: 5.6, objectName: "cloud" });
   chip(s, "chipE", "Electrons (−): a fast, fuzzy cloud", 0.7, 6.55, 4.6, 0.5, HEX.cyan, C.text1);
@@ -261,7 +265,7 @@ So what IS an atom? [CLICK] Mostly... nothing. The outside of an atom is a fuzzy
 Which means you, me, and this desk are almost entirely empty space. And yet you can't walk through walls. Hold on to that thought. That's a chemistry question, and we're going to answer it.
 `, "What is an atom made of?");
 
-  // ============================================================ 6. PROTONS = IDENTITY
+  // ============================================================ 6. old 6
   s = newSlide("CONTENT", "Atoms", "The number of protons decides who you are");
   const els = [["H", "Hydrogen", 1, "lightest atom, fuel of stars", HEX.cyan], ["C", "Carbon", 6, "the backbone of life", "C4B5FD"],
     ["O", "Oxygen", 8, "what you are breathing", HEX.pink], ["Au", "Gold", 79, "worth keeping", HEX.yellow]];
@@ -287,9 +291,112 @@ Here's the big idea. Atoms are all built from the same three ingredients: proton
 [CLICK] Count the protons, and you know the element. Each type of atom got a name, and those names are what we call the elements. It's like LEGO: same bricks, different counts, completely different set. And hang on to this idea, because at the very end of the talk, we're going to break the rule.
 `, "Protons decide the element");
 
-  // ============================================================ 7. PERIODIC TABLE
-  pres.addSection({ title: "Periodic Table and Electrons" });
-  s = newSlide("CONTENT", "Periodic Table and Electrons", "The periodic table: chemistry's cheat sheet");
+  // ============================================================ 7. STATES
+  pres.addSection({ title: "How Atoms Behave" });
+  s = newSlide("CONTENT", "How Atoms Behave", "So how do these atoms behave?");
+  const stPanels = [
+    ["LOW ENERGY", "SOLID", "locked in place, just vibrating", HEX.cyan, 0.05, 280, 0.4],
+    ["MEDIUM ENERGY", "LIQUID", "slide past each other", HEX.yellow, 0.26, 1300, 0.4],
+    ["HIGH ENERGY", "GAS", "fly free in every direction", HEX.orange, 0.55, 850, 0.34],
+  ];
+  const stPts = [
+    [0, 1, 2, 3].flatMap((r) => [0, 1, 2, 3].map((c) => [0.625 + c * 0.6, 0.325 + r * 0.6])),
+    [[0.25, 1.1], [0.85, 0.95], [1.45, 1.15], [2.05, 0.95], [2.65, 1.1], [0.5, 1.55], [1.1, 1.65], [1.7, 1.5], [2.3, 1.65], [2.8, 1.55], [0.3, 2.0], [0.9, 2.1], [1.55, 2.05], [2.2, 2.1], [2.75, 2.0]],
+    [[0.7, 0.5], [1.9, 0.6], [2.6, 1.3], [0.6, 1.5], [1.5, 1.2], [2.2, 2.0], [1.0, 2.0], [2.5, 0.4]],
+  ];
+  stPanels.forEach(([tag, state, desc, col, amp, dur, pd], bi) => {
+    const x = [0.6, 4.7, 8.8][bi];
+    card(s, `st${bi}c`, x, 1.55, 3.95, 4.9);
+    txt(s, `st${bi}h`, P([[tag, { fontSize: 16, bold: true, color: col }], [state, { fontSize: 38, bold: true }], [desc, { fontSize: 16, color: C.background2 }]]), x + 0.1, 1.65, 3.75, 1.65, { align: "center", valign: "top" });
+    shp(s, ST.rect, `st${bi}b`, x + 0.25, 3.4, 3.45, 2.85, { fill: HEX.navy, line: { color: C.background1, width: 2.5 } });
+    stPts[bi].forEach(([px, py], i) => shp(s, ST.ellipse, `st${bi}p${i}`, x + 0.25 + px, 3.4 + py, pd, pd, { fill: col, shadow: glowShadow(col, 8) }));
+    click("fade", [`st${bi}c`, `st${bi}h`, `st${bi}b`].concat(stPts[bi].map((_, i) => `st${bi}p${i}`)), { dur: 600 });
+    stPts[bi].forEach((_, i) => {
+      const a = (i * 137.5 * Math.PI) / 180;
+      withp("loop", [`st${bi}p${i}`], { dur: dur + (i % 4) * 130, dx: (Math.cos(a) * amp) / SW, dy: (Math.sin(a) * amp * 0.8) / SH, delay: 0.5 });
+    });
+  });
+  txt(s, "stcap", "Same atoms. Different energy. Different behavior.", 0.6, 6.6, 12.1, 0.6, { fontSize: 28, bold: true, align: "center", color: C.accent3 });
+  click("zoom", "stcap", { dur: 600 });
+  note(`
+We know what atoms are. So how do these atoms BEHAVE? It turns out the first thing that decides it is energy. [CLICK] Low-energy atoms barely move. They just vibrate in place, locked into position. That's a solid. [CLICK] Give them more energy and they break out of their spots and slide around each other. That's a liquid. [CLICK] Give them a LOT of energy and they fly off in every direction, around a thousand miles an hour in room air, bumping into each other and the walls billions of times a second. That's a gas, and those bumps on the walls are what you feel as pressure.
+
+[CLICK] Same atoms. Different energy. Different behavior. Ice, water, and steam are all the same H2O.
+
+But that raises a question. If atoms have all this energy to fly around, why does anything ever stay solid or liquid? Something has to be holding them together.
+`, "States of matter: how atoms behave");
+
+  // ============================================================ 8. old 18
+  s = newSlide("CONTENT", "How Atoms Behave", "What holds them together?");
+  const mols = [["A", [2.0, 2.65], [21, 125.5]], ["B", [4.3, 3.55], [-30, 74.5]], ["C", [6.1, 2.35], [20, 124.5]], ["E", [4.9, 5.7], [60, 164.5]]];
+  const dirv = (deg) => [Math.cos((deg * Math.PI) / 180), Math.sin((deg * Math.PI) / 180)];
+  const Opos = Object.fromEntries(mols.map(([k, p]) => [k, p]));
+  const hb = [["A", 0, "B"], ["B", 0, "C"], ["B", 1, "E"]];
+  hb.forEach(([k, hi, target], i) => {
+    const [ox, oy] = Opos[k]; const [dx, dy] = dirv(mols.find((m) => m[0] === k)[2][hi]);
+    const hx = ox + dx * 0.62, hy = oy + dy * 0.62;
+    ln(s, `h18l${i}`, hx, hy, Opos[target][0], Opos[target][1], { color: HEX.yellow, w: 3, dash: "dash" });
+  });
+  mols.forEach(([k, [ox, oy], angs]) => {
+    angs.forEach((a, hi) => {
+      const [dx, dy] = dirv(a);
+      shp(s, ST.ellipse, `h18${k}h${hi}`, ox + dx * 0.62 - 0.26, oy + dy * 0.62 - 0.26, 0.52, 0.52, { fill: "7DD3FC" });
+    });
+    shp(s, ST.ellipse, `h18${k}o`, ox - 0.45, oy - 0.45, 0.9, 0.9, { fill: "FF5A6E", shadow: glowShadow("FF5A6E", 10) });
+  });
+  txt(s, "h18lab", "hydrogen bonds", 2.2, 4.55, 2.2, 0.45, { fontSize: 18, bold: true, color: HEX.yellow, align: "center" });
+  const imf = [["snowc", "Why ice floats"], ["paw", "Why geckos climb walls"], ["dropc", "Why sweating cools you"]];
+  imf.forEach(([k, t], i) => {
+    card(s, `i18c${i}`, 7.9, 1.75 + i * 1.7, 4.85, 1.45);
+    icon(s, `i18i${i}`, k, 8.2, 2.1 + i * 1.7, 0.75);
+    txt(s, `i18t${i}`, t, 9.2, 1.85 + i * 1.7, 3.4, 1.25, { fontSize: 24, bold: true });
+  });
+  click("fade", ["h18l0", "h18l1", "h18l2", "h18lab"], { dur: 700, stagger: 0.25 });
+  imf.forEach((_, i) => { if (i === 0) click("zoom", [`i18c${i}`], { dur: 450 }); else after("zoom", [`i18c${i}`], { dur: 450 }); withp("zoom", [`i18i${i}`, `i18t${i}`], { dur: 450 }); });
+  note(`
+Something is holding them together: atoms and molecules are attracted to each other. [CLICK] Water is the star example. Each molecule has a slightly positive end and a slightly negative end, like a tiny bent magnet, and they cling to each other along these dashed lines called hydrogen bonds. So there's a tug-of-war going on: the attraction pulls the molecules together, and their energy pulls them apart. Low energy: attraction wins, and you get a solid. Medium energy: it's a draw, a liquid. High energy: the energy wins, and you get a gas.
+
+[CLICK] That one idea explains a pile of everyday mysteries. Why ice floats, which is very unusual for a solid, and is the reason lakes freeze from the top and fish survive the winter. Why geckos can walk up walls: no glue, just tiny attractions between molecules, adding up. And why sweating cools you down: the water has to absorb energy to break those attractions and escape your skin.
+
+So atoms and molecules attract each other. The stronger the attraction, the harder they are to pull apart. Which raises a bigger question: what happens when that attraction gets REALLY strong?
+`, "Intermolecular forces");
+
+  // ============================================================ 9. old 11
+  pres.addSection({ title: "Bonding and Electrons" });
+  s = newSlide("CONTENT", "Bonding and Electrons", "What happens when two atoms get close?");
+  s.addImage({ path: IMG("mascot_h.png"), x: 0.35, y: 2.5, w: 2.2, h: 2.2, objectName: "n11a" });
+  s.addImage({ path: IMG("mascot_h.png"), x: 3.85, y: 2.5, w: 2.2, h: 2.2, objectName: "n11b" });
+  shp(s, ST.heart, "n11heart", 1.8, 1.95, 0.7, 0.65, { fill: HEX.pink, shadow: glowShadow(HEX.pink, 12) });
+  txt(s, "n11lab", "Two hydrogen atoms, drifting closer", 0.5, 4.8, 5.5, 0.55, { fontSize: 20, color: C.background2, align: "center" });
+  const mw = META.bondwell, cx0 = 6.5, cy0 = 1.7, cw = 6.4, ch = cw * mw.h / mw.w;
+  s.addImage({ path: IMG("bondwell.png"), x: cx0, y: cy0, w: cw, h: ch, objectName: "well" });
+  txt(s, "wellY", "Energy", cx0 - 0.1, cy0 + 0.05, 0.9, 0.4, { fontSize: 16, bold: true, color: HEX.lav, align: "left" });
+  txt(s, "wellX", "Distance between the atoms →", cx0 + 1.2, cy0 + ch - 0.4, 4.9, 0.4, { fontSize: 16, bold: true, color: HEX.lav, align: "center" });
+  txt(s, "wellZero", "far apart: zero", cx0 + cw - 2.2, cy0 + mw.zero_y * ch - 0.5, 2.1, 0.4, { fontSize: 15, color: HEX.muted, align: "right" });
+  const p0 = mw.path[0];
+  const dotX = cx0 + p0[0] * cw - 0.17, dotY = cy0 + p0[1] * ch - 0.17;
+  shp(s, ST.ellipse, "dot11", dotX, dotY, 0.34, 0.34, { fill: HEX.yellow, shadow: glowShadow(HEX.yellow, 12) });
+  chip(s, "rel11", "ENERGY RELEASED = a BOND", cx0 + 0.9, cy0 + ch + 0.25, 5.0, 0.7, HEX.orange, C.text1, { fontSize: 24 });
+  txt(s, "low11", "Lower energy = happier atoms", 0.5, 5.5, 5.5, 0.55, { fontSize: 22, bold: true, color: HEX.yellow, align: "center" });
+  const dotPath = mw.path.map(([x, y]) => [(x - p0[0]) * cw / SW, (y - p0[1]) * ch / SH]);
+  click("fade", ["well", "wellY", "wellX", "wellZero", "dot11"], { dur: 700 });
+  click("movepath", ["dot11"], { dur: 3200, pts: dotPath });
+  withp("move", ["n11b"], { dur: 3200, dx: -2.1 / SW, dy: 0 });
+  withp("fade", ["low11"], { dur: 600, delay: 2.4 });
+  after("zoom", ["rel11"], { dur: 500 });
+  after("pulse", ["rel11"], { dur: 400 });
+  withp("zoom", ["n11heart"], { dur: 500 });
+  after("pulse", ["n11heart"], { dur: 500 });
+  note(`
+Let's find out. Take two atoms and push them toward each other. [CLICK] This graph tells the story. Energy goes up the side, and the distance between the atoms goes along the bottom. When they're far apart they don't feel each other: zero.
+
+[CLICK] Now push them closer. The electrons of each get pulled toward the nucleus of the other, and the energy DROPS, like a ball rolling down into a valley. At just the right distance, the energy hits the bottom. That's the happiest spot for the pair, and the energy they gave up doesn't vanish: it's released as heat and light. Atoms stuck together at that distance: that is a chemical bond. Push them even closer and they repel, so the energy shoots back up the other side. Collide them with enough energy, and they can fall into that valley and stay.
+
+But here's the thing: not every pair of atoms wants to fall into that valley. Some atoms are desperate to bond. Some want nothing to do with anyone. Who's who? The periodic table can tell you.
+`, "Atoms approach: energy is released");
+
+  // ============================================================ 10. old 7
+  s = newSlide("CONTENT", "Bonding and Electrons", "Who bonds? The periodic table knows");
   const SYM = "H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf Db Sg Bh Hs Mt Ds Rg Cn Nh Fl Mc Lv Ts Og".split(" ");
   if (SYM.length !== 118) throw new Error("need 118 symbols, got " + SYM.length);
   const pos = (Z) => {
@@ -326,10 +433,10 @@ Here's the big idea. Atoms are all built from the same three ingredients: proton
     });
   });
   const capBox = (name, big, small, col) => txt(s, name, P([[big, { fontSize: 30, bold: true, color: col }], [small, { fontSize: 22, color: C.background1 }]]), 2.0, 1.5, 6.6, 1.65, { valign: "top", align: "left" });
-  capBox("cap0", "118 elements. One page.", "Patterns everywhere.", HEX.cyan);
-  capBox("cap1", "ALKALI METALS", "Soft, shiny, and explosive in water", HEX.pink);
-  capBox("cap2", "HALOGENS", "Desperate to steal one electron", HEX.green);
-  capBox("cap3", "NOBLE GASES", "Too cool to react with anyone", HEX.violet);
+  capBox("cap0", "Some atoms bond eagerly.", "Some never will.", HEX.cyan);
+  capBox("cap1", "ALKALI METALS", "Give up 1 electron: bond with almost anything", HEX.pink);
+  capBox("cap2", "HALOGENS", "Desperate to grab 1 electron: also eager", HEX.green);
+  capBox("cap3", "NOBLE GASES", "Perfectly content: they almost never bond", HEX.violet);
   capBox("cap4", "TRANSITION METALS", "Iron, copper, gold: the metals you know", HEX.yellow);
   capBox("cap5", "Same column, same personality", "Because of their outer electrons", HEX.cyan);
   const famIds = ["alk", "hal", "nob", "trn"];
@@ -343,15 +450,36 @@ Here's the big idea. Atoms are all built from the same three ingredients: proton
   // cap0 is the only caption visible at the start: hide the rest by giving them an entrance
   // (done in add_animations.py via the "initially hidden" rule: every captured target of an entrance effect is hidden at start)
   note(`
-People noticed something over hundreds of years of studying matter: if you line the elements up by number of protons, the behavior REPEATS. Mendeleev's version of this table, in 1869, was so good that he left gaps for elements nobody had discovered yet, and he was right. That's the power of this thing. This is the Bible of chemistry: 118 elements on one page, and an enormous amount of information hiding in it.
+Who's who? People noticed something over hundreds of years: if you line the elements up by number of protons, the behavior REPEATS. Mendeleev's version of this table, in 1869, was so good that he left gaps for elements nobody had discovered yet, and he was right. This is the Bible of chemistry: 118 elements on one page, with an enormous amount of information hiding in it.
 
-[CLICK] The far left column: alkali metals. Soft enough to cut with a butter knife, and they go wild in water. [CLICK] Near the right: the halogens, desperate to steal one electron. [CLICK] The far right: the noble gases, the introverts of chemistry. They don't want to interact with anybody. [CLICK] And the big middle block: the transition metals. Iron, copper, gold, the metals you actually know.
+[CLICK] The far left column: the alkali metals. Each one is eager to give away a single electron, so they bond with almost anything. [CLICK] Near the right: the halogens, desperate to grab one electron. Also eager. [CLICK] The far right: the noble gases. Perfectly content, so they almost never bond with anybody. [CLICK] And the big middle block: the transition metals. Iron, copper, gold, the metals you actually know.
 
-[CLICK] The rule that makes the table so useful: same column, same personality. It's a seating chart arranged so that families with the same attitude sit together. And we'll find out why the columns match later in this talk, so hold that thought.
+[CLICK] The rule that makes the table so useful: same column, same personality. It's a seating chart arranged so that families with the same attitude sit together. And that attitude comes from their electrons, which we'll get to in a minute. First, let's see that attitude in action.
 `, "The periodic table");
 
-  // ============================================================ 8. ALKALI FAMILY
-  s = newSlide("CONTENT", "Periodic Table and Electrons", "Same family, same personality");
+  // ============================================================ 11. PARTY
+  s = newSlide("CONTENT", "Bonding and Electrons", "Chemistry is basically a party");
+  const party = [
+    ["alkali", "Alkali metals", "I have an electron I'd GLADLY give away!", HEX.pink, 0.55, 3.0, 3.0],
+    ["halogen", "Halogens", "Anybody got a spare electron?!", HEX.green, 4.65, 3.0, 3.0],
+    ["noble", "Noble gases", "I'm good.", HEX.cyan, 9.4, 3.9, 2.4],
+  ];
+  party.forEach(([k, label, line, col, x, my, msz], i) => {
+    speech(s, `pty${i}b`, line, x + 0.1, 1.55, i === 2 ? 2.2 : 3.4, i === 2 ? 0.8 : 1.3, { fontSize: i === 2 ? 26 : 21 });
+    s.addImage({ path: IMG(`mascot_${k}.png`), x: x + 0.2, y: my, w: msz, h: msz, objectName: `pty${i}m` });
+    chip(s, `pty${i}l`, label, x + 0.4, 6.35, 2.6, 0.55, col, C.text1, { fontSize: 20 });
+    click("zoom", [`pty${i}m`], { dur: 500 });
+    withp("zoom", [`pty${i}b`], { dur: 450, delay: 0.5 });
+    withp("fade", [`pty${i}l`], { dur: 500, delay: 0.3 });
+  });
+  withp("loop", ["pty0m"], { dur: 380, dx: 0, dy: -0.22 / SH, delay: 1.0 });
+  withp("loop", ["pty1m"], { dur: 120, dx: 0.06 / SW, dy: 0, delay: 1.0 });
+  note(`
+Let's put that in party terms. [CLICK] The alkali metals walk in: "I have an electron I would GLADLY give away!" [CLICK] The halogens, right behind them: "Wait, does anybody have a spare electron?!" Instant best friends. Put them together and they bond, and fast. [CLICK] And in the corner, sunglasses on: the noble gases. "I'm good." They already have what they need, so they don't bond with anyone. If you're an introvert at parties, congratulations, you're a noble gas.
+`, "Party chemistry");
+
+  // ============================================================ 12. old 8
+  s = newSlide("CONTENT", "Bonding and Electrons", "Same family, same personality");
   txt(s, "s8sub", "Alkali metals dropped into water", 0.6, 1.3, 8.0, 0.45, { fontSize: 20, color: C.background2 });
   const alk = [["Li", "Lithium", "calm fizz", 0.9, "FFD23F"], ["Na", "Sodium", "zips and burns", 1.55, "FFB020"], ["K", "Potassium", "lilac flames", 2.2, "FF8A1F"],
     ["Rb", "Rubidium", "violent", 2.85, "FF5A3C"], ["Cs", "Cesium", "explodes", 3.5, "FF2D55"]];
@@ -373,13 +501,30 @@ People noticed something over hundreds of years of studying matter: if you line 
   txt(s, "b8arrowt", "more reactive", 11.95, 3.4, 0.7, 1.7, { fontSize: 15, bold: true, color: C.accent2, rotate: 90, align: "center" });
   click("fade", ["b8card", "b8hd", "b8arrow", "b8arrowt", "b8cell0", "b8cell1", "b8cell2", "b8cell3", "b8cell4"], { dur: 600 });
   note(`
-Same column means same family, but with a twist. Watch what happens when you drop alkali metals into water, from the top of the column to the bottom. [CLICK] Lithium: a calm, polite fizz. Sodium: zips around the water, melts into a ball, and may catch fire. Potassium: bursts into lilac flames right away. Rubidium: violent. And cesium: it blows up so hard that it can shatter the glass container.
+Let's test the word "eager" with the alkali metals. Drop them in water, from the top of the column to the bottom. [CLICK] Lithium: a calm, polite fizz. Sodium: zips around, melts into a ball, and may catch fire. Potassium: lilac flames right away. Rubidium: violent. And cesium: it blows up so hard it can shatter the glass container.
 
-[CLICK] Same family, same kind of reaction, but each step down the column gets more dramatic. It's like a group chat: it escalates. And you can PREDICT that just from where they sit on the table. You can bet that francium, at the very bottom, is the wildest of them all. We just can't collect enough of it to prove it: it's so radioactive that it falls apart in minutes, and there's estimated to be only about an ounce of it in the entire Earth's crust at any moment.
+[CLICK] Same family, same kind of reaction, but each step down the column gets more dramatic. It's like a group chat: it escalates. You can predict that just from where they sit on the table. Francium, at the very bottom, should be the wildest of all. We just can't collect enough of it to prove it: it's so radioactive that it falls apart in minutes, and there's estimated to be only about an ounce of it in the entire Earth's crust at any moment.
+
+So why? Why would one more row make the drama worse, and why do the noble gases stay so calm? The answer is the same for everything in this class: the electrons.
 `, "Same family, same personality");
 
-  // ============================================================ 9. ELECTRON ENERGY LEVELS
-  s = newSlide("CONTENT", "Periodic Table and Electrons", "Electrons live on energy levels");
+  // ============================================================ 13. SODIUM
+  s = newSlide("CONTENT", "Bonding and Electrons", "Meanwhile, sodium and water");
+  s.addImage({ path: IMG("mascot_sodium.png"), x: 0.5, y: 2.9, w: 3.2, h: 3.2, objectName: "sod_m" });
+  speech(s, "sod_b", "Watch this.", 0.7, 1.6, 2.6, 0.9, { fontSize: 28 });
+  s.addImage({ path: IMG("sodium_water.gif"), x: 4.2, y: 1.75, w: 8.5, h: 4.72, objectName: "sod_gif" });
+  txt(s, "sod_cap", "Do not try this at home. Seriously.", 0.6, 6.6, 12.1, 0.55, { fontSize: 28, bold: true, align: "center", color: C.accent3 });
+  click("zoom", ["sod_m"], { dur: 500 });
+  withp("zoom", ["sod_b"], { dur: 450, delay: 0.5 });
+  click("fade", ["sod_gif"], { dur: 600 });
+  click("zoom", ["sod_cap"], { dur: 500 });
+  after("pulse", ["sod_cap"], { dur: 400 });
+  note(`
+Quick sidebar on that alkali family. [CLICK] Sodium: "Watch this." [CLICK] Drop it in water and it skates around the surface, fizzing, melts into a shiny ball, and can burst into flame. It gives up that outer electron to the water so eagerly that the reaction releases a lot of heat. [CLICK] Do not try this at home. Not even a little bit. That's exactly why we have a lab, goggles, and a teacher who has done this before.
+`, "Sodium meets water");
+
+  // ============================================================ 14. old 9
+  s = newSlide("CONTENT", "Bonding and Electrons", "It all comes down to electrons");
   const lvlY = [6.2, 4.2, 3.1, 2.4];
   lvlY.forEach((y, i) => {
     ln(s, `l9${i}`, 1.5, y, 5.6, y, { color: HEX.lav, w: 3 });
@@ -406,20 +551,20 @@ Same column means same family, but with a twist. Watch what happens when you dro
   withp("fadeout", ["ph9"], { dur: 500, delay: 0.8 });
   click("fade", ["c9c2", "c9t2"], { dur: 500 });
   note(`
-Remember how I said electrons do almost all the chemistry? Here's how they behave. Electrons live on energy levels, like floors of a building. But with a strange rule: an electron can stand ON a floor, never between floors.
+Remember, electrons are the outside of the atom, so they're what actually meets other atoms. Here's how they behave. Electrons live on energy levels, like floors of a building, with one strange rule: an electron can stand ON a floor, never between floors.
 
-[CLICK] Give an electron some energy, like heat, and it jumps UP a level. [CLICK] But it can't stay up there. It falls back down, and the energy it had to give up leaves as a flash of LIGHT. [CLICK] And the bigger the drop, the different the color.
+[CLICK] Give an electron some energy, like heat, and it jumps UP a level. [CLICK] But it can't stay up there. It falls back down, and the energy it had to give up leaves as a flash of LIGHT. [CLICK] The bigger the drop, the different the color.
 
-Electrons are the world's worst climbers: they go up, they immediately fall, and then they glow about it. Which brings us to one of the best party tricks in all of science.
+Electrons are the world's worst climbers: they go up, they immediately fall, and then they glow about it. And that gives us one of the best party tricks in all of science.
 `, "Electrons live on energy levels");
 
-  // ============================================================ 10. FLAME COLORS
-  s = newSlide("CONTENT", "Periodic Table and Electrons", "Every element glows its own color");
+  // ============================================================ 15. old 10
+  s = newSlide("CONTENT", "Bonding and Electrons", "Every element glows its own color");
   const fl = [["li", "Li", "Lithium", "crimson", "FF3355"], ["na", "Na", "Sodium", "yellow-orange", "FFC81E"], ["k", "K", "Potassium", "lilac", "B58CFF"],
     ["ca", "Ca", "Calcium", "orange-red", "FF7A2E"], ["cu", "Cu", "Copper", "green", "2EE08A"]];
   fl.forEach(([key, sym, name, colname, col], i) => {
     const x = 0.75 + i * 2.4;
-    s.addImage({ path: IMG(`flame_${key}.png`), x, y: 1.6, w: 2.0, h: 3.33, objectName: `f10${i}`, altText: `${name} flame test, ${colname}` });
+    s.addImage({ path: IMG(`flame_${key}.gif`), x, y: 1.6, w: 2.0, h: 3.33, objectName: `f10${i}`, altText: `${name} flame test, ${colname}` });
     txt(s, `f10t${i}`, P([[sym, { fontSize: 34, bold: true, color: col }], [name, { fontSize: 18, bold: true }], [colname, { fontSize: 16, color: C.background2 }]]), x - 0.2, 5.0, 2.4, 1.45, { align: "center", valign: "top" });
     if (i === 0) click("fade", [`f10${i}`], { dur: 700 }); else after("fade", [`f10${i}`], { dur: 600 });
     withp("fade", [`f10t${i}`], { dur: 600, delay: 0.2 });
@@ -427,46 +572,59 @@ Electrons are the world's worst climbers: they go up, they immediately fall, and
   txt(s, "f10cap", "Fireworks, neon signs, and how we know what stars are made of", 0.6, 6.6, 12.1, 0.55, { fontSize: 22, bold: true, align: "center", color: C.accent3 });
   click("fade", "f10cap", { dur: 700 });
   note(`
-Every kind of atom has its own pattern of drops, so every element glows its own color. This is called a flame test. [CLICK] Lithium: crimson. Sodium: that yellow-orange glow of old street lamps. Potassium: a pretty lilac. Calcium: orange-red. Copper: green.
+Every kind of atom has its own pattern of drops, so every element glows its own color. This is called a flame test. [CLICK] Lithium: crimson. Sodium: the yellow-orange glow of old street lamps. Potassium: a pretty lilac. Calcium: orange-red. Copper: green.
 
-[CLICK] This is exactly how fireworks get their colors. And it's how astronomers figure out what stars are made of: they have never visited a star, they just read its light. Light is a message from the electrons, and you will learn to read it. You'll be doing flame tests yourselves in this class.
+[CLICK] This is exactly how fireworks get their colors, and it's how astronomers figure out what stars are made of: they've never visited a star, they just read its light. You'll be doing flame tests yourselves in this class.
+
+And it proves something important: electrons really do sit on levels, in layers. The outermost layer is the one that touches other atoms. So let's look at that outer layer.
 `, "Flame tests");
 
-  // ============================================================ 11. ATOMS APPROACH: ENERGY
-  pres.addSection({ title: "Bonds and Reactions" });
-  s = newSlide("CONTENT", "Bonds and Reactions", "What happens when two atoms get close?");
-  shp(s, ST.ellipse, "n11a", 0.7, 2.9, 1.5, 1.5, { fill: "7DD3FC", shadow: glowShadow("7DD3FC", 14) });
-  shp(s, ST.ellipse, "n11b", 4.2, 2.9, 1.5, 1.5, { fill: "7DD3FC", shadow: glowShadow("7DD3FC", 14) });
-  txt(s, "n11ta", "H", 0.7, 2.9, 1.5, 1.5, { fontSize: 44, bold: true, align: "center", color: C.text1 });
-  txt(s, "n11tb", "H", 4.2, 2.9, 1.5, 1.5, { fontSize: 44, bold: true, align: "center", color: C.text1 });
-  txt(s, "n11lab", "Two hydrogen atoms, drifting closer", 0.5, 4.85, 5.5, 0.55, { fontSize: 20, color: C.background2, align: "center" });
-  const mw = META.bondwell, cx0 = 6.5, cy0 = 1.7, cw = 6.4, ch = cw * mw.h / mw.w;
-  s.addImage({ path: IMG("bondwell.png"), x: cx0, y: cy0, w: cw, h: ch, objectName: "well" });
-  txt(s, "wellY", "Energy", cx0 - 0.1, cy0 + 0.05, 0.9, 0.4, { fontSize: 16, bold: true, color: HEX.lav, align: "left" });
-  txt(s, "wellX", "Distance between the atoms →", cx0 + 1.2, cy0 + ch - 0.4, 4.9, 0.4, { fontSize: 16, bold: true, color: HEX.lav, align: "center" });
-  txt(s, "wellZero", "far apart: zero", cx0 + cw - 2.2, cy0 + mw.zero_y * ch - 0.5, 2.1, 0.4, { fontSize: 15, color: HEX.muted, align: "right" });
-  const p0 = mw.path[0];
-  const dotX = cx0 + p0[0] * cw - 0.17, dotY = cy0 + p0[1] * ch - 0.17;
-  shp(s, ST.ellipse, "dot11", dotX, dotY, 0.34, 0.34, { fill: HEX.yellow, shadow: glowShadow(HEX.yellow, 12) });
-  chip(s, "rel11", "ENERGY RELEASED = a BOND", cx0 + 0.9, cy0 + ch + 0.25, 5.0, 0.7, HEX.orange, C.text1, { fontSize: 24 });
-  txt(s, "low11", "Lower energy = happier atoms", 0.5, 5.5, 5.5, 0.55, { fontSize: 22, bold: true, color: HEX.yellow, align: "center" });
-  const dotPath = mw.path.map(([x, y]) => [(x - p0[0]) * cw / SW, (y - p0[1]) * ch / SH]);
-  click("fade", ["well", "wellY", "wellX", "wellZero", "dot11"], { dur: 700 });
-  click("movepath", ["dot11"], { dur: 3200, pts: dotPath });
-  withp("move", ["n11b", "n11tb"], { dur: 3200, dx: -2.1 / SW, dy: 0 });
-  withp("fade", ["low11"], { dur: 600, delay: 2.4 });
-  after("zoom", ["rel11"], { dur: 500 });
-  after("pulse", ["rel11"], { dur: 400 });
+  // ============================================================ 16. OUTER
+  s = newSlide("CONTENT", "Bonding and Electrons", "The outer electrons decide who bonds");
+  const OY = 3.35, RR = [0.5, 0.9, 1.3];
+  const atomDefs = [
+    { key: "na", x: 2.5, sym: "Na", shells: [2, 8, 1], col: "C084FC", name: "Sodium", line: "1 outer electron: wants to GIVE it away", lc: HEX.violet },
+    { key: "cl", x: 6.5, sym: "Cl", shells: [2, 8, 7], col: "5BE584", name: "Chlorine", line: "7 outer electrons: wants to GRAB one", lc: HEX.green },
+    { key: "ne", x: 10.6, sym: "Ne", shells: [2, 8], col: "7DD3FC", name: "Neon", line: "8 outer electrons: full, needs nothing", lc: HEX.cyan },
+  ];
+  atomDefs.forEach((a, ai) => {
+    const names = [];
+    a.shells.forEach((n, si) => {
+      const r = RR[si];
+      shp(s, ST.ellipse, `o16r_${a.key}${si}`, a.x - r, OY - r, 2 * r, 2 * r, { line: { color: "6C7AC9", width: 1.5 } });
+      names.push(`o16r_${a.key}${si}`);
+      const outer = si === a.shells.length - 1;
+      const slots = outer && a.key === "cl" ? 8 : n;
+      for (let k = 0; k < slots; k++) {
+        if (outer && a.key === "cl" && k === 4) continue;
+        const ang = ((outer ? 0 : (n === 2 ? 90 : 22.5)) + (k * 360) / slots) * Math.PI / 180;
+        const nm = `o16e_${a.key}_${si}_${k}`;
+        shp(s, ST.ellipse, nm, a.x + r * Math.cos(ang) - 0.085, OY + r * Math.sin(ang) - 0.085, 0.17, 0.17, { fill: outer ? HEX.yellow : HEX.cyan, shadow: glowShadow(outer ? HEX.yellow : HEX.cyan, 6) });
+        names.push(nm);
+      }
+    });
+    s.addText(a.sym, { shape: ST.ellipse, x: a.x - 0.31, y: OY - 0.31, w: 0.62, h: 0.62, fill: { color: a.col }, color: C.text1, fontSize: 16, bold: true, align: "center", valign: "middle", margin: 0, objectName: `o16n_${a.key}` });
+    names.push(`o16n_${a.key}`);
+    txt(s, `o16t_${a.key}`, P([[a.name, { fontSize: 24, bold: true, color: a.lc }], [a.line, { fontSize: 17 }]]), a.x - 1.95, 4.85, 3.9, 1.3, { align: "center", valign: "top" });
+    click("zoom", names, { dur: 450, stagger: 0.02 });
+    withp("fade", [`o16t_${a.key}`], { dur: 600, delay: 0.5 });
+  });
+  txt(s, "o16chna", "Na^+", 1.6, 1.35, 1.8, 0.6, { fontSize: 32, bold: true, align: "center", color: HEX.violet });
+  txt(s, "o16chcl", "Cl^−", 5.6, 1.35, 1.8, 0.6, { fontSize: 32, bold: true, align: "center", color: HEX.green });
+  shp(s, ST.heart, "o16heart", 4.2, 3.05, 0.6, 0.55, { fill: HEX.pink, shadow: glowShadow(HEX.pink, 10) });
+  txt(s, "o16cap", "Opposites attract. That is a bond.", 0.6, 6.35, 12.1, 0.6, { fontSize: 28, bold: true, align: "center", color: C.accent3 });
+  click("move", ["o16e_na_2_0"], { dur: 1100, dx: 1.4 / SW, dy: 0 });
+  withp("fade", ["o16chna", "o16chcl"], { dur: 600, delay: 0.9 });
+  after("zoom", ["o16heart"], { dur: 500 });
+  withp("fade", ["o16cap"], { dur: 600, delay: 0.3 });
   note(`
-Alright. Now we know atoms have personalities. So what happens when two atoms get close to each other? [CLICK] This graph is the story. Energy goes up the side, and the distance between the atoms goes along the bottom. When the atoms are far apart, they don't feel each other: zero. [CLICK] Now let them drift closer. As they approach, the electrons of each get pulled toward the nucleus of the other, and the energy DROPS. Like a ball rolling into a valley.
+Here's the secret behind who bonds. Look at the outermost layer of electrons. [CLICK] Sodium has just one electron out there, all by itself. It would love to get rid of it. [CLICK] Chlorine has seven out there, one short of a full set of eight. It would love to grab one. [CLICK] And neon? Eight. A full outer layer. It needs nothing, so it never bonds. That's your noble gas.
 
-At just the right distance, the energy hits the bottom of the valley. That's the happiest spot for the pair. And the energy they gave up doesn't vanish: it gets released, as heat and light. Atoms stuck together at that distance: that's a chemical bond.
+[CLICK] Now put sodium next to chlorine. Sodium hands its electron over. Now sodium is positive, chlorine is negative, and opposites attract. That's a bond, and the result is table salt. So atoms bond to get a full outer layer, and the periodic table tells you who needs what. That's why same column means same personality: same number of outer electrons.
+`, "The outer electrons decide who bonds");
 
-Bring them even closer than that and they start to repel each other, so the energy shoots up the other side. That "just right" distance is why molecules have specific sizes and shapes. And this idea, energy being released when atoms settle into better arrangements, is going to show up in every unit for the rest of the year.
-`, "Atoms approach: energy is released");
-
-  // ============================================================ 12. BOND TYPES
-  s = newSlide("CONTENT", "Bonds and Reactions", "Three ways atoms stick together");
+  // ============================================================ 17. old 12
+  s = newSlide("CONTENT", "Bonding and Electrons", "Three ways atoms stick together");
   const bx = [0.6, 4.7, 8.8];
   const bheads = [["GIVE", "Ionic: table salt", HEX.violet], ["SHARE", "Covalent: water, sugar, you", HEX.cyan], ["POOL", "Metallic: copper, gold", HEX.yellow]];
   bheads.forEach(([h, sub, col], i) => {
@@ -507,13 +665,36 @@ Bring them even closer than that and they start to repel each other, so the ener
   click("zoom", ["b12card2"], { dur: 450 });
   withp("zoom", ["b12hd2", "b12etxt3"].concat([0, 1, 2].flatMap((r) => [0, 1, 2].map((c) => `b12m${r}${c}`))).concat([0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => `b12d${i}`)), { dur: 450 });
   note(`
-When atoms get close, they can stick together in three main ways. [CLICK] GIVE: one atom hands an electron over to another, like sodium giving one to chlorine. [CLICK] The result is two oppositely charged particles that cling to each other: that's table salt. [CLICK] SHARE: two atoms hold electrons between them, like the oxygen and two hydrogens in water. That's most of the molecules you're made of: sugar, protein, DNA, water. [CLICK] POOL: metal atoms throw their outer electrons into a shared sea, and that's why metals are shiny, bendable, and carry electricity.
+Giving away an electron is only one way to settle things. There are three main ways atoms bond. [CLICK] GIVE: one atom hands an electron over to another, like sodium giving one to chlorine. [CLICK] The result is two oppositely charged particles that cling to each other: that's table salt. [CLICK] SHARE: when both atoms want electrons, nobody can give, so they share. The oxygen and two hydrogens in water share electrons. That's most of the molecules you're made of: sugar, protein, DNA, water. [CLICK] POOL: metal atoms throw their outer electrons into a shared sea. That's why metals are shiny, bendable, and carry electricity.
 
-Same atoms-sticking-together idea, completely different properties. Ionic is a one-sided relationship, covalent is a shared Netflix account, and metallic is a commune.
+Same atoms sticking together, completely different properties. Ionic is a one-sided relationship, covalent is a shared Netflix account, and metallic is a commune.
 `, "Three ways atoms stick together");
 
-  // ============================================================ 13. REACTIONS
-  s = newSlide("CONTENT", "Bonds and Reactions", "Chemical reaction: atoms swap partners");
+  // ============================================================ 18. TWOWAYS
+  s = newSlide("CONTENT", "Bonding and Electrons", "Two ways to study chemistry");
+  s.addImage({ path: IMG("mascot_grumpy.png"), x: 0.4, y: 1.45, w: 2.6, h: 2.6, objectName: "tw_m1" });
+  card(s, "tw_c1", 3.1, 1.95, 7.3, 1.5);
+  txt(s, "tw_t1", "Memorize 10,000 separate facts", 3.4, 2.0, 6.8, 1.4, { fontSize: 32, bold: true });
+  icon(s, "tw_i1", "no", 10.8, 2.15, 1.1);
+  s.addImage({ path: IMG("mascot_cool.png"), x: 0.4, y: 3.95, w: 2.6, h: 2.6, objectName: "tw_m2" });
+  card(s, "tw_c2", 3.1, 4.45, 7.3, 1.5);
+  txt(s, "tw_t2", "Learn the electron rules that explain all of them", 3.4, 4.5, 6.8, 1.4, { fontSize: 32, bold: true });
+  icon(s, "tw_i2", "yes", 10.8, 4.65, 1.1);
+  txt(s, "tw_cap", "Chemistry is a handful of ideas that keep repeating.", 0.6, 6.65, 12.1, 0.55, { fontSize: 26, bold: true, align: "center", color: C.accent3 });
+  click("zoom", ["tw_m1"], { dur: 450 });
+  withp("zoom", ["tw_c1", "tw_t1"], { dur: 450, delay: 0.3 });
+  withp("zoom", ["tw_i1"], { dur: 450, delay: 0.8 });
+  click("zoom", ["tw_m2"], { dur: 450 });
+  withp("zoom", ["tw_c2", "tw_t2"], { dur: 450, delay: 0.3 });
+  withp("zoom", ["tw_i2"], { dur: 450, delay: 0.8 });
+  click("fade", ["tw_cap"], { dur: 600 });
+  note(`
+Here's a quick truth about this class. There are two ways to study chemistry. [CLICK] Option one: memorize ten thousand separate facts. Which things react, what color the flames are, who bonds with who. That's the path of tears. [CLICK] Option two: learn a few rules about electrons, and then every one of those facts becomes predictable. That's what we just walked through. [CLICK] Chemistry is a handful of ideas that keep repeating. And we're about to use those ideas to rearrange atoms on purpose.
+`, "Two ways to study chemistry");
+
+  // ============================================================ 19. old 13
+  pres.addSection({ title: "Reactions" });
+  s = newSlide("CONTENT", "Reactions", "Chemical reaction: atoms swap partners");
   const OD = 1.25, HD = 0.8, sy = 2.9;
   const O1s = [5.85, sy], O2s = [6.85, sy];
   const H1s = [2.1, sy], H2s = [2.8, sy], H3s = [10.5, sy], H4s = [11.2, sy];
@@ -540,16 +721,16 @@ Same atoms-sticking-together idea, completely different properties. Ionic is a o
   });
   click("fade", ["r13cap"], { dur: 700 });
   note(`
-So what's a chemical reaction? It's just atoms changing partners. Break the old bonds, make new ones. [CLICK] Here's hydrogen gas and oxygen gas, each one a pair of atoms stuck together. [CLICK] Watch: the bonds break, the atoms shuffle, and new bonds form. Two water molecules.
+And here's the cool thing: bonds aren't forever. Break the old bonds, make new ones: that's a chemical reaction. [CLICK] Here's hydrogen gas and oxygen gas, each one a pair of atoms stuck together. [CLICK] Watch: the bonds break, the atoms shuffle, and new bonds form. Two waters.
 
 [CLICK] Look at what didn't change: the same six atoms that went in came out. Nothing is created, nothing is destroyed, just rearranged. Chemistry is atom accounting, and the best part is that you can actually balance the books.
 
-And remember the energy valley? When the new bonds are lower energy than the old ones, energy comes out. And that is how fire works.
+And remember the energy valley? When the new bonds sit lower in energy than the old ones, the extra energy comes out. And that is how fire works.
 `, "Chemical reactions: atoms swap partners");
 
-  // ============================================================ 14. DEMO: METHANE
-  s = newSlide("DEMO", "Bonds and Reactions", "Methane Bubbles", "title");
-  s.addImage({ path: IMG("flame_demo.png"), x: 8.9, y: 0.4, w: 4.2, h: 7.0, objectName: "demoflame" });
+  // ============================================================ 20. old 14
+  s = newSlide("DEMO", "Reactions", "Methane Bubbles", "title");
+  s.addImage({ path: IMG("flame_demo.gif"), x: 8.9, y: 0.4, w: 4.2, h: 7.0, objectName: "demoflame" });
   chip(s, "demotag", "DEMO TIME", 0.7, 0.85, 2.0, 0.55, HEX.orange, C.text1, { fontSize: 20, charSpacing: 4 });
   txt(s, "d14fuel", "CH_4  +  2 O_2", 0.7, 2.95, 7.9, 0.95, { fontSize: 50, bold: true, color: C.accent3 });
   txt(s, "d14fuel2", "methane (fuel)  +  oxygen from the air", 0.7, 4.0, 7.9, 0.45, { fontSize: 20, color: C.background2 });
@@ -570,7 +751,7 @@ DEMO: methane soap bubbles on my hand. The bubbles are filled with methane, they
 (Teacher note: follow your school's safety rules. Hands wet with the soap solution, jewelry off, hair tied back, sleeves clear, gas supply well away from the flame, safety glasses and a spotter, and keep the class back. Run the demo at the speed you're comfortable with, then CLICK past it when you're done.)
 `, "DEMO: methane bubbles", { demo: true });
 
-  // ============================================================ 15. THE MOLE
+  // ============================================================ 21. old 15
   pres.addSection({ title: "Counting and Amounts" });
   s = newSlide("CONTENT", "Counting and Amounts", "Atoms are too small to count one by one");
   txt(s, "m15a", "So chemists count in a really big bunch called…", 0.6, 1.45, 12.1, 0.55, { fontSize: 22, align: "center", color: C.background2 });
@@ -590,14 +771,14 @@ DEMO: methane soap bubbles on my hand. The bubbles are filled with methane, they
   withp("fade", ["m15unit"], { dur: 600, delay: 1.0 });
   mCards.forEach((_, i) => { click("zoom", [`m15c${i}`], { dur: 450 }); withp("zoom", [`m15i${i}`, `m15t${i}`], { dur: 450 }); });
   note(`
-So atoms are crazy small. You cannot count them one at a time, so chemists do what bakers do with eggs: we count in a big bunch. [CLICK] The bunch is called a mole. [CLICK] It's six hundred two sextillion. Or, 6.02 times ten to the twenty-third. Just a ridiculous number.
+A reaction is atoms swapping partners, so the next question is obvious: how MANY atoms? And atoms are crazy small, so you can't count them one at a time. Chemists do what bakers do with eggs: we count in a big bunch. [CLICK] The bunch is called a mole. [CLICK] It's six hundred two sextillion. Or, 6.02 times ten to the twenty-third. Just a ridiculous number.
 
 [CLICK] Just so you get a feel: a mole of seconds is about nineteen quadrillion years. That is over a million times the age of the universe. [CLICK] A mole of water molecules is about 18 grams: one big mouthful. [CLICK] And that's the trick: the number is huge, but we don't count, we weigh. The mass on a balance tells us how many atoms we have.
 
 No, not the animal. No, not the guacamole. Well, a little bit the guacamole: there's a national Mole Day every October 23rd, at 6:02 in the morning. Because 6.02 and 10/23. Chemistry teachers are very proud of this joke.
 `, "The mole");
 
-  // ============================================================ 16. STOICHIOMETRY
+  // ============================================================ 22. old 16
   s = newSlide("CONTENT", "Counting and Amounts", "Reactions are recipes");
   const gx = (n) => n;
   const grahamH = (name, x, y) => { shp(s, ST.roundRect, name, x, y, 1.25, 1.25, { fill: "D9A55B", rectRadius: 0.1, line: { color: "A9742A", width: 2 } }); };
@@ -626,75 +807,14 @@ No, not the animal. No, not the guacamole. Well, a little bit the guacamole: the
   click("fade", ["s16lim", "s16lim2"], { dur: 600, stagger: 0.3 });
   click("fade", ["s16use"], { dur: 600 });
   note(`
-Here's another way to see a reaction: it's a recipe. [CLICK] A s'more takes two graham crackers, one chocolate, one marshmallow. [CLICK] Combine them in exactly those amounts and you get one s'more.
+Once you can count atoms, you can write recipes. Here's another way to see a reaction: it's a recipe. [CLICK] A s'more takes two graham crackers, one chocolate, one marshmallow. [CLICK] Combine them in exactly those amounts and you get one s'more.
 
 The math of recipes is called stoichiometry, which is a fun word to say five times fast. It answers questions like: if I have this much of each ingredient, how much product can I make? [CLICK] If you have a hundred graham crackers and only three marshmallows, you make three s'mores. The marshmallow runs out first and shuts the whole thing down. Chemists call that the limiting reactant. [CLICK] Companies use this exact thinking to make medicine, fertilizer, and fuel without wasting a drop.
 
 At my house, the chocolate is always the limiting reactant.
 `, "Reactions are recipes (stoichiometry)");
 
-  // ============================================================ 17. GASES
-  pres.addSection({ title: "States of Matter" });
-  s = newSlide("CONTENT", "States of Matter", "Gases: particles in constant motion");
-  const boxes = [[0.9, "COLD", HEX.cyan, "slow, gentle taps", 0.12, 2.6], [7.0, "HOT", HEX.orange, "fast, hard hits = more pressure", 0.42, 0.85]];
-  const pts17 = [[0.8, 0.7], [1.9, 0.9], [3.0, 0.6], [3.9, 0.8], [0.7, 1.7], [1.8, 1.9], [3.1, 1.6], [3.8, 1.8], [1.0, 2.6], [2.2, 2.5], [3.2, 2.7], [2.6, 1.2]];
-  boxes.forEach(([x, name, col, desc, amp, dur], bi) => {
-    card(s, `g17card${bi}`, x - 0.15, 1.5, 5.6, 5.5, { fill: "10173F" });
-    txt(s, `g17h${bi}`, P([[name, { fontSize: 28, bold: true, color: col }], [desc, { fontSize: 18 }]]), x, 1.6, 5.3, 1.0, { align: "center", valign: "top" });
-    shp(s, ST.rect, `g17box${bi}`, x + 0.1, 2.75, 5.1, 3.95, { fill: "0B1030", line: { color: C.background1, width: 3 } });
-    pts17.forEach(([px, py], i) => {
-      shp(s, ST.ellipse, `g17p${bi}_${i}`, x + 0.2 + px, 2.75 + 0.1 + py, 0.3, 0.3, { fill: col, shadow: glowShadow(col, 8) });
-    });
-    click("fade", [`g17card${bi}`, `g17h${bi}`, `g17box${bi}`].concat(pts17.map((_, i) => `g17p${bi}_${i}`)), { dur: 600 });
-    pts17.forEach((_, i) => {
-      const a = (i * 137.5 * Math.PI) / 180;
-      withp("loop", [`g17p${bi}_${i}`], { dur: (dur + (i % 4) * 0.25) * 1000 / (bi ? 1.2 : 1), dx: (Math.cos(a) * amp * 1.6) / SW, dy: (Math.sin(a) * amp * 1.2) / SH, delay: 0.6 });
-    });
-  });
-  note(`
-Let's switch to gases. A gas is a huge crowd of particles flying around in all directions. [CLICK] In room-temperature air, those particles are moving around a thousand miles per hour, faster than a jet airliner, and each one is bumping into something billions of times a second. You can't feel it because each hit is super tiny, but all those tiny hits add up. That's air pressure.
-
-[CLICK] Heat the gas up and the particles move faster and hit the walls harder and more often. More pressure. That's why a car tire reads a higher pressure after a long drive on a hot day, and it's why you don't throw a sealed can into a campfire.
-
-Air is just invisible chaos that you've been breathing for years.
-`, "Gases");
-
-  // ============================================================ 18. INTERMOLECULAR FORCES
-  s = newSlide("CONTENT", "States of Matter", "Molecules pull on each other, too");
-  const mols = [["A", [2.0, 2.65], [21, 125.5]], ["B", [4.3, 3.55], [-30, 74.5]], ["C", [6.1, 2.35], [20, 124.5]], ["E", [4.9, 5.7], [60, 164.5]]];
-  const dirv = (deg) => [Math.cos((deg * Math.PI) / 180), Math.sin((deg * Math.PI) / 180)];
-  const Opos = Object.fromEntries(mols.map(([k, p]) => [k, p]));
-  const hb = [["A", 0, "B"], ["B", 0, "C"], ["B", 1, "E"]];
-  hb.forEach(([k, hi, target], i) => {
-    const [ox, oy] = Opos[k]; const [dx, dy] = dirv(mols.find((m) => m[0] === k)[2][hi]);
-    const hx = ox + dx * 0.62, hy = oy + dy * 0.62;
-    ln(s, `h18l${i}`, hx, hy, Opos[target][0], Opos[target][1], { color: HEX.yellow, w: 3, dash: "dash" });
-  });
-  mols.forEach(([k, [ox, oy], angs]) => {
-    angs.forEach((a, hi) => {
-      const [dx, dy] = dirv(a);
-      shp(s, ST.ellipse, `h18${k}h${hi}`, ox + dx * 0.62 - 0.26, oy + dy * 0.62 - 0.26, 0.52, 0.52, { fill: "7DD3FC" });
-    });
-    shp(s, ST.ellipse, `h18${k}o`, ox - 0.45, oy - 0.45, 0.9, 0.9, { fill: "FF5A6E", shadow: glowShadow("FF5A6E", 10) });
-  });
-  txt(s, "h18lab", "hydrogen bonds", 2.2, 4.55, 2.2, 0.45, { fontSize: 18, bold: true, color: HEX.yellow, align: "center" });
-  const imf = [["snowc", "Why ice floats"], ["paw", "Why geckos climb walls"], ["dropc", "Why sweating cools you"]];
-  imf.forEach(([k, t], i) => {
-    card(s, `i18c${i}`, 7.9, 1.75 + i * 1.7, 4.85, 1.45);
-    icon(s, `i18i${i}`, k, 8.2, 2.1 + i * 1.7, 0.75);
-    txt(s, `i18t${i}`, t, 9.2, 1.85 + i * 1.7, 3.4, 1.25, { fontSize: 24, bold: true });
-  });
-  click("fade", ["h18l0", "h18l1", "h18l2", "h18lab"], { dur: 700, stagger: 0.25 });
-  imf.forEach((_, i) => { if (i === 0) click("zoom", [`i18c${i}`], { dur: 450 }); else after("zoom", [`i18c${i}`], { dur: 450 }); withp("zoom", [`i18i${i}`, `i18t${i}`], { dur: 450 }); });
-  note(`
-Molecules also attract each other, a bit more weakly than the bonds inside them. These are called intermolecular forces. Water is the star example. [CLICK] Each water molecule has a slightly positive end and a slightly negative end, like a tiny bent magnet, and the molecules cling to each other in these dashed lines called hydrogen bonds.
-
-[CLICK] That one idea explains a pile of everyday mysteries. Why ice floats, which is extremely unusual for a solid and is the reason lakes freeze from the top and fish survive the winter. Why geckos can walk up walls: no glue, just tiny attractions between molecules, adding up. And why sweating cools you down: the water has to absorb energy to break those attractions and escape.
-
-Same atoms, but different pulls between them, so you get a solid, a liquid, or a gas.
-`, "Intermolecular forces");
-
-  // ============================================================ 19. THERMO
+  // ============================================================ 23. old 19
   pres.addSection({ title: "Energy and Change" });
   s = newSlide("CONTENT", "Energy and Change", "Every reaction moves energy");
   const exo = META.profile_exo, endo = META.profile_endo;
@@ -713,14 +833,14 @@ Same atoms, but different pulls between them, so you get a solid, a liquid, or a
     withp("fade", [`t19e${i}`], { dur: 500, delay: 0.7 });
   });
   note(`
-Every reaction moves energy around, and we sort them into two types. [CLICK] Exothermic: the products end up lower in energy than the reactants, and the difference is released. Fire, hand warmers, and the glow stick you cracked at a school dance: all exothermic. [CLICK] Endothermic: the products end up higher in energy, so the reaction pulls energy in from its surroundings. That's why an instant cold pack feels cold: the reaction inside is stealing heat from your hand.
+Recipes tell us how MUCH stuff we need. But remember the energy valley? Every reaction also moves energy around, and we sort them into two types. [CLICK] Exothermic: the products end up lower in energy than the reactants, and the difference is released. Fire, hand warmers, and the glow stick you cracked at a school dance: all exothermic. [CLICK] Endothermic: the products end up higher in energy, so the reaction pulls energy in from its surroundings. That's why an instant cold pack feels cold: the reaction inside is stealing heat from your hand.
 
 Thermodynamics is the study of all that energy bookkeeping. How much energy comes out? Which way does it go? Will the reaction even happen? And now it's time for the most energetic demo of the day.
 `, "Thermodynamics: energy in and out");
 
-  // ============================================================ 20. DEMO: THERMITE
+  // ============================================================ 24. old 20
   s = newSlide("DEMO", "Energy and Change", "Thermite", "title");
-  s.addImage({ path: IMG("flame_demo.png"), x: 8.9, y: 0.4, w: 4.2, h: 7.0, objectName: "demoflame2" });
+  s.addImage({ path: IMG("flame_demo.gif"), x: 8.9, y: 0.4, w: 4.2, h: 7.0, objectName: "demoflame2" });
   chip(s, "demotag2", "DEMO TIME", 0.7, 0.85, 2.0, 0.55, HEX.orange, C.text1, { fontSize: 20, charSpacing: 4 });
   txt(s, "d20rust", "Fe_2O_3", 0.7, 2.9, 3.6, 0.95, { fontSize: 50, bold: true, color: C.accent3 });
   txt(s, "d20rustl", "rust", 0.7, 3.8, 3.6, 0.4, { fontSize: 18, color: C.background2 });
@@ -743,7 +863,22 @@ DEMO: two rusted iron balls with aluminum foil wrapped around one. Smash them to
 (Teacher note: this one is a flash and a shower of sparks. Follow your school's safety rules: eye protection for everyone, students well back, on a non-flammable surface, away from anything that burns, and do a practice run first. Take as much or as little time with it as you need.)
 `, "DEMO: thermite", { demo: true });
 
-  // ============================================================ 21. KINETICS + EQUILIBRIUM
+  // ============================================================ 25. FINE
+  s = newSlide("CONTENT", "Energy and Change", "Exothermic reactions, in a nutshell");
+  s.addImage({ path: IMG("flame_demo.gif"), x: 2.3, y: 2.7, w: 2.4, h: 4.0, objectName: "fine_f1" });
+  s.addImage({ path: IMG("flame_demo.gif"), x: 8.6, y: 2.7, w: 2.4, h: 4.0, objectName: "fine_f2" });
+  s.addImage({ path: IMG("mascot_fine.png"), x: 4.8, y: 3.1, w: 3.7, h: 3.7, objectName: "fine_m" });
+  speech(s, "fine_b", "This is fine.", 5.3, 1.55, 3.1, 1.0, { fontSize: 30 });
+  txt(s, "fine_cap", "(It was not fine. Goggles, please.)", 0.6, 6.75, 12.1, 0.5, { fontSize: 24, bold: true, align: "center", color: C.accent3 });
+  click("fade", ["fine_f1", "fine_f2"], { dur: 700 });
+  withp("zoom", ["fine_m"], { dur: 500, delay: 0.4 });
+  click("zoom", ["fine_b"], { dur: 450 });
+  click("fade", ["fine_cap"], { dur: 600 });
+  note(`
+So what does an exothermic reaction look like from the chemicals' point of view? [CLICK] Here's an atom, sitting in a room where a LOT of heat is being released all around it. [CLICK] "This is fine." [CLICK] It is not fine. That's why we wear goggles. And it's why the next two questions matter: how fast does a reaction go, and how far does it go?
+`, "Exothermic: this is fine", { });
+
+  // ============================================================ 26. old 21
   s = newSlide("CONTENT", "Energy and Change", "How fast? How far?");
   card(s, "k21card0", 0.45, 1.5, 6.3, 5.2, { fill: "10173F" });
   txt(s, "k21h0", P([["HOW FAST?", { fontSize: 28, bold: true, color: HEX.yellow }], ["Even a good reaction needs a push to start", { fontSize: 18 }]]), 0.7, 1.55, 5.8, 0.95, { align: "center", valign: "top" });
@@ -765,7 +900,15 @@ DEMO: two rusted iron balls with aluminum foil wrapped around one. Smash them to
   click("fade", ["k21card0", "k21h0", "k21img"], { dur: 600 });
   click("zoom", ["k21ea"], { dur: 500 });
   withp("fade", ["k21ea1", "k21ea2"], { dur: 600, delay: 0.3 });
-  click("fade", ["k21card1", "k21h1", "k21A", "k21At", "k21B", "k21Bt"], { dur: 600 });
+  for (let i = 0; i < 3; i++) {
+    shp(s, ST.ellipse, `k21f${i}`, 9.1, 3.38, 0.2, 0.2, { fill: HEX.pink });
+    shp(s, ST.ellipse, `k21r${i}`, 10.75, 4.13, 0.2, 0.2, { fill: HEX.green });
+  }
+  click("fade", ["k21card1", "k21h1", "k21A", "k21At", "k21B", "k21Bt", "k21f0", "k21f1", "k21f2", "k21r0", "k21r1", "k21r2"], { dur: 600 });
+  for (let i = 0; i < 3; i++) {
+    withp("loop1", [`k21f${i}`], { dur: 1500, dx: 1.65 / SW, dy: 0, delay: 0.7 + i * 0.5 });
+    withp("loop1", [`k21r${i}`], { dur: 1500, dx: -1.65 / SW, dy: 0, delay: 0.9 + i * 0.5 });
+  }
   withp("zoom", ["k21r", "k21l"], { dur: 500, delay: 0.5 });
   click("fade", ["k21eq"], { dur: 700 });
   note(`
@@ -774,7 +917,7 @@ Two more big questions, both of which you can ask about any reaction. First: how
 Second: how FAR does the reaction go? [CLICK] A lot of reactions can run both ways: A turns into B and B turns back into A. [CLICK] Eventually the two directions run at the same speed and nothing seems to change anymore. It looks calm but nothing stopped: it's busy in both directions. Like a crowded two-way hallway between classes: everybody's moving, but the crowd stays the same size. That's equilibrium. And chemists can nudge it to get more of the product they want.
 `, "Kinetics and equilibrium");
 
-  // ============================================================ 22. ACIDS & BASES
+  // ============================================================ 27. old 22
   s = newSlide("CONTENT", "Energy and Change", "Acids and bases: a tiny particle on the move");
   const bar = { x: 0.7, y: 3.35, w: 11.9, h: 0.84 };
   s.addImage({ path: IMG("phbar.png"), x: bar.x, y: bar.y, w: bar.w, h: bar.h, objectName: "ph22bar" });
@@ -795,13 +938,15 @@ Second: how FAR does the reaction go? [CLICK] A lot of reactions can run both wa
   phs.forEach((_, i) => { after("fade", [`ph22t${i}`, `ph22n${i}`], { dur: 400 }); });
   click("fade", ["ph22cap"], { dur: 700 });
   note(`
-Next up: acids and bases. You already know some. Lemon juice and vinegar are acids, soap and baking soda are bases. [CLICK] And chemists measure it on a scale called pH, from 0 to 14. Stomach acid at the bottom, vinegar, coffee, pure water right in the middle at 7, baking soda, soap, bleach. [CLICK] And all of it comes down to one tiny particle: the hydrogen ion, H plus. It's basically just a proton, hopping from one molecule to the next. More of them floating around means more acidic.
+That "both directions" idea is happening in your kitchen right now: acids and bases. You already know some. Lemon juice and vinegar are acids, soap and baking soda are bases. [CLICK] Chemists measure it on a scale called pH, from 0 to 14. Stomach acid at the bottom, vinegar, coffee, pure water right in the middle at 7, baking soda, soap, bleach. [CLICK] And all of it comes down to one tiny particle: the hydrogen ion, H plus. It's basically just a proton, hopping from one molecule to the next. More of them floating around means more acidic.
 
 Your stomach sits in a pH 1 to 2 acid bath all day and you're fine, because it covers itself in mucus. Nobody gives stomach mucus any credit.
+
+So protons can hop from molecule to molecule. But protons aren't the only particles that can move. Electrons can too.
 `, "Acids and bases");
 
-  // ============================================================ 23. ELECTROCHEMISTRY
-  s = newSlide("CONTENT", "Energy and Change", "Moving electrons = electricity");
+  // ============================================================ 28. old 23
+  s = newSlide("CONTENT", "Energy and Change", "Harnessing the energy: batteries");
   // lemon
   shp(s, ST.ellipse, "lem", 1.0, 3.7, 3.8, 2.4, { fill: "FFD23F", shadow: glowShadow("FFD23F", 16) });
   shp(s, ST.rect, "zn", 2.0, 2.55, 0.28, 2.6, { fill: "AAB4D0", line: { color: "E6ECFF", width: 1 } });
@@ -834,16 +979,20 @@ Your stomach sits in a pH 1 to 2 acid bath all day and you're fine, because it c
     withp("loop1", [`el1_${i}`], { dur: 2400, dx: 7.31 / SW, dy: 0, delay: i * 0.8 });
     withp("loop1", [`el2_${i}`], { dur: 2400, dx: -3.26 / SW, dy: 0, delay: i * 0.8 });
   });
-  click("fade", ["s23cap"], { dur: 700 });
+  shp(s, ST.roundRect, "ph23body", 11.15, 2.1, 1.4, 2.5, { fill: "151B4A", rectRadius: 0.2, line: { color: C.background1, width: 2.5 } });
+  txt(s, "ph23txt", P([["1%", { fontSize: 34, bold: true, color: HEX.pink }], ["battery", { fontSize: 14, color: HEX.muted }]]), 11.15, 2.5, 1.4, 1.6, { align: "center" });
+  txt(s, "ph23cap", "me, every afternoon", 10.7, 4.7, 2.3, 0.5, { fontSize: 16, bold: true, color: HEX.yellow, align: "center" });
+  click("fade", ["s23cap", "ph23body", "ph23txt", "ph23cap"], { dur: 700 });
+  withp("loop", ["ph23body", "ph23txt"], { dur: 110, dx: 0.06 / SW, dy: 0, delay: 0.8 });
   note(`
-Electrons again. Remember that the electron is the star of chemistry? If you can get electrons to move from one place to another through a wire, that's electricity. [CLICK] And here's the cool part: you can force electrons to do that using a chemical reaction. This is a lemon battery: a zinc strip and a copper strip stuck in a lemon. The zinc is happy to give up electrons, the copper is happy to take them, and the only route between them runs through the wire. So the electrons flow, and the light turns on.
+Remember the energy released when bonds form? In a fire, that energy escapes as heat and light and you can't do much with it. But what if you force the electrons to travel through a wire on their way? Then you can harness that energy. That's electricity. [CLICK] This is a lemon battery: a zinc strip and a copper strip stuck in a lemon. The zinc is happy to give up electrons, the copper is happy to take them, and the only route between them runs through the wire. So the electrons flow, and the light turns on.
 
 [CLICK] That is every battery in your life: your phone, your laptop, an electric car. A chemical reaction pushing electrons around a circuit on purpose. Which is why your phone battery is just a very organized chemical reaction that you complain about at 1 percent.
 
 (Honest footnote: one lemon alone is too weak for a bulb. It takes a few lemons wired together to light a small LED. The idea is the same.)
 `, "Electrochemistry");
 
-  // ============================================================ 24. NUCLEAR
+  // ============================================================ 29. old 24
   pres.addSection({ title: "Nuclear and Wrap-up" });
   s = newSlide("CONTENT", "Nuclear and Wrap-up", "…and sometimes the nucleus itself changes");
   txt(s, "n24top", "Everything so far moved electrons. The nucleus never changed.", 0.6, 1.3, 7.5, 0.8, { fontSize: 22, color: C.background2, valign: "top" });
@@ -859,7 +1008,7 @@ Electrons again. Remember that the electron is the star of chemistry? If you can
   txt(s, "n24hel", "1 helium nucleus", 4.5, 4.3, 3.2, 0.5, { fontSize: 18, bold: true, align: "center" });
   txt(s, "n24newel", "Change the number of protons and you change the element.", 0.6, 5.2, 7.5, 0.9, { fontSize: 26, bold: true, color: C.accent3, valign: "top" });
   txt(s, "n24alch", "Alchemists spent centuries trying to turn lead into gold. Nuclear chemistry says it is possible.", 0.6, 6.2, 7.5, 0.9, { fontSize: 18, color: C.background2, valign: "top" });
-  s.addImage({ path: IMG("sun.png"), x: 8.1, y: 1.4, w: 5.0, h: 5.0, objectName: "sun" });
+  s.addImage({ path: IMG("sun_pulse.gif"), x: 8.1, y: 1.4, w: 5.0, h: 5.0, objectName: "sun" });
   txt(s, "emc", [{ text: "E = mc", options: {} }, { text: "2", options: { superscript: true } }], 8.4, 3.25, 4.4, 1.3, { fontSize: 54, bold: true, align: "center", color: C.text1 });
   txt(s, "emccap", "a pinch of mass → a mountain of energy", 7.9, 6.5, 5.2, 0.6, { fontSize: 18, bold: true, align: "center", color: C.accent3 });
   click("zoom", ["n24h0", "n24h1", "n24h2", "n24h3", "n24hl"], { dur: 500, stagger: 0.1 });
@@ -881,10 +1030,10 @@ Everything we've talked about so far was electrons: moving them, sharing them, j
 [CLICK] And where does all that energy come from? A tiny bit of the mass vanishes and turns into energy, following Einstein's most famous equation. A pinch of mass, a mountain of energy. It powers the sun, and the same idea, running the other direction by splitting big nuclei, powers nuclear plants.
 `, "Nuclear chemistry");
 
-  // ============================================================ 25. WRAP-UP
+  // ============================================================ 30. old 25
   s = newSlide("CONTENT", "Nuclear and Wrap-up", "So… what is chemistry?");
   txt(s, "w25a", "Atoms, their electrons, and the energy that moves between them.", 0.6, 1.4, 12.1, 0.7, { fontSize: 30, bold: true, align: "center", color: C.accent3 });
-  const topics = ["Atoms", "Periodic table", "Electrons", "Bonding", "Reactions", "Moles", "Stoichiometry", "Gases", "Forces between molecules", "Energy", "Speed", "Equilibrium", "Acids and bases", "Electrochemistry", "Nuclear"];
+  const topics = ["Atoms", "States of matter", "Attractions", "Bonding", "Periodic table", "Electrons", "Reactions", "Moles", "Stoichiometry", "Energy", "Speed", "Equilibrium", "Acids and bases", "Batteries", "Nuclear"];
   const row1 = topics.slice(0, 8), row2 = topics.slice(8);
   const mkRow = (arr, y, offsetIdx) => {
     const wChip = 1.43, g = 0.08; const tot = arr.length * wChip + (arr.length - 1) * g; let x = (SW - tot) / 2;
@@ -903,10 +1052,15 @@ Everything we've talked about so far was electrons: moving them, sharing them, j
   click("zoom", ["w25see"], { dur: 500 });
   click("zoom", ["w25exp"], { dur: 500 });
   click("zoom", ["w25chg"], { dur: 500 });
+  s.addImage({ path: IMG("mascot_cool.png"), x: 0.2, y: 5.5, w: 2.0, h: 2.0, objectName: "w25m1" });
+  s.addImage({ path: IMG("mascot_h.png"), x: 11.1, y: 5.5, w: 2.0, h: 2.0, objectName: "w25m2" });
   click("zoom", ["w25end"], { dur: 700 });
+  withp("zoom", ["w25m1", "w25m2"], { dur: 600, delay: 0.3 });
+  withp("loop", ["w25m1"], { dur: 500, dx: 0, dy: -0.3 / SH, delay: 0.9 });
+  withp("loop", ["w25m2"], { dur: 640, dx: 0, dy: -0.3 / SH, delay: 0.9 });
   after("pulse", ["w25end"], { dur: 500 });
   note(`
-So, what IS chemistry? [CLICK] It's atoms, their electrons, and the energy that moves between them. And look how it all stacks. [CLICK] Atoms lead to the periodic table, the table leads to electrons, electrons lead to bonds, bonds lead to reactions. Reactions lead to counting and recipes, then to gases and the forces between molecules. Then energy, how fast, how far, acids and bases, batteries... and finally all the way to nuclei. Every idea sits on top of the one before it, and each one answers a "why" about the world you already live in. That's our year.
+So, what IS chemistry? [CLICK] It's atoms, their electrons, and the energy that moves between them. [CLICK] And look at how it all stacks. Atoms behave differently depending on their energy: solid, liquid, gas. What holds them together is attraction. Make that attraction strong enough and atoms bond. Which atoms bond is decided by their electrons, which is why the periodic table works. Rearrange those bonds and you get reactions. Count them: moles and recipes. Track the energy: how much, how fast, how far. Acids and bases move protons, batteries move electrons, and at the very end, the nuclei themselves. Every idea sits on top of the one before it, and each one answers a "why" about the world you already live in. That's our year.
 
 Three verbs. [CLICK] We'll SEE things, in labs, with fire, with color changes. [CLICK] We'll EXPLAIN them, by going down to the atoms. [CLICK] And eventually you'll be able to CHANGE things: design new materials, new medicines, new ways of making energy. [CLICK] Welcome to chemistry.
 

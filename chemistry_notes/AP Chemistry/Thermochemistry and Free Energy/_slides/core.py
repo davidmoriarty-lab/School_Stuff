@@ -9,16 +9,22 @@ import data as D
 from data import sig, sci
 
 FINAL = os.environ.get("DECK_FINAL") == "1"        # QA mode: draw each slide as it looks after its last click
+STATE = None                                       # QA mode: draw each slide after exactly this many clicks (set by audit.py)
 SLIDES = []                                        # (slide, title) in order, for QA
+LAST = None                                        # (slide, timeline) of the slide just finished
 
 
 def finish(slide, tl, tip="", title=""):
+    global LAST
     clicks = tl.click_list()
     body = tip.strip()
     if clicks:
         body += "\n\nCLICK BY CLICK:\n" + "\n".join("%d. %s" % (i + 1, c) for i, c in enumerate(clicks))
     notes(slide, body)
-    if FINAL:
+    LAST = (slide, tl)
+    if STATE is not None:
+        tl.apply_state(STATE)
+    elif FINAL:
         tl.apply_final_state()
     else:
         tl.build()
@@ -160,20 +166,24 @@ def mc_slide(prs, n, topic, q, choices, right, why):
     ch = min(0.8, (5.8 - y) / 4 - 0.1)
     tl = Timeline(s)
     hits = []
+    letter = check = None
     for k, c in enumerate(choices):
         yy = y + k * (ch + 0.1)
         card(s, 0.55, yy, W - 1.1, ch, WHITE, 0.12, line=LINE)
-        badge(s, 1.05, yy + ch / 2, 0.24, "ABCD"[k], "868E96", WHITE, 16)
+        if k == right:
+            # the green highlight sits BEHIND the choice text (drawn before it), so the text is never covered or copied
+            hits = [card(s, 0.55, yy, W - 1.1, ch, SOFT[GREEN], 0.12, line=GREEN)]
+        lb = badge(s, 1.05, yy + ch / 2, 0.24, "ABCD"[k], "868E96", WHITE, 16)
         txt(s, 1.5, yy, W - 2.7, ch, c, 18, INK, anchor="m")
         if k == right:
-            hit = card(s, 0.55, yy, W - 1.1, ch, SOFT[GREEN], 0.12, line=GREEN)
-            hb = badge(s, 1.05, yy + ch / 2, 0.24, "✓", GREEN, WHITE, 18)
-            ht = txt(s, 1.5, yy, W - 2.7, ch, c, 18, INK, bold=True, anchor="m")
-            hits = [hit, hb, ht]
+            check = badge(s, 1.05, yy + ch / 2, 0.24, "✓", GREEN, WHITE, 18)
+            letter = lb
     wc = card(s, 0.55, 5.95, W - 1.1, 1.0, SOFT[col], 0.12)
     wt = txt(s, 0.85, 5.98, W - 1.7, 0.94, why, 14, INK, anchor="m")
     tl.click("Reveal the answer: " + "ABCD"[right])
     tl.fade(*hits)
+    tl.out(letter, dur=250)
+    tl.then(); tl.fade(check, dur=300)
     tl.click("Explain why")
     tl.fade(wc, wt)
     finish(s, tl, "Warm-up question. Let students vote before you reveal the answer.", "Warm-up %d" % n)

@@ -858,7 +858,7 @@ Thermodynamics is the study of all that energy bookkeeping. How much energy come
   note(`
 Remember that energy valley, and the idea that some reactions drop a LOT of energy? [CLICK] Here's the ultimate example. Rust, which is iron oxide, plus aluminum. [CLICK] Aluminum wants oxygen even more than iron does, so it rips the oxygen off the iron and makes aluminum oxide, with much stronger bonds. [CLICK] And the energy difference is enormous: the iron comes out molten, over 2,000 degrees Celsius. That's hotter than lava.
 
-DEMO: two rusted iron balls with aluminum foil wrapped around one. Smash them together and the impact gives the reaction its starting push. Which, by the way, is a good preview of next: reactions don't just happen on their own, they need a kick to get started.
+DEMO: two rusted iron balls with aluminum foil wrapped around one. Smash them together and the impact gives the reaction its starting push.
 
 (Teacher note: this one is a flash and a shower of sparks. Follow your school's safety rules: eye protection for everyone, students well back, on a non-flammable surface, away from anything that burns, and do a practice run first. Take as much or as little time with it as you need.)
 `, "DEMO: thermite", { demo: true });
@@ -875,47 +875,8 @@ DEMO: two rusted iron balls with aluminum foil wrapped around one. Smash them to
   click("zoom", ["fine_b"], { dur: 450 });
   click("fade", ["fine_cap"], { dur: 600 });
   note(`
-So what does an exothermic reaction look like from the chemicals' point of view? [CLICK] Here's an atom, sitting in a room where a LOT of heat is being released all around it. [CLICK] "This is fine." [CLICK] It is not fine. That's why we wear goggles. And it's why the next two questions matter: how fast does a reaction go, and how far does it go?
+So what does an exothermic reaction look like from the chemicals' point of view? [CLICK] Here's an atom, sitting in a room where a LOT of heat is being released all around it. [CLICK] "This is fine." [CLICK] It is not fine. That's why we wear goggles. Fire, thermite, hand warmers: those are all energy being RELEASED as heat. So here's a different question: what else can a reaction release or move around besides heat? Let's look at one of the tiniest particles there is.
 `, "Exothermic: this is fine", { });
-
-  // ============================================================ 26. old 21
-  s = newSlide("CONTENT", "Energy and Change", "How fast? How far?");
-  card(s, "k21card0", 0.45, 1.5, 6.3, 5.2, { fill: "10173F" });
-  txt(s, "k21h0", P([["HOW FAST?", { fontSize: 28, bold: true, color: HEX.yellow }], ["Even a good reaction needs a push to start", { fontSize: 18 }]]), 0.7, 1.55, 5.8, 0.95, { align: "center", valign: "top" });
-  const kx = 0.75, kw = 5.7, kh = kw * exo.h / exo.w, ky = 2.7;
-  s.addImage({ path: IMG("profile_exo.png"), x: kx, y: ky, w: kw, h: kh, objectName: "k21img" });
-  const kpx = kx + exo.x_peak * kw;
-  shp(s, ST.upArrow, "k21ea", kpx - 1.15, ky + exo.y_peak * kh, 0.4, (exo.y_start - exo.y_peak) * kh, { fill: HEX.yellow });
-  txt(s, "k21ea1", "activation\nenergy", kx + 0.55, ky + exo.y_peak * kh + 0.05, 1.15, 0.8, { fontSize: 16, bold: true, color: HEX.yellow, align: "right", valign: "top" });
-  txt(s, "k21ea2", "the push to get started", kx + 0.55, ky + exo.y_start * kh + 0.3, 2.6, 0.5, { fontSize: 16, color: HEX.lav, align: "left", valign: "top" });
-  card(s, "k21card1", 6.95, 1.5, 5.95, 5.2, { fill: "10173F" });
-  txt(s, "k21h1", P([["HOW FAR?", { fontSize: 28, bold: true, color: HEX.cyan }], ["Many reactions run both directions", { fontSize: 18 }]]), 7.2, 1.55, 5.45, 0.95, { align: "center", valign: "top" });
-  shp(s, ST.ellipse, "k21A", 7.55, 3.1, 1.5, 1.5, { fill: HEX.pink, shadow: glowShadow(HEX.pink, 12) });
-  txt(s, "k21At", "A", 7.55, 3.1, 1.5, 1.5, { fontSize: 40, bold: true, align: "center", color: C.text1 });
-  shp(s, ST.ellipse, "k21B", 11.0, 3.1, 1.5, 1.5, { fill: HEX.green, shadow: glowShadow(HEX.green, 12) });
-  txt(s, "k21Bt", "B", 11.0, 3.1, 1.5, 1.5, { fontSize: 40, bold: true, align: "center", color: C.text1 });
-  shp(s, ST.rightArrow, "k21r", 9.3, 3.2, 1.45, 0.55, { fill: C.accent3 });
-  shp(s, ST.leftArrow, "k21l", 9.3, 3.95, 1.45, 0.55, { fill: C.accent3 });
-  txt(s, "k21eq", P([["Forward rate = reverse rate", { fontSize: 22, bold: true }], ["It looks calm. It is not.", { fontSize: 20, color: C.background2 }]]), 7.2, 5.0, 5.5, 1.5, { align: "center", valign: "top" });
-  click("fade", ["k21card0", "k21h0", "k21img"], { dur: 600 });
-  click("zoom", ["k21ea"], { dur: 500 });
-  withp("fade", ["k21ea1", "k21ea2"], { dur: 600, delay: 0.3 });
-  for (let i = 0; i < 3; i++) {
-    shp(s, ST.ellipse, `k21f${i}`, 9.1, 3.38, 0.2, 0.2, { fill: HEX.pink });
-    shp(s, ST.ellipse, `k21r${i}`, 10.75, 4.13, 0.2, 0.2, { fill: HEX.green });
-  }
-  click("fade", ["k21card1", "k21h1", "k21A", "k21At", "k21B", "k21Bt", "k21f0", "k21f1", "k21f2", "k21r0", "k21r1", "k21r2"], { dur: 600 });
-  for (let i = 0; i < 3; i++) {
-    withp("loop1", [`k21f${i}`], { dur: 1500, dx: 1.65 / SW, dy: 0, delay: 0.7 + i * 0.5 });
-    withp("loop1", [`k21r${i}`], { dur: 1500, dx: -1.65 / SW, dy: 0, delay: 0.9 + i * 0.5 });
-  }
-  withp("zoom", ["k21r", "k21l"], { dur: 500, delay: 0.5 });
-  click("fade", ["k21eq"], { dur: 700 });
-  note(`
-Two more big questions, both of which you can ask about any reaction. First: how FAST? [CLICK] Even a reaction that releases a ton of energy has to climb a hill first. [CLICK] That hill is called the activation energy. It's why paper doesn't burst into flames on its own: it's ready to release energy, but it needs a match to get over the hump. Same idea as our thermite demo: the smash got it over the hill.
-
-Second: how FAR does the reaction go? [CLICK] A lot of reactions can run both ways: A turns into B and B turns back into A. [CLICK] Eventually the two directions run at the same speed and nothing seems to change anymore. It looks calm but nothing stopped: it's busy in both directions. Like a crowded two-way hallway between classes: everybody's moving, but the crowd stays the same size. That's equilibrium. And chemists can nudge it to get more of the product they want.
-`, "Kinetics and equilibrium");
 
   // ============================================================ 27. old 22
   s = newSlide("CONTENT", "Energy and Change", "Acids and bases: a tiny particle on the move");
@@ -938,7 +899,7 @@ Second: how FAR does the reaction go? [CLICK] A lot of reactions can run both wa
   phs.forEach((_, i) => { after("fade", [`ph22t${i}`, `ph22n${i}`], { dur: 400 }); });
   click("fade", ["ph22cap"], { dur: 700 });
   note(`
-That "both directions" idea is happening in your kitchen right now: acids and bases. You already know some. Lemon juice and vinegar are acids, soap and baking soda are bases. [CLICK] Chemists measure it on a scale called pH, from 0 to 14. Stomach acid at the bottom, vinegar, coffee, pure water right in the middle at 7, baking soda, soap, bleach. [CLICK] And all of it comes down to one tiny particle: the hydrogen ion, H plus. It's basically just a proton, hopping from one molecule to the next. More of them floating around means more acidic.
+Reactions don't only move energy around, they move tiny particles around. You've got some of those reactions in your kitchen right now: acids and bases. You already know some. Lemon juice and vinegar are acids, soap and baking soda are bases. [CLICK] Chemists measure it on a scale called pH, from 0 to 14. Stomach acid at the bottom, vinegar, coffee, pure water right in the middle at 7, baking soda, soap, bleach. [CLICK] And all of it comes down to one tiny particle: the hydrogen ion, H plus. It's basically just a proton, hopping from one molecule to the next. More of them floating around means more acidic.
 
 Your stomach sits in a pH 1 to 2 acid bath all day and you're fine, because it covers itself in mucus. Nobody gives stomach mucus any credit.
 
@@ -1033,7 +994,7 @@ Everything we've talked about so far was electrons: moving them, sharing them, j
   // ============================================================ 30. old 25
   s = newSlide("CONTENT", "Nuclear and Wrap-up", "So… what is chemistry?");
   txt(s, "w25a", "Atoms, their electrons, and the energy that moves between them.", 0.6, 1.4, 12.1, 0.7, { fontSize: 30, bold: true, align: "center", color: C.accent3 });
-  const topics = ["Atoms", "States of matter", "Attractions", "Bonding", "Periodic table", "Electrons", "Reactions", "Moles", "Stoichiometry", "Energy", "Speed", "Equilibrium", "Acids and bases", "Batteries", "Nuclear"];
+  const topics = ["Atoms", "States of matter", "Attractions", "Bonding", "Periodic table", "Electrons", "Reactions", "Moles", "Stoichiometry", "Energy", "Acids and bases", "Batteries", "Nuclear"];
   const row1 = topics.slice(0, 8), row2 = topics.slice(8);
   const mkRow = (arr, y, offsetIdx) => {
     const wChip = 1.43, g = 0.08; const tot = arr.length * wChip + (arr.length - 1) * g; let x = (SW - tot) / 2;
@@ -1060,7 +1021,7 @@ Everything we've talked about so far was electrons: moving them, sharing them, j
   withp("loop", ["w25m2"], { dur: 640, dx: 0, dy: -0.3 / SH, delay: 0.9 });
   after("pulse", ["w25end"], { dur: 500 });
   note(`
-So, what IS chemistry? [CLICK] It's atoms, their electrons, and the energy that moves between them. [CLICK] And look at how it all stacks. Atoms behave differently depending on their energy: solid, liquid, gas. What holds them together is attraction. Make that attraction strong enough and atoms bond. Which atoms bond is decided by their electrons, which is why the periodic table works. Rearrange those bonds and you get reactions. Count them: moles and recipes. Track the energy: how much, how fast, how far. Acids and bases move protons, batteries move electrons, and at the very end, the nuclei themselves. Every idea sits on top of the one before it, and each one answers a "why" about the world you already live in. That's our year.
+So, what IS chemistry? [CLICK] It's atoms, their electrons, and the energy that moves between them. [CLICK] And look at how it all stacks. Atoms behave differently depending on their energy: solid, liquid, gas. What holds them together is attraction. Make that attraction strong enough and atoms bond. Which atoms bond is decided by their electrons, which is why the periodic table works. Rearrange those bonds and you get reactions. Count them: moles and recipes. Track the energy going in and out. Acids and bases move protons, batteries move electrons, and at the very end, the nuclei themselves. Every idea sits on top of the one before it, and each one answers a "why" about the world you already live in. That's our year.
 
 Three verbs. [CLICK] We'll SEE things, in labs, with fire, with color changes. [CLICK] We'll EXPLAIN them, by going down to the atoms. [CLICK] And eventually you'll be able to CHANGE things: design new materials, new medicines, new ways of making energy. [CLICK] Welcome to chemistry.
 

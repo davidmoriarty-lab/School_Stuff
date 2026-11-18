@@ -8,8 +8,8 @@ Two demo slides are built in: methane bubbles (slide 14) and thermite (slide 20)
 Atoms and their sizes, protons, **states of matter** (how do atoms behave?), **what holds them together** (attractions),
 **atoms approaching** (the bond valley), **who bonds** (periodic table, party gag, alkali metals, sodium gag), **why**
 (electron levels, flame tests, outer electrons), bond types, "two ways to study chemistry" gag, reactions, **methane demo**, the mole,
-stoichiometry, energy in and out, **thermite demo**, "this is fine" gag, speed and balance, acids and bases, **batteries**
-(harnessing the energy), nuclear, wrap-up. 30 slides.
+stoichiometry, energy in and out, **thermite demo**, "this is fine" gag, acids and bases, **batteries**
+(harnessing the energy), nuclear, wrap-up. 29 slides.
 
 ## Motion and memes
 - Animated GIFs (orbiting atom, flickering flame tests and demo flames, sodium racing on water, pulsing sun) are drawn by `build_images.py`.

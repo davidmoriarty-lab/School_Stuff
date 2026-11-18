@@ -141,44 +141,38 @@
  {
   "n": 24,
   "title": "DEMO: thermite",
-  "notes": "Remember that energy valley, and the idea that some reactions drop a LOT of energy? [CLICK] Here's the ultimate example. Rust, which is iron oxide, plus aluminum. [CLICK] Aluminum wants oxygen even more than iron does, so it rips the oxygen off the iron and makes aluminum oxide, with much stronger bonds. [CLICK] And the energy difference is enormous: the iron comes out molten, over 2,000 degrees Celsius. That's hotter than lava.\n\nDEMO: two rusted iron balls with aluminum foil wrapped around one. Smash them together and the impact gives the reaction its starting push. Which, by the way, is a good preview of next: reactions don't just happen on their own, they need a kick to get started.\n\n(Teacher note: this one is a flash and a shower of sparks. Follow your school's safety rules: eye protection for everyone, students well back, on a non-flammable surface, away from anything that burns, and do a practice run first. Take as much or as little time with it as you need.)",
+  "notes": "Remember that energy valley, and the idea that some reactions drop a LOT of energy? [CLICK] Here's the ultimate example. Rust, which is iron oxide, plus aluminum. [CLICK] Aluminum wants oxygen even more than iron does, so it rips the oxygen off the iron and makes aluminum oxide, with much stronger bonds. [CLICK] And the energy difference is enormous: the iron comes out molten, over 2,000 degrees Celsius. That's hotter than lava.\n\nDEMO: two rusted iron balls with aluminum foil wrapped around one. Smash them together and the impact gives the reaction its starting push.\n\n(Teacher note: this one is a flash and a shower of sparks. Follow your school's safety rules: eye protection for everyone, students well back, on a non-flammable surface, away from anything that burns, and do a practice run first. Take as much or as little time with it as you need.)",
   "demo": true,
-  "words": 167
+  "words": 143
  },
  {
   "n": 25,
   "title": "Exothermic: this is fine",
-  "notes": "So what does an exothermic reaction look like from the chemicals' point of view? [CLICK] Here's an atom, sitting in a room where a LOT of heat is being released all around it. [CLICK] \"This is fine.\" [CLICK] It is not fine. That's why we wear goggles. And it's why the next two questions matter: how fast does a reaction go, and how far does it go?",
-  "words": 64
+  "notes": "So what does an exothermic reaction look like from the chemicals' point of view? [CLICK] Here's an atom, sitting in a room where a LOT of heat is being released all around it. [CLICK] \"This is fine.\" [CLICK] It is not fine. That's why we wear goggles. Fire, thermite, hand warmers: those are all energy being RELEASED as heat. So here's a different question: what else can a reaction release or move around besides heat? Let's look at one of the tiniest particles there is.",
+  "words": 82
  },
  {
   "n": 26,
-  "title": "Kinetics and equilibrium",
-  "notes": "Two more big questions, both of which you can ask about any reaction. First: how FAST? [CLICK] Even a reaction that releases a ton of energy has to climb a hill first. [CLICK] That hill is called the activation energy. It's why paper doesn't burst into flames on its own: it's ready to release energy, but it needs a match to get over the hump. Same idea as our thermite demo: the smash got it over the hill.\n\nSecond: how FAR does the reaction go? [CLICK] A lot of reactions can run both ways: A turns into B and B turns back into A. [CLICK] Eventually the two directions run at the same speed and nothing seems to change anymore. It looks calm but nothing stopped: it's busy in both directions. Like a crowded two-way hallway between classes: everybody's moving, but the crowd stays the same size. That's equilibrium. And chemists can nudge it to get more of the product they want.",
-  "words": 158
+  "title": "Acids and bases",
+  "notes": "Reactions don't only move energy around, they move tiny particles around. You've got some of those reactions in your kitchen right now: acids and bases. You already know some. Lemon juice and vinegar are acids, soap and baking soda are bases. [CLICK] Chemists measure it on a scale called pH, from 0 to 14. Stomach acid at the bottom, vinegar, coffee, pure water right in the middle at 7, baking soda, soap, bleach. [CLICK] And all of it comes down to one tiny particle: the hydrogen ion, H plus. It's basically just a proton, hopping from one molecule to the next. More of them floating around means more acidic.\n\nYour stomach sits in a pH 1 to 2 acid bath all day and you're fine, because it covers itself in mucus. Nobody gives stomach mucus any credit.\n\nSo protons can hop from molecule to molecule. But protons aren't the only particles that can move. Electrons can too.",
+  "words": 155
  },
  {
   "n": 27,
-  "title": "Acids and bases",
-  "notes": "That \"both directions\" idea is happening in your kitchen right now: acids and bases. You already know some. Lemon juice and vinegar are acids, soap and baking soda are bases. [CLICK] Chemists measure it on a scale called pH, from 0 to 14. Stomach acid at the bottom, vinegar, coffee, pure water right in the middle at 7, baking soda, soap, bleach. [CLICK] And all of it comes down to one tiny particle: the hydrogen ion, H plus. It's basically just a proton, hopping from one molecule to the next. More of them floating around means more acidic.\n\nYour stomach sits in a pH 1 to 2 acid bath all day and you're fine, because it covers itself in mucus. Nobody gives stomach mucus any credit.\n\nSo protons can hop from molecule to molecule. But protons aren't the only particles that can move. Electrons can too.",
-  "words": 144
- },
- {
-  "n": 28,
   "title": "Electrochemistry",
   "notes": "Remember the energy released when bonds form? In a fire, that energy escapes as heat and light and you can't do much with it. But what if you force the electrons to travel through a wire on their way? Then you can harness that energy. That's electricity. [CLICK] This is a lemon battery: a zinc strip and a copper strip stuck in a lemon. The zinc is happy to give up electrons, the copper is happy to take them, and the only route between them runs through the wire. So the electrons flow, and the light turns on.\n\n[CLICK] That is every battery in your life: your phone, your laptop, an electric car. A chemical reaction pushing electrons around a circuit on purpose. Which is why your phone battery is just a very organized chemical reaction that you complain about at 1 percent.\n\n(Honest footnote: one lemon alone is too weak for a bulb. It takes a few lemons wired together to light a small LED. The idea is the same.)",
   "words": 169
  },
  {
-  "n": 29,
+  "n": 28,
   "title": "Nuclear chemistry",
   "notes": "Everything we've talked about so far was electrons: moving them, sharing them, jumping them, pushing them through wires. The nucleus, the protons, never changed. So the element never changed. A chemical reaction can't turn lead into gold.\n\n[CLICK] But there's a whole other branch of chemistry where the nucleus itself changes. Here are four hydrogen nuclei, which are just single protons. [CLICK] Squeeze them together hard enough and they fuse into one helium nucleus. That is what's happening in the sun right now.\n\n[CLICK] And remember the rule from way back at the beginning? The number of protons decides the element. We just changed the proton count, so we just changed the element. The alchemists spent centuries trying to turn lead into gold. It turns out nuclear chemistry says: totally possible. Just don't ask what the electric bill looks like.\n\n[CLICK] And where does all that energy come from? A tiny bit of the mass vanishes and turns into energy, following Einstein's most famous equation. A pinch of mass, a mountain of energy. It powers the sun, and the same idea, running the other direction by splitting big nuclei, powers nuclear plants.",
   "words": 188
  },
  {
-  "n": 30,
+  "n": 29,
   "title": "So what is chemistry?",
-  "notes": "So, what IS chemistry? [CLICK] It's atoms, their electrons, and the energy that moves between them. [CLICK] And look at how it all stacks. Atoms behave differently depending on their energy: solid, liquid, gas. What holds them together is attraction. Make that attraction strong enough and atoms bond. Which atoms bond is decided by their electrons, which is why the periodic table works. Rearrange those bonds and you get reactions. Count them: moles and recipes. Track the energy: how much, how fast, how far. Acids and bases move protons, batteries move electrons, and at the very end, the nuclei themselves. Every idea sits on top of the one before it, and each one answers a \"why\" about the world you already live in. That's our year.\n\nThree verbs. [CLICK] We'll SEE things, in labs, with fire, with color changes. [CLICK] We'll EXPLAIN them, by going down to the atoms. [CLICK] And eventually you'll be able to CHANGE things: design new materials, new medicines, new ways of making energy. [CLICK] Welcome to chemistry.\n\nOkay. Now we can do the syllabus.",
-  "words": 173
+  "notes": "So, what IS chemistry? [CLICK] It's atoms, their electrons, and the energy that moves between them. [CLICK] And look at how it all stacks. Atoms behave differently depending on their energy: solid, liquid, gas. What holds them together is attraction. Make that attraction strong enough and atoms bond. Which atoms bond is decided by their electrons, which is why the periodic table works. Rearrange those bonds and you get reactions. Count them: moles and recipes. Track the energy going in and out. Acids and bases move protons, batteries move electrons, and at the very end, the nuclei themselves. Every idea sits on top of the one before it, and each one answers a \"why\" about the world you already live in. That's our year.\n\nThree verbs. [CLICK] We'll SEE things, in labs, with fire, with color changes. [CLICK] We'll EXPLAIN them, by going down to the atoms. [CLICK] And eventually you'll be able to CHANGE things: design new materials, new medicines, new ways of making energy. [CLICK] Welcome to chemistry.\n\nOkay. Now we can do the syllabus.",
+  "words": 171
  }
 ]

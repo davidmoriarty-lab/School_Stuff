@@ -14,7 +14,7 @@ from docx.shared import Inches, Pt, RGBColor
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = json.load(open(os.path.join(HERE, "script.json")))
 WPM = 180                      # a fast talker; change to taste
-OPTIONAL = {12: "Alkali metals in water", 15: "Flame tests", 26: "Kinetics and equilibrium", 27: "Acids and bases"}
+OPTIONAL = {12: "Alkali metals in water", 15: "Flame tests", 26: "Acids and bases"}
 ORANGE = RGBColor(0xE0, 0x5A, 0x00)
 GREY = RGBColor(0x55, 0x5B, 0x70)
 

@@ -123,12 +123,13 @@ def part(d, label, text, pts, h, size=10):
     space(d, h)
 
 
-def build_student(v):
+def build_student(v, title="Moles and Molar Quantities: Free Response Test", tag=None, foot=None):
     d = new_doc()
-    footer(d, "Honors Chemistry  •  Unit 5 Free Response Test  •  Version %s" % v["ver"])
+    tag = tag or "Version %s" % v["ver"]
+    footer(d, foot or "Honors Chemistry  •  Unit 5 Free Response Test  •  Version %s" % v["ver"])
     p = fmt(d.add_paragraph(), after=1)
-    run(p, "Moles and Molar Quantities: Free Response Test", 15, bold=True)
-    run(p, "          Version %s" % v["ver"], 12, bold=True, color="444444")
+    run(p, title, 15, bold=True)
+    run(p, "          " + tag, 12, bold=True, color="444444")
     p = fmt(d.add_paragraph(), after=2); run(p, "Name: ______________________________      Pd: ______", 10.5)
     p = fmt(d.add_paragraph(), after=2)
     run(p, "Show your setup with units for every calculation and report answers to the correct number of significant figures. "
@@ -173,6 +174,59 @@ def build_student(v):
     return d
 
 
+def key_version(d, v, first=True, label=None):
+    a, b = v["sub"]
+    mM = MASS[v["sym"]]
+    p = fmt(d.add_paragraph(), before=(2 if first else 0), after=2, keep=True)
+    if not first:
+        p.paragraph_format.page_break_before = True
+    run(p, "%s:  %s oxide (%s)  and  %s" % (label or "Version %s" % v["ver"], v["metal"], v["oxide"], v["hyd_name"]), 12, bold=True)
+
+    def block(title, parts):
+        p = fmt(d.add_paragraph(), before=5, after=1, keep=True); run(p, title, 10, bold=True)
+        for lab, text, ans in parts:
+            p = fmt(d.add_paragraph(), before=2, after=0, left=0.3, hang=0.3, keep=True)
+            run(p, lab + "\t" + text, 9)
+            for line in ans.split("\n"):
+                p = fmt(d.add_paragraph(), left=0.3, after=0)
+                shade(p, "F2F2F2")
+                rich(p, line, 9)
+
+    ratio = v["ratio"]
+    q1 = [
+        ("a.", "Mass of the solid oxide. (1 pt)",
+         "%.2f − %.2f = **%.2f g %s oxide** (1 pt)" % (v["c_oxide"], v["crucible"], v["g_oxide"], v["metal"])),
+        ("b.", "Mass of oxygen (the mass of %s, %.2f g, is given). (1 pt)" % (v["sym"], v["g_metal"]),
+         "%.2f − %.2f = **%.2f g O** (1 pt)" % (v["g_oxide"], v["g_metal"], v["g_O"])),
+        ("c.", "Atoms of metal. (2 pts)",
+         "%.2f g %s × (1 mol / %.2f g) × (6.022 × 10²³ atoms / 1 mol) = **%s atoms of %s**\n(1 pt for grams → moles, 1 pt for moles → atoms)"
+         % (v["g_metal"], v["sym"], mM, sci(v["atoms"], 3), v["sym"])),
+        ("d.", "Empirical formula. (4 pts)",
+         "Moles %s: %.2f g ÷ %.2f g/mol = %s mol (1 pt)\nMoles O: %.2f g ÷ 16.00 g/mol = %s mol (1 pt)\n"
+         "Ratio, dividing by the smaller (%s mol): %s : O = 1 : %s (1 pt)\nThe ratio is not whole-number, so multiply by %d: %s : O = %d : %d → **%s** (1 pt)"
+         % (v["sym"], v["g_metal"], mM, sf(v["n_metal"], 4), v["g_O"], sf(v["n_O"], 4), sf(v["n_metal"], 4),
+            v["sym"], sf(ratio, 3), a, v["sym"], a, b, v["oxide"])),
+        ("e.", "Balanced equation. (2 pts)",
+         "**%s**   (1 pt for the correct formula as the product, 1 pt for balanced with whole-number coefficients)" % v["eq"]),
+    ]
+    block("Question 1: oxide of %s (10 pts)" % v["metal"], q1)
+    pw = v["pct_water"]
+    q2 = [
+        ("a.", "Mass of hydrate, mass of water lost, percent water. (3 pts)",
+         "Mass of hydrate = %.2f − %.2f = **%.2f g** (1 pt)\nMass of water lost = %.2f − %.2f = **%.2f g** (1 pt)\n"
+         "Percent water = %.2f g ÷ %.2f g × 100 = **%s%%** (1 pt)"
+         % (v["h_with"], v["hyd_c"], v["g_hyd"], v["h_with"], v["h_after"], v["g_water"], v["g_water"], v["g_hyd"], sf(pw, 3))),
+        ("b.", "Moles of water and of anhydrous salt. (3 pts)",
+         "Mass of anhydrous %s = %.2f − %.2f = %.2f g (1 pt)\nMoles H₂O = %.2f g ÷ 18.02 g/mol = **%s mol** (1 pt)\n"
+         "Moles %s = %.2f g ÷ %.2f g/mol = **%s mol** (1 pt)"
+         % (v["salt_f"], v["h_after"], v["hyd_c"], v["g_salt"], v["g_water"], sf(v["n_water"], 3), v["salt_f"], v["g_salt"], v["salt_mm"], sf(v["n_salt"], 3))),
+        ("c.", "x, formula and name. (4 pts)",
+         "Ratio: %s mol H₂O ÷ %s mol %s = %s (1 pt)\nx = **%d** (rounded to a whole number) (1 pt)\nFormula: **%s** (1 pt)\nName: **%s** (1 pt)"
+         % (sf(v["n_water"], 3), sf(v["n_salt"], 3), v["salt_f"], sf(v["x_calc"], 3), v["x"], v["hyd_f"].replace("xH", "%dH" % v["x"]), v["hyd_name"])),
+    ]
+    block("Question 2: %s hydrate (10 pts)" % v["salt"], q2)
+
+
 def build_key():
     d = new_doc()
     footer(d, "Honors Chemistry  •  Unit 5 Free Response Test  •  TEACHER KEY (Versions A, B, C)")
@@ -183,57 +237,7 @@ def build_key():
     run(p, " = 6.022 × 10²³). Accept an answer within one rounding digit if the work is correct. Q1 is 10 points and Q2 is 10 points.", 9, color="555555")
     rule(p)
     for n, v in enumerate(VERSIONS):
-        a, b = v["sub"]
-        mM = MASS[v["sym"]]
-        first = n == 0
-        p = fmt(d.add_paragraph(), before=(2 if first else 0), after=2, keep=True)
-        if not first:
-            p.paragraph_format.page_break_before = True
-        run(p, "Version %s:  %s oxide (%s)  and  %s" % (v["ver"], v["metal"], v["oxide"], v["hyd_name"]), 12, bold=True)
-
-        def block(title, parts):
-            p = fmt(d.add_paragraph(), before=5, after=1, keep=True); run(p, title, 10, bold=True)
-            for lab, text, ans in parts:
-                p = fmt(d.add_paragraph(), before=2, after=0, left=0.3, hang=0.3, keep=True)
-                run(p, lab + "\t" + text, 9)
-                for line in ans.split("\n"):
-                    p = fmt(d.add_paragraph(), left=0.3, after=0)
-                    shade(p, "F2F2F2")
-                    rich(p, line, 9)
-
-        ratio = v["ratio"]
-        q1 = [
-            ("a.", "Mass of the solid oxide. (1 pt)",
-             "%.2f − %.2f = **%.2f g %s oxide** (1 pt)" % (v["c_oxide"], v["crucible"], v["g_oxide"], v["metal"])),
-            ("b.", "Mass of oxygen (the mass of %s, %.2f g, is given). (1 pt)" % (v["sym"], v["g_metal"]),
-             "%.2f − %.2f = **%.2f g O** (1 pt)" % (v["g_oxide"], v["g_metal"], v["g_O"])),
-            ("c.", "Atoms of metal. (2 pts)",
-             "%.2f g %s × (1 mol / %.2f g) × (6.022 × 10²³ atoms / 1 mol) = **%s atoms of %s**\n(1 pt for grams → moles, 1 pt for moles → atoms)"
-             % (v["g_metal"], v["sym"], mM, sci(v["atoms"], 3), v["sym"])),
-            ("d.", "Empirical formula. (4 pts)",
-             "Moles %s: %.2f g ÷ %.2f g/mol = %s mol (1 pt)\nMoles O: %.2f g ÷ 16.00 g/mol = %s mol (1 pt)\n"
-             "Ratio, dividing by the smaller (%s mol): %s : O = 1 : %s (1 pt)\nThe ratio is not whole-number, so multiply by %d: %s : O = %d : %d → **%s** (1 pt)"
-             % (v["sym"], v["g_metal"], mM, sf(v["n_metal"], 4), v["g_O"], sf(v["n_O"], 4), sf(v["n_metal"], 4),
-                v["sym"], sf(ratio, 3), a, v["sym"], a, b, v["oxide"])),
-            ("e.", "Balanced equation. (2 pts)",
-             "**%s**   (1 pt for the correct formula as the product, 1 pt for balanced with whole-number coefficients)" % v["eq"]),
-        ]
-        block("Question 1: oxide of %s (10 pts)" % v["metal"], q1)
-        pw = v["pct_water"]
-        q2 = [
-            ("a.", "Mass of hydrate, mass of water lost, percent water. (3 pts)",
-             "Mass of hydrate = %.2f − %.2f = **%.2f g** (1 pt)\nMass of water lost = %.2f − %.2f = **%.2f g** (1 pt)\n"
-             "Percent water = %.2f g ÷ %.2f g × 100 = **%s%%** (1 pt)"
-             % (v["h_with"], v["hyd_c"], v["g_hyd"], v["h_with"], v["h_after"], v["g_water"], v["g_water"], v["g_hyd"], sf(pw, 3))),
-            ("b.", "Moles of water and of anhydrous salt. (3 pts)",
-             "Mass of anhydrous %s = %.2f − %.2f = %.2f g (1 pt)\nMoles H₂O = %.2f g ÷ 18.02 g/mol = **%s mol** (1 pt)\n"
-             "Moles %s = %.2f g ÷ %.2f g/mol = **%s mol** (1 pt)"
-             % (v["salt_f"], v["h_after"], v["hyd_c"], v["g_salt"], v["g_water"], sf(v["n_water"], 3), v["salt_f"], v["g_salt"], v["salt_mm"], sf(v["n_salt"], 3))),
-            ("c.", "x, formula and name. (4 pts)",
-             "Ratio: %s mol H₂O ÷ %s mol %s = %s (1 pt)\nx = **%d** (rounded to a whole number) (1 pt)\nFormula: **%s** (1 pt)\nName: **%s** (1 pt)"
-             % (sf(v["n_water"], 3), sf(v["n_salt"], 3), v["salt_f"], sf(v["x_calc"], 3), v["x"], v["hyd_f"].replace("xH", "%dH" % v["x"]), v["hyd_name"])),
-        ]
-        block("Question 2: %s hydrate (10 pts)" % v["salt"], q2)
+        key_version(d, v, first=(n == 0))
     return d
 
 

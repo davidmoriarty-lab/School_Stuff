@@ -34,6 +34,26 @@ class Timeline:
     def __init__(self, slide):
         self.slide = slide
         self.clicks = []          # {"label": str, "stages": [[Effect, ...], ...]}
+        self._wrapped = {}
+
+    def _wrap(self, shape):
+        """Put an animated shape inside its own group (kept at the same place in the stacking order) and animate the group.
+        Group targets are what PowerPoint itself writes for grouped objects; plain text boxes and autoshapes need extra
+        'build' bookkeeping that was not behaving, so every animated object is grouped instead."""
+        el = shape._element
+        if el.tag.endswith("}grpSp"):
+            return shape
+        key = id(el)
+        if key in self._wrapped:
+            return self._wrapped[key]
+        parent = el.getparent()
+        idx = list(parent).index(el)
+        grp = self.slide.shapes.add_group_shape([shape])
+        gel = grp._element
+        parent.remove(gel)
+        parent.insert(idx, gel)
+        self._wrapped[key] = grp
+        return grp
 
     # ----------------------------------------------------------------- structure
     def click(self, label=""):
@@ -48,7 +68,7 @@ class Timeline:
         if not self.clicks:
             self.click()
         for k, s in enumerate(shapes):
-            self.clicks[-1]["stages"][-1].append(Effect(kind, s, dur, delay, **kw))
+            self.clicks[-1]["stages"][-1].append(Effect(kind, self._wrap(s), dur, delay, **kw))
         return self
 
     # ----------------------------------------------------------------- effects
@@ -74,9 +94,10 @@ class Timeline:
     def pulse(self, *shapes, scale=1.12, dur=600, delay=0):
         return self._add("pulse", shapes, dur, delay, scale=scale)
 
-    def jiggle(self, shape, dx, dy, dur=800, delay=0):
-        """Endless back-and-forth wobble (a looping motion path).  Put these in the LAST stage of a click, never before another stage."""
-        return self._add("jiggle", [shape], dur, delay, dx=dx, dy=dy)
+    def jiggle(self, shape, points, dur=3000, delay=0):
+        """Endless wandering: a closed loop path (starts and ends at (0, 0), EMU offsets) repeated until the end of the slide.
+        Put these in the LAST stage of a click, never before another stage."""
+        return self._add("jiggle", [shape], dur, delay, points=points)
 
     def swap(self, old, new, out_dur=300, in_dur=400):
         """Replace old shapes by new ones WITHOUT showing both at once: old fades out, then (after previous) new fades in.
@@ -197,10 +218,11 @@ class Timeline:
                     % (path, "A" * len(pts), self._id(), e.dur, self._tgt(e)))
             return (head % (0, "path", 0, ' accel="30000" decel="30000"')) + body + tail
         if k == "jiggle":
-            path = "M 0 0 L %.5f %.5f E" % (e.kw["dx"] / sw, e.kw["dy"] / sh)
-            body = ('<p:animMotion origin="layout" path="%s" pathEditMode="relative" rAng="0" ptsTypes="AA"><p:cBhvr><p:cTn id="%d" dur="%d" autoRev="1" fill="hold"/>%s'
+            pts = e.kw["points"]
+            path = "M " + " L ".join("%.5f %.5f" % (dx / sw, dy / sh) for dx, dy in pts) + " E"
+            body = ('<p:animMotion origin="layout" path="%s" pathEditMode="relative" rAng="0" ptsTypes="%s"><p:cBhvr><p:cTn id="%d" dur="%d" fill="hold"/>%s'
                     '<p:attrNameLst><p:attrName>ppt_x</p:attrName><p:attrName>ppt_y</p:attrName></p:attrNameLst></p:cBhvr></p:animMotion>'
-                    % (path, self._id(), e.dur, self._tgt(e)))
+                    % (path, "A" * len(pts), self._id(), e.dur, self._tgt(e)))
             return (head % (0, "path", 0, ' repeatCount="indefinite"')) + body + tail
         if k == "pulse":
             pct = int(round(e.kw["scale"] * 100000))

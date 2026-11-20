@@ -67,7 +67,7 @@ function ImageField({ value, onChange }: { value: string; onChange: (v: string) 
   );
 }
 
-function FieldEditor({ f, props, set }: { f: Field; props: Props; set: (p: Props) => void }) {
+export function FieldEditor({ f, props, set }: { f: Field; props: Props; set: (p: Props) => void }) {
   const v = props[f.key];
   const put = (x: unknown) => set({ [f.key]: x });
   switch (f.kind) {
@@ -101,6 +101,51 @@ function FieldEditor({ f, props, set }: { f: Field; props: Props; set: (p: Props
       );
     }
     case "grid": return <GridField props={props} set={set} />;
+    case "choices": {
+      const rows: { id: string; text: string; correct: boolean }[] = Array.isArray(v) ? v : [];
+      const letter = (i: number) => String.fromCharCode(65 + i);
+      return (
+        <div className="space-y-1.5">
+          {rows.map((c, i) => (
+            <div key={c.id} className="flex items-center gap-1.5">
+              <input type={f.multi ? "checkbox" : "radio"} name={f.key} className="size-4 accent-[var(--color-brand-600)]" checked={c.correct} title="Correct answer"
+                onChange={(e) => put(rows.map((x, j) => (f.multi ? (j === i ? { ...x, correct: e.target.checked } : x) : { ...x, correct: j === i })))} />
+              <span className="w-4 text-xs text-slate-400">{letter(i)}</span>
+              {(c as { img?: string }).img && /* eslint-disable-next-line @next/next/no-img-element */ <img src={(c as { img?: string }).img} alt="" className="h-7 w-10 rounded border border-slate-200 object-contain" />}
+              <input className={inputClass + " min-w-0 flex-1 !px-2 !py-1.5 text-sm"} value={c.text} placeholder={`Choice ${letter(i)}`} onChange={(e) => put(rows.map((x, j) => (j === i ? { ...x, text: e.target.value } : x)))} />
+              <button className="rounded p-1 text-red-400 hover:bg-red-50" onClick={() => put(rows.filter((_, j) => j !== i))} aria-label="Remove choice"><Trash2 className="size-3.5" /></button>
+            </div>
+          ))}
+          <Button variant="secondary" size="sm" disabled={rows.length >= 10} onClick={() => put([...rows, { id: Math.random().toString(36).slice(2, 7), text: "", correct: false }])}><Plus className="size-3.5" /> Add choice</Button>
+        </div>
+      );
+    }
+    case "parts": {
+      const rows: { id: string; label: string; stem: string; points: number; answer: string; lines: number }[] = Array.isArray(v) ? v : [];
+      const nextLabel = () => `(${String.fromCharCode(97 + rows.length)})`;
+      const upd = (i: number, p: Partial<(typeof rows)[number]>) => put(rows.map((x, j) => (j === i ? { ...x, ...p } : x)));
+      const mk = (label: string, stem = "") => ({ id: Math.random().toString(36).slice(2, 7), label, stem, points: 1, answer: "", lines: 3 });
+      return (
+        <div className="space-y-2">
+          {rows.map((r, i) => (
+            <div key={r.id} className="space-y-1.5 rounded-lg border border-slate-200 p-2">
+              <div className="flex gap-1.5">
+                <input className={inputClass + " !w-16 !px-2 !py-1 text-sm"} value={r.label} onChange={(e) => upd(i, { label: e.target.value })} aria-label="Part label" />
+                <label className="flex items-center gap-1 text-xs text-slate-500">pts<input type="number" min={0} className={inputClass + " !w-16 !px-2 !py-1 text-sm"} value={r.points} onChange={(e) => upd(i, { points: Number(e.target.value) })} /></label>
+                <label className="flex items-center gap-1 text-xs text-slate-500">lines<input type="number" min={0} max={30} className={inputClass + " !w-16 !px-2 !py-1 text-sm"} value={r.lines} onChange={(e) => upd(i, { lines: Number(e.target.value) })} /></label>
+                <button className="ml-auto rounded p-1 text-red-400 hover:bg-red-50" onClick={() => put(rows.filter((_, j) => j !== i))} aria-label="Remove part"><Trash2 className="size-3.5" /></button>
+              </div>
+              <textarea className={inputClass + " w-full text-sm"} rows={2} placeholder="Part question" value={r.stem} onChange={(e) => upd(i, { stem: e.target.value })} />
+              <textarea className={inputClass + " w-full text-sm"} rows={2} placeholder="Answer (key only)" value={r.answer} onChange={(e) => upd(i, { answer: e.target.value })} />
+            </div>
+          ))}
+          <div className="flex flex-wrap gap-1.5">
+            <Button variant="secondary" size="sm" onClick={() => put([...rows, mk(nextLabel())])}><Plus className="size-3.5" /> Add part</Button>
+            {rows.length === 0 && <Button variant="ghost" size="sm" onClick={() => put([mk("(a)", "Make a claim."), mk("(b)", "Give evidence that supports it."), mk("(c)", "Explain your reasoning.")])}>Claim, evidence, reasoning</Button>}
+          </div>
+        </div>
+      );
+    }
   }
 }
 

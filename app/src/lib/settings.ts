@@ -2,13 +2,14 @@
 // with a default. Saved values (from the Settings page or a page's "quick settings" pop-up) are merged over these.
 
 export type ModuleKey =
-  | "library" | "worksheets" | "profiles" | "subplans" | "seating" | "lessons" | "pacing" | "calendar" | "todo" | "tools" | "gradebook" | "share";
+  | "library" | "worksheets" | "profiles" | "subplans" | "questions" | "seating" | "lessons" | "pacing" | "calendar" | "todo" | "tools" | "gradebook" | "share";
 
 export const MODULES: { key: ModuleKey; label: string; hint: string }[] = [
   { key: "library", label: "Library", hint: "Browse, search, preview and print your class files" },
   { key: "worksheets", label: "Worksheet builder", hint: "Drag-and-snap chemistry worksheet maker" },
   { key: "profiles", label: "Student profiles", hint: "Preferred names, notes and a printable substitute roster" },
   { key: "subplans", label: "Sub plans & bell schedules", hint: "Build a day plan for a substitute from a bell schedule" },
+  { key: "questions", label: "Question bank & tests", hint: "Questions of any kind, and tests with versions A to D" },
   { key: "seating", label: "Seating charts", hint: "Room layouts with students, printable" },
   { key: "lessons", label: "Lesson plans", hint: "Customizable lesson plan templates" },
   { key: "pacing", label: "Pacing guides", hint: "Unit schedule for the year" },
@@ -64,7 +65,7 @@ export const DEFAULT_SETTINGS: Settings = {
   fontScale: "normal",
   density: "comfortable",
   modules: {
-    library: true, worksheets: true, profiles: true, subplans: true, seating: true, lessons: true, pacing: true,
+    library: true, worksheets: true, profiles: true, subplans: true, questions: true, seating: true, lessons: true, pacing: true,
     calendar: true, todo: true, tools: true, gradebook: true, share: true,
   },
   periods: [

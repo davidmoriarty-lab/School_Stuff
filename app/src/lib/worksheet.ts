@@ -34,7 +34,9 @@ export type Field =
   | { key: string; label: string; kind: "lines"; hint?: string; rows?: number }
   | { key: string; label: string; kind: "pairs"; cols: { key: string; label: string }[]; add: string; hint?: string }
   | { key: string; label: string; kind: "multi"; options: [string, string][]; hint?: string }
-  | { key: string; label: string; kind: "grid"; hint?: string };
+  | { key: string; label: string; kind: "grid"; hint?: string }
+  | { key: string; label: string; kind: "choices"; multi: boolean; hint?: string }
+  | { key: string; label: string; kind: "parts"; hint?: string };
 
 export type BlockDef = {
   label: string; group: "Basics" | "Chemistry" | "Visual"; hint: string;

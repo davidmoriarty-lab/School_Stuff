@@ -8,5 +8,6 @@ export function getUnitSuggestions(): string[] {
   for (const g of listItems("pacing")) for (const u of (g.data as Guide).units ?? []) if (u.title?.trim()) set.add(u.title.trim());
   for (const l of listItems("lesson")) if (l.data.unit?.trim()) set.add(String(l.data.unit).trim());
   for (const w of listItems("worksheet")) if (w.data.unit?.trim()) set.add(String(w.data.unit).trim());
+  for (const k of ["question", "exam"] as const) for (const i of listItems(k)) if (i.data.unit?.trim()) set.add(String(i.data.unit).trim());
   return [...set].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 }

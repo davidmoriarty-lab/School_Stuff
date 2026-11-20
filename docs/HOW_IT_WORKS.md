@@ -87,6 +87,24 @@ contact, a note "for a substitute", private notes, a dated log, and any extra fi
 * Sub plans do not include a roster. Print rosters from Student profiles: one class, several, or all classes at once.
 * Sub plans appear on the calendar on their date. Both kinds can be shared in a package.
 
+## Question bank and test builder
+
+* **Question bank** (`/questions`): every question is one item of any kind: multiple choice, select-all, true/false, short answer,
+  free response (with parts and a rubric), fill in the blank, matching, calculation, balance equations, names and formulas, and
+  put-in-order. Each kind's fields are listed once in `lib/questions.ts` (`QTYPES`) and the editor builds itself from that list,
+  the same way the worksheet builder's right-hand panel does. Any question can carry pictures (paste with Ctrl+V) and tables,
+  a symbol palette helps with chemistry characters, and questions are tagged by course, unit, topic, difficulty and tags.
+  "Import from class materials" brings in the acids and bases quiz and the SN1/SN2/E1/E2 problems, pictures included.
+* **Test builder** (`/testbuilder`): pick questions from the bank (filter, select, or add random ones), add section headings and page
+  breaks, pin a question in place, override points. A test keeps **its own copy** of each question, so changing the bank later never
+  alters a test you already gave (the refresh button pulls the latest if you want it).
+* **Versions A to D**: `buildVersion()` in `lib/questions.ts` shuffles with a seeded random generator, so a version is
+  reproducible and its answer key always matches its own paper. Questions move only inside their section, pinned ones stay put,
+  "All of the above" stays last, and matching columns and ordering steps are shuffled too. Answer keys print with a quick-key grid,
+  and a cross-reference table lists each question's number on every version.
+* **Gradebook**: "Gradebook" turns Version A into a test in the Gradebook, so you can print scoring sheets and scan results.
+  Questions worth more than 3 points are split into parts, which is how the scoring sheets work.
+
 ## Periodic table
 
 The worksheet "Periodic table" block uses the College Board AP Chemistry table (`app/public/ap-periodic-table.svg`, cropped from

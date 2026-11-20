@@ -10,8 +10,8 @@ import { makeBackup } from "./backup";
 import { clearSearchCache, resolveSafe } from "./library";
 import type { Chart } from "./seating";
 
-export const SHAREABLE: ItemKind[] = ["worksheet", "lesson", "pacing", "seating", "subplan", "bell"];
-export const KIND_LABEL: Record<string, string> = { worksheet: "Worksheet", lesson: "Lesson plan", pacing: "Pacing guide", seating: "Seating layout", subplan: "Sub plan", bell: "Bell schedule" };
+export const SHAREABLE: ItemKind[] = ["worksheet", "lesson", "pacing", "seating", "subplan", "bell", "question", "exam"];
+export const KIND_LABEL: Record<string, string> = { worksheet: "Worksheet", lesson: "Lesson plan", pacing: "Pacing guide", seating: "Seating layout", subplan: "Sub plan", bell: "Bell schedule", question: "Question", exam: "Test" };
 
 export type PackItem = { uid: string; kind: ItemKind; title: string; updatedAt: string; data: unknown };
 export type PackFile = { path: string; base64: string };

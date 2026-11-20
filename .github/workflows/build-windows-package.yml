@@ -70,7 +70,7 @@ jobs:
           Start-Sleep -Seconds 10
           $bad = @()
           $paths = "/", "/settings", "/library", "/library?q=titration", "/worksheets", "/seating", "/calendar", "/todos", "/lessons", "/pacing", "/share", "/tools",
-                   "/gradebook", "/tests", "/rosters", "/profiles", "/profiles/print?sections=all", "/subplans", "/bell-schedules", "/ap-periodic-table.svg", "/files/class/index.html"
+                   "/gradebook", "/tests", "/rosters", "/profiles", "/profiles/print?sections=all", "/subplans", "/bell-schedules", "/questions", "/testbuilder", "/ap-periodic-table.svg", "/files/class/index.html"
           foreach ($path in $paths) {
             try { $code = (Invoke-WebRequest "http://127.0.0.1:3000$path" -UseBasicParsing).StatusCode } catch { $code = $_.Exception.Response.StatusCode.value__ }
             "$path -> $code"

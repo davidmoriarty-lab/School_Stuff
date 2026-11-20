@@ -29,3 +29,17 @@ body {
 @media print {
   aside, nav { display: none !important; }
 }
+
+/* Dark mode: flip the whole page's colors, then flip pictures, frames and worksheet paper back. */
+html.dark-mode { filter: invert(0.92) hue-rotate(180deg); background: #fff; }
+html.dark-mode img, html.dark-mode iframe, html.dark-mode video, html.dark-mode .keep-colors {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+.no-print {}
+@media print {
+  html.dark-mode { filter: none; }
+  .no-print { display: none !important; }
+  body { background: #fff !important; }
+  main { max-width: none !important; padding: 0 !important; }
+}

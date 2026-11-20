@@ -29,7 +29,9 @@ jobs:
       - name: Install and build the app
         working-directory: app
         run: |
-          npm ci
+          # --ignore-scripts: the database library ships a ready-made Windows binary (prebuilds/win32-x64.node).
+          # Without this flag npm tries to compile it from source, which needs Visual Studio C++ tools.
+          npm ci --ignore-scripts
           npm run build
 
       - name: Assemble the package folder

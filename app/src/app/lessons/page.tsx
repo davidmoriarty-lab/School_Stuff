@@ -1,4 +1,3 @@
-import { BookOpen } from "lucide-react";
 import { getSettings, listItems } from "@/lib/store";
 import { PageHeader } from "@/components/ui";
 import { SimpleList } from "@/components/SimpleList";
@@ -11,7 +10,7 @@ export default function Lessons() {
   return (
     <>
       <PageHeader title="Lesson plans" subtitle="Your template (the boxes on each plan) is set under Settings → Lesson plan template." />
-      <SimpleList kind="lesson" base="/lessons" items={items} courses={s.courses} noun="lesson plan" icon={BookOpen} />
+      <SimpleList kind="lesson" base="/lessons" items={items} courses={s.courses} noun="lesson plan" />
     </>
   );
 }

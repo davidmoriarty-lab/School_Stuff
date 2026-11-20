@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Copy, Plus, Trash2, type LucideIcon } from "lucide-react";
+import { BookOpen, Copy, Plus, Route, Trash2 } from "lucide-react";
 import { Modal } from "./Modal";
 import { Button, Card, EmptyState, Input, Select } from "./ui";
 import { deleteItemAction, duplicateItemAction, saveItemAction } from "@/lib/storeActions";
@@ -11,9 +11,10 @@ import { todayStr } from "@/lib/dates";
 
 type Row = { uid: string; title: string; meta: string; updatedAt: string };
 
-export function SimpleList({ kind, base, items, courses, noun, icon: Icon, sections }: {
-  kind: "lesson" | "pacing"; base: string; items: Row[]; courses: string[]; noun: string; icon: LucideIcon; sections?: string[];
+export function SimpleList({ kind, base, items, courses, noun }: {
+  kind: "lesson" | "pacing"; base: string; items: Row[]; courses: string[]; noun: string;
 }) {
+  const Icon = kind === "lesson" ? BookOpen : Route;
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
@@ -29,7 +30,6 @@ export function SimpleList({ kind, base, items, courses, noun, icon: Icon, secti
     router.push(`${base}/${uid}`);
   }
   const shown = items.filter((i) => (i.title + " " + i.meta).toLowerCase().includes(q.toLowerCase()));
-  void sections;
   return (
     <>
       <div className="mb-4 flex flex-wrap items-center gap-2">

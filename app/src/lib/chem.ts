@@ -170,6 +170,11 @@ export function chemSegs(text: string, auto = true): Seg[] {
     if (chunk.startsWith("^{")) { push({ t: "sup", s: chunk.slice(2, -1) }); continue; }
     if (!auto) { push({ t: "text", s: chunk }); continue; }
     for (const w of chunk.split(/(\s+)/)) {
+      if (/[\u00B7\u2022]/.test(w) && !/^\s+$/.test(w)) {
+        // Hydrates such as CuSO4·5H2O: format each side of the dot on its own.
+        for (const part of w.split(/([\u00B7\u2022])/)) (formulaSegs(part) ?? [{ t: "text" as const, s: part }]).forEach(push);
+        continue;
+      }
       const segs = w && !/^\s+$/.test(w) ? formulaSegs(w) : null;
       if (segs) segs.forEach(push); else push({ t: "text", s: w });
     }

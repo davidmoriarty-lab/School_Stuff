@@ -5,7 +5,6 @@ name: Build Windows package
 on:
   push:
     branches: ["main", "claude/**"]
-    paths: ["app/**", "packaging/**", ".github/workflows/build-windows-package.yml"]
     tags: ["v*"]
   workflow_dispatch:
 
@@ -53,27 +52,38 @@ jobs:
           foreach ($p in "index.html","simulations","chemistry_notes","organic-chemistry","4-year-course-planner","ap-chemistry","honors-chemistry") {
             if (Test-Path $p) { Copy-Item -Recurse -Force $p $lib }
           }
+          foreach ($must in "server.js", ".next/server", ".next/static", "node/node.exe", "node_modules/better-sqlite3") {
+            if (-not (Test-Path "$out/$must")) { throw "Package is missing $must" }
+          }
           Copy-Item "packaging/Start App.bat" $out
           Copy-Item "packaging/READ ME FIRST.txt" $out
           "Built from commit ${env:GITHUB_SHA} on $(Get-Date -Format u)" | Set-Content "$out/VERSION.txt"
 
-      - name: Check the package starts and answers on 127.0.0.1
+      - name: Check the package starts and every page answers on 127.0.0.1
         run: |
           $env:HOSTNAME = "127.0.0.1"; $env:PORT = "3000"; $env:NODE_ENV = "production"
+          $env:CLASSROOM_LIBRARY_DIR = "$PWD/ClassroomApp/library"
           $p = Start-Process -FilePath "$PWD/ClassroomApp/node/node.exe" -ArgumentList "server.js" `
                 -WorkingDirectory "$PWD/ClassroomApp" -PassThru -RedirectStandardOutput server.log -RedirectStandardError server.err
-          Start-Sleep -Seconds 8
-          $bad = $false
-          foreach ($path in "/", "/tests", "/rosters") {
-            $code = (Invoke-WebRequest "http://127.0.0.1:3000$path" -UseBasicParsing).StatusCode
+          Start-Sleep -Seconds 10
+          $bad = @()
+          $paths = "/", "/settings", "/library", "/library?q=titration", "/worksheets", "/seating", "/calendar", "/todos", "/lessons", "/pacing", "/share", "/tools",
+                   "/gradebook", "/tests", "/rosters", "/files/class/index.html"
+          foreach ($path in $paths) {
+            try { $code = (Invoke-WebRequest "http://127.0.0.1:3000$path" -UseBasicParsing).StatusCode } catch { $code = $_.Exception.Response.StatusCode.value__ }
             "$path -> $code"
-            if ($code -ne 200) { $bad = $true }
+            if ($code -ne 200) { $bad += $path }
           }
+          # The localhost lock must refuse a request addressed to some other host name
+          try { $r = Invoke-WebRequest "http://127.0.0.1:3000/" -Headers @{ Host = "evil.example.com" } -UseBasicParsing; $lock = $r.StatusCode } catch { $lock = $_.Exception.Response.StatusCode.value__ }
+          "host lock -> $lock"
+          if ($lock -ne 403) { $bad += "host-lock" }
+          # The database file must have been created next to the app
+          if (-not (Test-Path "ClassroomApp/data/scoring.db")) { $bad += "database-not-created" }
           Stop-Process $p -Force
           Get-Content server.log, server.err -ErrorAction SilentlyContinue
-          # Remove the test database so the zip ships clean
           Remove-Item -Recurse -Force "ClassroomApp/data" -ErrorAction SilentlyContinue
-          if ($bad) { throw "Smoke test failed" }
+          if ($bad.Count) { throw "Smoke test failed: $($bad -join ', ')" }
 
       - name: Zip it
         run: Compress-Archive -Path ClassroomApp -DestinationPath ClassroomApp-windows.zip

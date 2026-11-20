@@ -10,7 +10,7 @@ export type BlockType =
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Props = Record<string, any>;
-export type Block = { id: string; type: BlockType; x: number; y: number; w: number; h: number; props: Props };
+export type Block = { id: string; type: BlockType; x: number; y: number; w: number; h: number; props: Props; fit?: boolean };
 export type Page = { blocks: Block[] };
 export type Sheet = {
   paper: "letter" | "a4";
@@ -183,7 +183,7 @@ export const BLOCK_DEFS: Record<BlockType, BlockDef> = {
   },
   molemap: {
     label: "Mole map", group: "Chemistry", hint: "Particles ↔ moles ↔ grams ↔ liters diagram",
-    w: 720, h: 230, props: { title: "The Mole Map" }, fields: [{ key: "title", label: "Title", kind: "text" }],
+    w: 720, h: 240, props: { title: "The Mole Map" }, fields: [{ key: "title", label: "Title", kind: "text" }],
   },
   periodic: {
     label: "Periodic table", group: "Chemistry", hint: "Full colored periodic table",
@@ -243,7 +243,7 @@ export const BLOCK_ORDER = Object.keys(BLOCK_DEFS) as BlockType[];
 
 export function newBlock(type: BlockType, x: number, y: number): Block {
   const d = BLOCK_DEFS[type];
-  return { id: uid(), type, x, y, w: d.w, h: d.h, props: JSON.parse(JSON.stringify(d.props)) };
+  return { id: uid(), type, x, y, w: d.w, h: d.h, props: JSON.parse(JSON.stringify(d.props)), fit: true };
 }
 
 export function emptySheet(course = "", paper: "letter" | "a4" = "letter"): Sheet {
@@ -307,7 +307,7 @@ export const TEMPLATES: { id: string; label: string; hint: string; build: (cours
     build: (course, paper) => {
       const s = emptySheet(course, paper); const st = { blocks: s.pages[0].blocks, y: 48 };
       add(st, "header", { course, title: "Mole Conversions" });
-      add(st, "molemap", {}, 220);
+      add(st, "molemap", {}, 240);
       add(st, "factor", { num: "1", problem: "How many moles are in 25.0 g of NaCl?", given: "25.0 g NaCl", slots: 1, captions: ["molar mass"], target: "mol NaCl", answer: "0.428 mol NaCl" }, 120);
       add(st, "factor", { num: "2", problem: "How many molecules are in 2.50 mol of H2O?", given: "2.50 mol H2O", slots: 1, captions: ["Avogadro's number"], target: "molecules H2O", answer: "1.51 × 10^{24} molecules" }, 120);
       add(st, "factor", { num: "3", problem: "What volume does 0.500 mol of CO2 occupy at STP?", given: "0.500 mol CO2", slots: 1, captions: ["molar volume"], target: "L CO2", answer: "11.2 L CO2" }, 120);

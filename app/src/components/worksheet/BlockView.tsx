@@ -59,9 +59,15 @@ export function BlockView({ block, showKey, editing }: { block: Block; showKey: 
       return (
         <div>
           {p.title ? <div style={{ fontStyle: "italic", marginBottom: 6 }}><Chem text={p.title} /></div> : null}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 28px" }}>
-            <div>{arr(p.left).map((t, i) => <div key={i} style={{ display: "flex", gap: 6, marginBottom: 6, alignItems: "baseline" }}><span style={{ display: "inline-block", width: 34, borderBottom: `1px solid ${INK}`, textAlign: "center", height: 18 }}>{showKey ? <Key>{ans[i]}</Key> : ""}</span>{i + 1}. <span><Chem text={t} /></span></div>)}</div>
-            <div>{arr(p.right).map((t, i) => <div key={i} style={{ marginBottom: 6 }}>{LETTERS[i]}.&nbsp; <Chem text={t} /></div>)}</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 28px" }}>
+            {Array.from({ length: Math.max(arr(p.left).length, arr(p.right).length) }).map((_, i) => (
+              <div key={i} style={{ display: "contents" }}>
+                <div style={{ display: "flex", gap: 6, alignItems: "baseline" }}>
+                  {i < arr(p.left).length && <><span style={{ display: "inline-block", width: 34, borderBottom: `1px solid ${INK}`, textAlign: "center", height: 18 }}>{showKey ? <Key>{ans[i]}</Key> : ""}</span>{i + 1}. <span><Chem text={arr(p.left)[i]} /></span></>}
+                </div>
+                <div>{i < arr(p.right).length && <>{LETTERS[i]}.&nbsp; <Chem text={arr(p.right)[i]} /></>}</div>
+              </div>
+            ))}
           </div>
         </div>
       );
@@ -284,33 +290,33 @@ function Factor({ p, showKey }: { p: Props; showKey: boolean }) {
 function MoleMap({ w, h, title }: { w: number; h: number; title?: string }) {
   const box = (x: number, y: number, t: string, sub: string) => (
     <g key={t}>
-      <rect x={x} y={y} width={150} height={56} rx={10} fill="#fff" stroke={INK} strokeWidth={2} />
-      <text x={x + 75} y={y + 25} textAnchor="middle" fontWeight={700} fontSize={16}>{t}</text>
-      <text x={x + 75} y={y + 44} textAnchor="middle" fontSize={11} fill="#444">{sub}</text>
+      <rect x={x} y={y} width={150} height={54} rx={10} fill="#fff" stroke={INK} strokeWidth={2} />
+      <text x={x + 75} y={y + 24} textAnchor="middle" fontWeight={700} fontSize={16}>{t}</text>
+      <text x={x + 75} y={y + 43} textAnchor="middle" fontSize={11} fill="#444">{sub}</text>
     </g>
   );
-  const arrow = (x1: number, y1: number, x2: number, y2: number, label: string, ly: number) => (
-    <g key={label + x1 + y1}>
-      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={INK} strokeWidth={1.8} markerEnd="url(#ah)" />
-      <text x={(x1 + x2) / 2} y={ly} textAnchor="middle" fontSize={11}>{label}</text>
+  const harrow = (x1: number, x2: number, y: number, label: string, above: boolean) => (
+    <g key={label}>
+      <line x1={x1} y1={y} x2={x2} y2={y} stroke={INK} strokeWidth={1.8} markerEnd="url(#ah)" />
+      <text x={(x1 + x2) / 2} y={above ? y - 6 : y + 15} textAnchor="middle" fontSize={11}>{label}</text>
     </g>
   );
   return (
-    <svg viewBox="0 0 720 230" width={w} height={h} style={{ display: "block" }}>
+    <svg viewBox="0 0 720 240" width={w} height={h} style={{ display: "block" }}>
       <defs><marker id="ah" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill={INK} /></marker></defs>
-      {title ? <text x={360} y={16} textAnchor="middle" fontWeight={700} fontSize={15}>{title}</text> : null}
-      {box(20, 90, "Particles", "atoms / molecules / ions")}
-      {box(285, 90, "Moles", "mol")}
-      {box(550, 90, "Mass", "grams")}
-      {box(285, 170, "Volume of gas", "liters at STP")}
-      {arrow(172, 108, 283, 108, "÷ 6.022 × 10²³", 100)}
-      {arrow(283, 128, 172, 128, "× 6.022 × 10²³", 144)}
-      {arrow(437, 108, 548, 108, "× molar mass", 100)}
-      {arrow(548, 128, 437, 128, "÷ molar mass", 144)}
-      {arrow(345, 148, 345, 168, "", 160)}
-      <text x={420} y={160} fontSize={11}>× 22.4 L/mol</text>
-      <text x={200} y={160} fontSize={11}>÷ 22.4 L/mol</text>
-      <line x1={375} y1={168} x2={375} y2={148} stroke={INK} strokeWidth={1.8} markerEnd="url(#ah)" />
+      {title ? <text x={360} y={18} textAnchor="middle" fontWeight={700} fontSize={15}>{title}</text> : null}
+      {box(20, 56, "Particles", "atoms / molecules / ions")}
+      {box(285, 56, "Moles", "mol")}
+      {box(550, 56, "Mass", "grams")}
+      {box(285, 176, "Volume of gas", "liters at STP")}
+      {harrow(172, 283, 74, "÷ 6.022 × 10²³", true)}
+      {harrow(283, 172, 96, "× 6.022 × 10²³", false)}
+      {harrow(437, 548, 74, "× molar mass", true)}
+      {harrow(548, 437, 96, "÷ molar mass", false)}
+      <line x1={330} y1={112} x2={330} y2={174} stroke={INK} strokeWidth={1.8} markerEnd="url(#ah)" />
+      <text x={322} y={148} textAnchor="end" fontSize={11}>× 22.4 L/mol</text>
+      <line x1={390} y1={174} x2={390} y2={112} stroke={INK} strokeWidth={1.8} markerEnd="url(#ah)" />
+      <text x={398} y={148} textAnchor="start" fontSize={11}>÷ 22.4 L/mol</text>
     </svg>
   );
 }

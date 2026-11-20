@@ -100,6 +100,7 @@ export function Editor({ uid: itemUid, initialTitle, initial, courses }: { uid: 
         if (blocks.length && bottom + b.h > H - margin) { pages = [...pages, { blocks: [] }]; pg = pages.length - 1; b.y = margin; }
         else b.y = bottom;
       }
+      b.x = Math.max(0, Math.min(b.x, W - margin - b.w)); // keep new blocks on the paper
       Object.assign(b, clampPos(b));
       return { ...s, pages: pages.map((p, i) => (i === pg ? { ...p, blocks: [...p.blocks, b] } : p)) };
     });
@@ -231,16 +232,23 @@ export function Editor({ uid: itemUid, initialTitle, initial, courses }: { uid: 
     return () => window.removeEventListener("keydown", h);
   });
 
-  // ---- grow boxes whose content is taller than the box --------------------------------------------------------------
+  // ---- keep boxes the right height -----------------------------------------------------------------------------------
+  // A box grows when its content is taller than the box. Brand-new blocks (flagged "fit") are also trimmed once
+  // so there is no empty space left over from the template's size estimate.
   useEffect(() => {
-    const grow: Record<string, number> = {};
+    const set: Record<string, number> = {};
+    const unfit: string[] = [];
     document.querySelectorAll<HTMLElement>("[data-inner]").forEach((n) => {
       const id = n.dataset.inner!;
       const loc = locate(sheetRef.current, id);
-      const need = Math.ceil(n.offsetHeight);
-      if (loc && need > loc.block.h + 1) grow[id] = need;
+      if (!loc) return;
+      const need = Math.max(8, Math.ceil(n.offsetHeight));
+      if (loc.block.fit) { set[id] = need; unfit.push(id); }
+      else if (need > loc.block.h + 1) set[id] = need;
     });
-    if (Object.keys(grow).length) mutate((s) => ({ ...s, pages: s.pages.map((p) => ({ ...p, blocks: p.blocks.map((b) => (grow[b.id] ? { ...b, h: grow[b.id] } : b)) })) }), false);
+    if (Object.keys(set).length) {
+      mutate((s) => ({ ...s, pages: s.pages.map((p) => ({ ...p, blocks: p.blocks.map((b) => (set[b.id] ? { ...b, h: set[b.id], fit: undefined } : b)) })) }), false);
+    }
   }, [sheet, showKey, mutate]);
 
   // ---- autosave ------------------------------------------------------------------------------------------------------

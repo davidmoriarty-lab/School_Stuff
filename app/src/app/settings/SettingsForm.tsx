@@ -34,12 +34,17 @@ export function SettingsForm({ initial, backups }: { initial: Settings; backups:
   const [saved, setSaved] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
+  // Changes are collected and saved together a moment after the last keystroke, so quick edits never overwrite each other.
+  const pending = useRef<Partial<Settings>>({});
   function update(patch: Partial<Settings>) {
     setS((cur) => ({ ...cur, ...patch }));
     setSaved(false);
+    pending.current = { ...pending.current, ...patch };
     clearTimeout(timer.current);
     timer.current = setTimeout(async () => {
-      await saveSettingsAction(patch);
+      const send = pending.current;
+      pending.current = {};
+      await saveSettingsAction(send);
       setSaved(true);
       router.refresh();
     }, 500);

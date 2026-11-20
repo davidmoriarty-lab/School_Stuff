@@ -5,8 +5,9 @@
 import fs from "node:fs";
 import path from "node:path";
 
-export type RootKey = "class" | "mine";
-export const ROOT_LABEL: Record<RootKey, string> = { class: "Class materials", mine: "My files" };
+import type { Entry, RootKey } from "./libraryShared";
+export { ROOT_LABEL, PREVIEWABLE, filesUrl } from "./libraryShared";
+export type { Entry, RootKey } from "./libraryShared";
 
 const CLASS_TOP = new Set(["index.html", "simulations", "chemistry_notes", "organic-chemistry", "4-year-course-planner", "ap-chemistry", "honors-chemistry"]);
 const SKIP = new Set(["node_modules", ".git", "dist", ".next", "__pycache__"]);
@@ -29,8 +30,6 @@ export function resolveSafe(root: RootKey, rel: string): string | null {
   }
   return full;
 }
-
-export type Entry = { name: string; rel: string; isDir: boolean; size: number; mtime: number; ext: string };
 
 const hidden = (n: string) => n.startsWith(".") || SKIP.has(n);
 
@@ -94,7 +93,3 @@ export const MIME: Record<string, string> = {
   xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 };
 
-export const PREVIEWABLE = new Set(["html", "htm", "pdf", "png", "jpg", "jpeg", "gif", "svg", "txt", "md", "csv"]);
-
-export const filesUrl = (root: RootKey, rel: string, download = false) =>
-  `/files/${root}/${rel.split("/").map(encodeURIComponent).join("/")}${download ? "?download=1" : ""}`;

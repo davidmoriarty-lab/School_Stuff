@@ -8,7 +8,7 @@ import {
 import { Modal } from "@/components/Modal";
 import { Button, Card, EmptyState } from "@/components/ui";
 import { togglePin } from "@/lib/libraryActions";
-import { PREVIEWABLE, filesUrl, type Entry, type RootKey } from "@/lib/library";
+import { PREVIEWABLE, filesUrl, type Entry, type RootKey } from "@/lib/libraryShared";
 import type { Pin as PinT } from "@/lib/settings";
 
 type E = Entry & { root: RootKey };

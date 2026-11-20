@@ -18,15 +18,16 @@ GitHub holds the code; a GitHub Actions job builds a Windows zip that contains e
 - `.github/workflows/build-windows-package.yml`   builds `ClassroomApp-windows.zip`
 - everything else (index.html, simulations, chemistry_notes, ...) is the class library; it is copied into the zip's `library/` folder
 
-## Phases
-1. Foundation: merge, package build, Settings page, shared shell (done: merge + package build; next: Settings)
-2. Library: browse/search/preview worksheets, tests, slides, notes; add your own files; print
-3. Gradebook: the existing tracker (tests, scanning, curves, AP tags, reports) inside the shell
-4. Classroom: rosters, seating charts (drag-and-drop, saved layouts, print), notes, accommodations flags, parent-contact log
-5. Planning: calendar, lesson plans, pacing guides, sub plans, to-do list, Today dashboard
-6. Share Packages: export selected items (worksheets, lesson plans, pacing guides, seating layouts) to a `.classpack` file;
-   another teacher imports it and it adds or updates their items. Never includes student data; asks before overwriting.
-7. Extras: random picker, group maker, timers, printable sheet maker, backup/restore
+## Phases (status)
+1. Foundation: merge, package build, Settings page, shell, backups. **Done**
+2. Library: browse/search/preview/print, My files uploads, pinning. **Done**
+3. Gradebook: the original tracker (tests, scanning, curves, AP tags, reports) inside the shell. **Done**
+4. Classroom: seating charts (presets, snap, assign, print), random picker, group maker, timer. **Done**
+5. Planning: calendar, lesson plans (customizable template), pacing guides (auto dates), to-do, Today page. **Done**
+6. Worksheet builder: drag-and-snap, 20 chemistry block types, templates, answer key, print. **Done**
+7. Share Packages (`.classpack`). **Done**
+8. Ideas for later: question bank blocks drawn from the molecule/problem JSON files, rubric builder, seating by group
+   history, standards tracking, sub-plan packet, calendar import (.ics), restore-from-backup button.
 
 ## Open items
 - `xlsx` (SheetJS) has known advisories with no npm fix; replace or isolate it when the import/export code is reviewed.

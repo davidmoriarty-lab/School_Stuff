@@ -1,0 +1,91 @@
+name: Build Windows package
+
+# Builds a ready-to-run Windows zip (app + its own portable Node + class library).
+# Download it from the finished run's "Artifacts" section, or from Releases when a tag like v0.1.0 is pushed.
+on:
+  push:
+    branches: ["main", "claude/**"]
+    paths: ["app/**", "packaging/**", ".github/workflows/build-windows-package.yml"]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write   # lets the tag build attach the zip to a Release
+
+jobs:
+  package:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install and build the app
+        working-directory: app
+        run: |
+          npm ci
+          npm run build
+
+      - name: Assemble the package folder
+        run: |
+          $out = "ClassroomApp"
+          New-Item -ItemType Directory -Force $out | Out-Null
+          # The app server (Next.js standalone output) with its dependencies, including the Windows database engine
+          Copy-Item -Recurse -Force "app/.next/standalone/*" $out
+          # Never ship a database that the build may have created
+          Remove-Item -Recurse -Force "$out/data" -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force "$out/.next" | Out-Null
+          Copy-Item -Recurse -Force "app/.next/static" "$out/.next/static"
+          if (Test-Path "app/public") { Copy-Item -Recurse -Force "app/public" "$out/public" }
+          # Portable Node: the exact version that built the app, so the database engine matches it
+          New-Item -ItemType Directory -Force "$out/node" | Out-Null
+          Copy-Item (Get-Command node).Source "$out/node/node.exe"
+          # The class library (read-only teaching files)
+          $lib = "$out/library"
+          New-Item -ItemType Directory -Force $lib | Out-Null
+          foreach ($p in "index.html","simulations","chemistry_notes","organic-chemistry","4-year-course-planner","ap-chemistry","honors-chemistry") {
+            if (Test-Path $p) { Copy-Item -Recurse -Force $p $lib }
+          }
+          Copy-Item "packaging/Start App.bat" $out
+          Copy-Item "packaging/READ ME FIRST.txt" $out
+          "Built from commit ${env:GITHUB_SHA} on $(Get-Date -Format u)" | Set-Content "$out/VERSION.txt"
+
+      - name: Check the package starts and answers on 127.0.0.1
+        run: |
+          $env:HOSTNAME = "127.0.0.1"; $env:PORT = "3000"; $env:NODE_ENV = "production"
+          $p = Start-Process -FilePath "$PWD/ClassroomApp/node/node.exe" -ArgumentList "server.js" `
+                -WorkingDirectory "$PWD/ClassroomApp" -PassThru -RedirectStandardOutput server.log -RedirectStandardError server.err
+          Start-Sleep -Seconds 8
+          $bad = $false
+          foreach ($path in "/", "/tests", "/rosters") {
+            $code = (Invoke-WebRequest "http://127.0.0.1:3000$path" -UseBasicParsing).StatusCode
+            "$path -> $code"
+            if ($code -ne 200) { $bad = $true }
+          }
+          Stop-Process $p -Force
+          Get-Content server.log, server.err -ErrorAction SilentlyContinue
+          # Remove the test database so the zip ships clean
+          Remove-Item -Recurse -Force "ClassroomApp/data" -ErrorAction SilentlyContinue
+          if ($bad) { throw "Smoke test failed" }
+
+      - name: Zip it
+        run: Compress-Archive -Path ClassroomApp -DestinationPath ClassroomApp-windows.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ClassroomApp-windows
+          path: ClassroomApp-windows.zip
+          retention-days: 30
+
+      - name: Attach to a Release (tag builds only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ClassroomApp-windows.zip

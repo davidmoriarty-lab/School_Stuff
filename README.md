@@ -1,5 +1,7 @@
 # Teaching Materials
 
+> **Classroom App (in progress):** a local web app (tests/scoring, seating charts, planning, library) lives in `app/`. See `docs/PLAN.md`. A Windows zip is built by GitHub Actions (Actions tab, Artifacts).
+
 **Searchable index of everything:** https://davidmoriarty-lab.github.io/School_Stuff/ (GitHub Pages; open `index.html` locally to preview).
 One page searches all molecules, problems and quiz questions, with filters by collection and type and answers hidden until you expand a card.
 

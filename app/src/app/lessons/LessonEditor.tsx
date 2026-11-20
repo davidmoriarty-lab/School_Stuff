@@ -9,8 +9,8 @@ import type { LessonSection } from "@/lib/settings";
 type Attach = { kind: "worksheet" | "link"; ref: string; label: string };
 type Lesson = { course: string; unit: string; date: string; duration: number; periods: string; sections: Record<string, string>; attachments: Attach[] };
 
-export function LessonEditor({ uid, initialTitle, initial, sections, courses, worksheets }: {
-  uid: string; initialTitle: string; initial: Partial<Lesson>; sections: LessonSection[]; courses: string[]; worksheets: { uid: string; title: string }[];
+export function LessonEditor({ uid, initialTitle, initial, sections, courses, worksheets, unitSuggestions }: {
+  unitSuggestions: string[]; uid: string; initialTitle: string; initial: Partial<Lesson>; sections: LessonSection[]; courses: string[]; worksheets: { uid: string; title: string }[];
 }) {
   const [title, setTitle] = useState(initialTitle);
   const [d, setD] = useState<Lesson>({ course: "", unit: "", date: "", duration: 50, periods: "", sections: {}, attachments: [], ...initial });
@@ -43,7 +43,7 @@ export function LessonEditor({ uid, initialTitle, initial, sections, courses, wo
         <Input className="!border-0 !px-0 text-2xl font-semibold !shadow-none" placeholder="Lesson title" value={title} onChange={(e) => setTitle(e.target.value)} />
         <div className="mt-3 grid gap-3 sm:grid-cols-4">
           <label className="text-xs font-medium text-slate-600">Course<Select className="mt-1" value={d.course} onChange={(e) => set({ course: e.target.value })}><option value="">(none)</option>{courses.map((c) => <option key={c}>{c}</option>)}</Select></label>
-          <label className="text-xs font-medium text-slate-600">Unit<Input className="mt-1" value={d.unit} onChange={(e) => set({ unit: e.target.value })} placeholder="Unit 5" /></label>
+          <label className="text-xs font-medium text-slate-600">Unit<Input className="mt-1" list="lesson-units" value={d.unit} onChange={(e) => set({ unit: e.target.value })} placeholder="Unit 5" /><datalist id="lesson-units">{unitSuggestions.map((u) => <option key={u} value={u} />)}</datalist></label>
           <label className="text-xs font-medium text-slate-600">Date<Input className="mt-1" type="date" value={d.date} onChange={(e) => set({ date: e.target.value })} /></label>
           <label className="text-xs font-medium text-slate-600">Minutes<Input className="mt-1" type="number" min={5} value={d.duration} onChange={(e) => set({ duration: Number(e.target.value) })} /></label>
         </div>

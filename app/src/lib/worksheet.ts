@@ -19,6 +19,7 @@ export type Sheet = {
   grid: number;
   snap: boolean;
   course: string;
+  unit: string;
   pages: Page[];
 };
 
@@ -247,7 +248,7 @@ export function newBlock(type: BlockType, x: number, y: number): Block {
 }
 
 export function emptySheet(course = "", paper: "letter" | "a4" = "letter"): Sheet {
-  return { paper, font: "sans", margin: 48, grid: 8, snap: true, course, pages: [{ blocks: [] }] };
+  return { paper, font: "sans", margin: 48, grid: 8, snap: true, course, unit: "", pages: [{ blocks: [] }] };
 }
 
 // ---- Starter templates -----------------------------------------------------------------------------------------------

@@ -8,11 +8,13 @@ import { Button, Card, EmptyState, Input, Select } from "@/components/ui";
 import { deleteItemAction, duplicateItemAction, saveItemAction } from "@/lib/storeActions";
 import { TEMPLATES } from "@/lib/worksheet";
 
-type Row = { uid: string; title: string; updatedAt: string; blocks: number; pages: number };
+type Row = { uid: string; title: string; updatedAt: string; blocks: number; pages: number; course: string; unit: string };
 
 export function WorksheetList({ items, courses, paper }: { items: Row[]; courses: string[]; paper: "letter" | "a4" }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [q, setQ] = useState("");
+  const [courseF, setCourseF] = useState("");
   const [name, setName] = useState("");
   const [course, setCourse] = useState(courses[0] ?? "");
   const [busy, setBusy] = useState(false);
@@ -26,15 +28,20 @@ export function WorksheetList({ items, courses, paper }: { items: Row[]; courses
 
   return (
     <>
-      <div className="mb-4 flex justify-end"><Button onClick={() => setOpen(true)}><Plus className="size-4" /> New worksheet</Button></div>
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <Input className="!w-64" placeholder="Search worksheets, courses or units" value={q} onChange={(e) => setQ(e.target.value)} />
+        <Select className="!w-48" value={courseF} onChange={(e) => setCourseF(e.target.value)}><option value="">All courses</option>{[...new Set(items.map((i) => i.course).filter(Boolean))].map((c) => <option key={c}>{c}</option>)}</Select>
+        <Button className="ml-auto" onClick={() => setOpen(true)}><Plus className="size-4" /> New worksheet</Button>
+      </div>
       {items.length === 0 ? (
         <Card><EmptyState icon={PencilRuler} title="No worksheets yet" description="Start from a chemistry template (balancing equations, molar mass, naming, stoichiometry) or a blank page." action={<Button onClick={() => setOpen(true)}><Plus className="size-4" /> New worksheet</Button>} /></Card>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((w) => (
+          {items.filter((w) => (!courseF || w.course === courseF) && `${w.title} ${w.course} ${w.unit}`.toLowerCase().includes(q.toLowerCase())).map((w) => (
             <Card key={w.uid} className="p-4">
               <Link href={`/worksheets/${w.uid}`} className="block font-medium text-slate-900 hover:text-brand-600">{w.title || "Untitled"}</Link>
-              <div className="mt-1 text-xs text-slate-500">{w.pages} page{w.pages === 1 ? "" : "s"} · {w.blocks} blocks · edited {w.updatedAt.slice(0, 10)}</div>
+              <div className="mt-1 text-xs text-slate-500">{[w.course, w.unit].filter(Boolean).join(" · ") || "No course or unit"}</div>
+              <div className="text-xs text-slate-400">{w.pages} page{w.pages === 1 ? "" : "s"} · {w.blocks} blocks · edited {w.updatedAt.slice(0, 10)}</div>
               <div className="mt-3 flex gap-1">
                 <Link href={`/worksheets/${w.uid}`} className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-brand-700 hover:bg-brand-50">Edit</Link>
                 <Link href={`/worksheets/${w.uid}/print`} className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100">Print</Link>

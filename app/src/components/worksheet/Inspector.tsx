@@ -5,6 +5,7 @@ import { useState } from "react";
 import { AlignCenter, AlignLeft, AlignRight, ArrowDownToLine, ArrowUpToLine, Copy, MoveHorizontal, Plus, Ruler, Trash2, X } from "lucide-react";
 import { Button, Input, Select, inputClass } from "@/components/ui";
 import { BLOCK_DEFS, type Block, type Field, type Props } from "@/lib/worksheet";
+import { imageToDataUrl } from "@/lib/imageUtil";
 
 const Label = ({ children, hint }: { children: React.ReactNode; hint?: string }) => (
   <div className="mb-1"><div className="text-xs font-medium text-slate-700">{children}</div>{hint && <div className="text-[11px] leading-snug text-slate-400">{hint}</div>}</div>
@@ -50,24 +51,17 @@ function GridField({ props, set }: { props: Props; set: (p: Props) => void }) {
 }
 
 function ImageField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  function pick(file: File | undefined) {
+  const [err, setErr] = useState("");
+  async function pick(file: File | undefined) {
     if (!file) return;
-    const url = URL.createObjectURL(file);
-    const img = new window.Image();
-    img.onload = () => {
-      const max = 1000, k = Math.min(1, max / Math.max(img.width, img.height));
-      const c = document.createElement("canvas");
-      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
-      c.getContext("2d")!.drawImage(img, 0, 0, c.width, c.height);
-      onChange(c.toDataURL(file.type === "image/png" ? "image/png" : "image/jpeg", 0.85));
-      URL.revokeObjectURL(url);
-    };
-    img.src = url;
+    try { setErr(""); onChange((await imageToDataUrl(file)).src); } catch (e) { setErr((e as Error).message); }
   }
   return (
     <div className="space-y-2">
       {value && /* eslint-disable-next-line @next/next/no-img-element */ <img src={value} alt="" className="max-h-24 rounded border border-slate-200" />}
       <input type="file" accept="image/*" className="block w-full text-xs" onChange={(e) => pick(e.target.files?.[0])} />
+      <p className="text-[11px] text-slate-400">Tip: you can also copy a picture and press Ctrl+V on the page.</p>
+      {err && <p className="text-xs text-red-600">{err}</p>}
       {value && <Button variant="ghost" size="sm" onClick={() => onChange("")}><X className="size-3" /> Remove picture</Button>}
     </div>
   );

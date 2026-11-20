@@ -90,10 +90,12 @@ jobs:
       - name: Zip it
         run: Compress-Archive -Path ClassroomApp -DestinationPath ClassroomApp-windows.zip
 
+      # The folder itself is uploaded, so the download is ONE zip to extract (not a zip inside a zip).
       - uses: actions/upload-artifact@v4
         with:
           name: ClassroomApp-windows
-          path: ClassroomApp-windows.zip
+          path: ClassroomApp
+          include-hidden-files: true
           retention-days: 30
 
       - name: Attach to a Release (tag builds only)

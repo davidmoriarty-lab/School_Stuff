@@ -4,6 +4,32 @@ rem Keep this window open while you use the app. Close it (or press Ctrl+C) to s
 cd /d "%~dp0"
 title Classroom App (running - close this window to stop)
 
+rem --- Check that everything the app needs is next to this file -------------------------------------------
+if not exist "%~dp0node\node.exe" goto missing
+if not exist "%~dp0server.js" goto missing
+if not exist "%~dp0.next" goto missing
+goto ready
+
+:missing
+echo.
+echo  The app cannot start because some of its files are missing next to this file.
+echo.
+echo  The most common cause: Start App.bat was opened from INSIDE a zip file.
+echo  Windows lets you open a zip like a folder, but that only unpacks this one file.
+echo.
+echo  To fix it:
+echo    1. Close this window.
+echo    2. Right-click the zip file and choose "Extract All..."  (do this for every zip, if there is a zip inside a zip)
+echo    3. Open the extracted ClassroomApp folder. It should contain: node, library, node_modules, .next, server.js
+echo    4. Double-click Start App.bat from that folder.
+echo.
+echo  This file is currently in:
+echo    %~dp0
+echo.
+pause
+exit /b 1
+
+:ready
 set HOSTNAME=127.0.0.1
 set PORT=3000
 set NODE_ENV=production

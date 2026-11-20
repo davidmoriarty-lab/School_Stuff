@@ -1,7 +1,8 @@
 CLASSROOM APP - how to use
 
 1. Unzip this whole folder somewhere you can write files (Documents or Desktop is fine).
-   Do not run it from inside the zip.
+   Right-click the zip and choose "Extract All". Do NOT double-click Start App.bat while it is still inside the zip:
+   the app will say it cannot find the path specified.
 2. Double-click "Start App.bat". A black window opens (leave it open) and your browser
    opens to  http://127.0.0.1:3000
 3. To stop the app, close the black window.

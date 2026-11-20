@@ -43,3 +43,5 @@ html.dark-mode img, html.dark-mode iframe, html.dark-mode video, html.dark-mode 
   body { background: #fff !important; }
   main { max-width: none !important; padding: 0 !important; }
 }
+
+.ws-block:hover { outline: 1px dashed #94a3b8; outline-offset: 1px; }

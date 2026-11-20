@@ -1,0 +1,20 @@
+CLASSROOM APP - how to use
+
+1. Unzip this whole folder somewhere you can write files (Documents or Desktop is fine).
+   Do not run it from inside the zip.
+2. Double-click "Start App.bat". A black window opens (leave it open) and your browser
+   opens to  http://127.0.0.1:3000
+3. To stop the app, close the black window.
+
+Everything needed is inside this folder, including its own copy of Node.
+Nothing is installed and nothing is downloaded.
+
+YOUR DATA
+  The "data" folder (created on first run) holds your students, scores and settings.
+  It stays on this computer. Back it up by copying that folder.
+
+UPDATING TO A NEW VERSION
+  Unzip the new version into a NEW folder, then copy your old "data" folder into it.
+  (Or unzip over the old folder: the zip never contains a "data" folder, so yours is kept.)
+
+The app only answers to this computer. Other devices on the network cannot open it.

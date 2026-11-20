@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-700: #4338ca;
+}
+
+:root {
+  --background: #f6f7fb;
+  --foreground: #0f172a;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+}
+
+@media print {
+  aside, nav { display: none !important; }
+}
+
+/* Dark mode: flip the whole page's colors, then flip pictures, frames and worksheet paper back. */
+html.dark-mode { filter: invert(0.92) hue-rotate(180deg); background: #fff; }
+html.dark-mode img, html.dark-mode iframe, html.dark-mode video, html.dark-mode .keep-colors {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+.no-print {}
+@media print {
+  html.dark-mode { filter: none; }
+  .no-print { display: none !important; }
+  body { background: #fff !important; }
+  main { max-width: none !important; padding: 0 !important; }
+}
+
+.ws-block:hover { outline: 1px dashed #94a3b8; outline-offset: 1px; }

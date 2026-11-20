@@ -19,6 +19,7 @@ export type Sheet = {
   grid: number;
   snap: boolean;
   course: string;
+  unit: string;
   pages: Page[];
 };
 
@@ -33,7 +34,9 @@ export type Field =
   | { key: string; label: string; kind: "lines"; hint?: string; rows?: number }
   | { key: string; label: string; kind: "pairs"; cols: { key: string; label: string }[]; add: string; hint?: string }
   | { key: string; label: string; kind: "multi"; options: [string, string][]; hint?: string }
-  | { key: string; label: string; kind: "grid"; hint?: string };
+  | { key: string; label: string; kind: "grid"; hint?: string }
+  | { key: string; label: string; kind: "choices"; multi: boolean; hint?: string }
+  | { key: string; label: string; kind: "parts"; hint?: string };
 
 export type BlockDef = {
   label: string; group: "Basics" | "Chemistry" | "Visual"; hint: string;
@@ -186,12 +189,13 @@ export const BLOCK_DEFS: Record<BlockType, BlockDef> = {
     w: 720, h: 240, props: { title: "The Mole Map" }, fields: [{ key: "title", label: "Title", kind: "text" }],
   },
   periodic: {
-    label: "Periodic table", group: "Chemistry", hint: "Full colored periodic table",
-    w: 720, h: 330, props: { showMass: true, showNumber: true, showName: false, blankSymbols: false, color: true },
+    label: "Periodic table", group: "Chemistry", hint: "College Board AP periodic table (black and white), or a colored version",
+    w: 720, h: 485, props: { style: "collegeboard", showMass: true, showNumber: true, showName: false, blankSymbols: false, color: true },
     fields: [
-      { key: "color", label: "Color by group", kind: "bool" }, { key: "showNumber", label: "Atomic number", kind: "bool" },
-      { key: "showMass", label: "Atomic mass", kind: "bool" }, { key: "showName", label: "Element name", kind: "bool" },
-      { key: "blankSymbols", label: "Hide symbols (students fill in)", kind: "bool" },
+      { key: "style", label: "Which table", kind: "select", options: [["collegeboard", "College Board AP table (black and white)"], ["color", "Colored table (made by this app)"]], hint: "The College Board table is exactly the one on the AP exam. The options below only apply to the colored table." },
+      { key: "color", label: "Colored table: color by group", kind: "bool" }, { key: "showNumber", label: "Colored table: atomic number", kind: "bool" },
+      { key: "showMass", label: "Colored table: atomic mass", kind: "bool" }, { key: "showName", label: "Colored table: element name", kind: "bool" },
+      { key: "blankSymbols", label: "Colored table: hide symbols (students fill in)", kind: "bool" },
     ],
   },
   reference: {
@@ -247,7 +251,7 @@ export function newBlock(type: BlockType, x: number, y: number): Block {
 }
 
 export function emptySheet(course = "", paper: "letter" | "a4" = "letter"): Sheet {
-  return { paper, font: "sans", margin: 48, grid: 8, snap: true, course, pages: [{ blocks: [] }] };
+  return { paper, font: "sans", margin: 48, grid: 8, snap: true, course, unit: "", pages: [{ blocks: [] }] };
 }
 
 // ---- Starter templates -----------------------------------------------------------------------------------------------

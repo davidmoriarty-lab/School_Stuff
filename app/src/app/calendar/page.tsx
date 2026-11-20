@@ -14,6 +14,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
   const ym = m && /^\d{4}-\d{2}$/.test(m) ? m : t.slice(0, 7);
   const events: CalEvent[] = listItems("event").map((e) => ({ uid: e.uid, title: e.title, ...(e.data as Omit<CalEvent, "uid" | "title">) }));
   const lessons = listItems("lesson").filter((l) => l.data.date).map((l) => ({ uid: l.uid, title: l.title || "Lesson", date: String(l.data.date) }));
+  const subs = listItems("subplan").filter((l) => l.data.date).map((l) => ({ uid: l.uid, title: l.title || "Sub plans", date: String(l.data.date) }));
   const todos = listItems("todo").filter((x) => x.data.due && !x.data.done).map((x) => ({ uid: x.uid, title: x.title, date: String(x.data.due) }));
   const units = listItems("pacing").flatMap((p) => (p.data as Guide).units?.map((u) => ({ title: `${u.title}`, start: u.start, end: u.end, color: u.color })) ?? []).filter((u) => u.start);
   const [y, mo] = ym.split("-").map(Number);
@@ -28,7 +29,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
           { key: "showTodos", label: "Show to-do due dates", kind: "bool", def: true },
           { key: "showUnits", label: "Show pacing guide units", kind: "bool", def: true },
         ]} />} />
-      <CalendarView ym={ym} prev={prev} next={next} today={t} events={events} lessons={lessons} todos={todos} units={units} eventTypes={s.eventTypes} courses={s.courses}
+      <CalendarView ym={ym} prev={prev} next={next} today={t} events={events} lessons={lessons} subs={subs} todos={todos} units={units} eventTypes={s.eventTypes} courses={s.courses}
         prefs={{ weekStart: Number(s.prefs.calendar?.weekStart ?? 0) as 0 | 1, showWeekends: (s.prefs.calendar?.showWeekends ?? true) as boolean, showLessons: (s.prefs.calendar?.showLessons ?? true) as boolean, showTodos: (s.prefs.calendar?.showTodos ?? true) as boolean, showUnits: (s.prefs.calendar?.showUnits ?? true) as boolean }}
         header={s.print.headerText} />
     </>

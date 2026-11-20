@@ -13,9 +13,9 @@ export type CalEvent = { uid: string; title: string; date: string; endDate?: str
 type Prefs = { weekStart: 0 | 1; showWeekends: boolean; showLessons: boolean; showTodos: boolean; showUnits: boolean };
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-export function CalendarView({ ym, prev, next, today, events, lessons, todos, units, eventTypes, courses, prefs, header }: {
+export function CalendarView({ ym, prev, next, today, events, lessons, subs, todos, units, eventTypes, courses, prefs, header }: {
   ym: string; prev: string; next: string; today: string; events: CalEvent[];
-  lessons: { uid: string; title: string; date: string }[]; todos: { uid: string; title: string; date: string }[];
+  lessons: { uid: string; title: string; date: string }[]; subs: { uid: string; title: string; date: string }[]; todos: { uid: string; title: string; date: string }[];
   units: { title: string; start: string; end: string; color: string }[]; eventTypes: EventType[]; courses: string[]; prefs: Prefs; header: string;
 }) {
   const router = useRouter();
@@ -56,6 +56,7 @@ export function CalendarView({ ym, prev, next, today, events, lessons, todos, un
               const inMonth = d.slice(0, 7) === ym;
               const evs = events.filter((e) => e.date <= d && (e.endDate || e.date) >= d);
               const ls = prefs.showLessons ? lessons.filter((l) => l.date === d) : [];
+              const ss = subs.filter((l) => l.date === d);
               const ts = prefs.showTodos ? todos.filter((t) => t.date === d) : [];
               const us = prefs.showUnits ? units.filter((u) => u.start === d) : [];
               return (
@@ -65,6 +66,7 @@ export function CalendarView({ ym, prev, next, today, events, lessons, todos, un
                     {us.map((u, i) => <div key={i} className="truncate rounded px-1 py-0.5 text-[11px] font-medium text-white" style={{ background: u.color }}>▶ {u.title}</div>)}
                     {evs.map((e) => <button key={e.uid} onClick={(ev) => { ev.stopPropagation(); setEdit(e); }} className="block w-full truncate rounded px-1 py-0.5 text-left text-[11px] font-medium text-white" style={{ background: color(e.type) }}>{e.time ? e.time + " " : ""}{e.title}</button>)}
                     {ls.map((l) => <Link key={l.uid} href={`/lessons/${l.uid}`} onClick={(e) => e.stopPropagation()} className="block truncate rounded border border-brand-500 px-1 py-0.5 text-[11px] text-brand-700">📖 {l.title}</Link>)}
+                    {ss.map((l) => <Link key={l.uid} href={`/subplans/${l.uid}`} onClick={(e) => e.stopPropagation()} className="block truncate rounded bg-amber-100 px-1 py-0.5 text-[11px] font-medium text-amber-900">Sub plan: {l.title}</Link>)}
                     {ts.map((t) => <div key={t.uid} className="truncate rounded border border-dashed border-slate-300 px-1 py-0.5 text-[11px] text-slate-600">☐ {t.title}</div>)}
                   </div>
                 </div>

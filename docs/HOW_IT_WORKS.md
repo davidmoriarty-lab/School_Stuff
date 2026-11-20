@@ -61,6 +61,56 @@ drawing function in `components/worksheet/BlockView.tsx`.
   `@page` rules for paper size.
 * The editor saves itself a second after you stop changing things. Undo keeps the last 80 states.
 
+## Student profiles
+
+Every student on a roster gets a profile (created when a roster is imported or a student is added, and filled in later by you):
+preferred name, pronouns, name pronunciation, flags (IEP, 504, ELL, ... editable in Settings), accommodations, health notes, guardian
+contact, a note "for a substitute", private notes, a dated log, and any extra fields you define.
+
+* Stored in its own table, `student_profile` (see `lib/profiles.ts`), **not** as a shareable item, so profile data can never end
+  up in a Share Package. It is deleted automatically if the student is deleted.
+* The **preferred name** replaces the first name on seating charts, the random picker and group maker (`lib/roster.ts`).
+  A roster file with a "Preferred Name" column fills it in on import.
+* **Substitute roster** (`/profiles/print`): pick a class, table or card layout, which fields to include, and an optional seating
+  chart. Your **private notes are left off unless you tick them**. Every choice is stored in the web address, so the printout
+  always matches the screen.
+
+## Sub plans and bell schedules
+
+* A **bell schedule** (`/bell-schedules`) is a named list of time slots such as "Period 1, 8:00 to 8:50, Honors Chemistry". Make one per
+  kind of day (regular, early release, assembly) and star one as the default.
+* A **sub plan** (`/subplans`) has a date, a bell schedule and an ordered list of sections: teacher and room info, the **day schedule**
+  (one row per slot with what the class is doing, a worksheet from the builder, other materials and copies), plus ready-made
+  sections (attendance, behavior, emergency, passes, technology, early finishers, helpful students, contacts, checklist, space for the
+  sub to write). Drag a section's handle to reorder, use the eye to leave one off the printout, or copy an earlier sub plan.
+* Changing the bell schedule updates the times but **keeps your notes**: slots are matched by id and then by name ("Period 1").
+* Sub plans do not include a roster. Print rosters from Student profiles: one class, several, or all classes at once.
+* Sub plans appear on the calendar on their date. Both kinds can be shared in a package.
+
+## Question bank and test builder
+
+* **Question bank** (`/questions`): every question is one item of any kind: multiple choice, select-all, true/false, short answer,
+  free response (with parts and a rubric), fill in the blank, matching, calculation, balance equations, names and formulas, and
+  put-in-order. Each kind's fields are listed once in `lib/questions.ts` (`QTYPES`) and the editor builds itself from that list,
+  the same way the worksheet builder's right-hand panel does. Any question can carry pictures (paste with Ctrl+V) and tables,
+  a symbol palette helps with chemistry characters, and questions are tagged by course, unit, topic, difficulty and tags.
+  "Import from class materials" brings in the acids and bases quiz and the SN1/SN2/E1/E2 problems, pictures included.
+* **Test builder** (`/testbuilder`): pick questions from the bank (filter, select, or add random ones), add section headings and page
+  breaks, pin a question in place, override points. A test keeps **its own copy** of each question, so changing the bank later never
+  alters a test you already gave (the refresh button pulls the latest if you want it).
+* **Versions A to D**: `buildVersion()` in `lib/questions.ts` shuffles with a seeded random generator, so a version is
+  reproducible and its answer key always matches its own paper. Questions move only inside their section, pinned ones stay put,
+  "All of the above" stays last, and matching columns and ordering steps are shuffled too. Answer keys print with a quick-key grid,
+  and a cross-reference table lists each question's number on every version.
+* **Gradebook**: "Gradebook" turns Version A into a test in the Gradebook, so you can print scoring sheets and scan results.
+  Questions worth more than 3 points are split into parts, which is how the scoring sheets work.
+
+## Periodic table
+
+The worksheet "Periodic table" block uses the College Board AP Chemistry table (`app/public/ap-periodic-table.svg`, cropped from
+their 2020 PDF; (c) College Board). A vector file, so it stays sharp at any size. The block can also show a colored table that the
+app draws itself from `lib/chem.ts`.
+
 ## Share packages
 
 A `.classpack` file is plain JSON: `{ format, version, from, items: [...], files: [...] }`.

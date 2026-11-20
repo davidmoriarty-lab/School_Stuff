@@ -172,6 +172,47 @@ export function SettingsForm({ initial, backups }: { initial: Settings; backups:
       </Card>
 
       <Card>
+        <CardHeader title="Student profiles" description="Flags, extra fields and which sections each student profile shows" />
+        <div className="space-y-5 px-5 py-4">
+          <div>
+            <div className="mb-1 text-sm font-medium text-slate-800">Flags (tags you can put on a student)</div>
+            <div className="space-y-2">
+              {s.studentTags.map((t, i) => (
+                <div key={t.id} className="flex gap-2">
+                  <input type="color" value={t.color} className="h-9 w-10 cursor-pointer rounded border border-slate-300" onChange={(e) => upd("studentTags", s.studentTags.map((x, j) => (j === i ? { ...x, color: e.target.value } : x)))} />
+                  <Input value={t.label} onChange={(e) => upd("studentTags", s.studentTags.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)))} />
+                  <Button variant="danger" size="sm" onClick={() => upd("studentTags", s.studentTags.filter((_, j) => j !== i))} aria-label="Remove"><Trash2 className="size-4" /></Button>
+                </div>
+              ))}
+              <Button variant="secondary" size="sm" onClick={() => upd("studentTags", [...s.studentTags, { id: "t" + Date.now().toString(36), label: "New flag", color: "#0891b2" }])}><Plus className="size-3.5" /> Add flag</Button>
+            </div>
+          </div>
+          <div>
+            <div className="mb-1 text-sm font-medium text-slate-800">Your own fields</div>
+            <div className="space-y-2">
+              {s.studentFields.map((f, i) => (
+                <div key={f.id} className="flex items-center gap-2">
+                  <Input value={f.label} placeholder="Field name (for example: Lab partner)" onChange={(e) => upd("studentFields", s.studentFields.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)))} />
+                  <label className="flex items-center gap-1.5 whitespace-nowrap text-xs text-slate-600"><input type="checkbox" className="accent-[var(--color-brand-600)]" checked={f.long} onChange={(e) => upd("studentFields", s.studentFields.map((x, j) => (j === i ? { ...x, long: e.target.checked } : x)))} /> Long text</label>
+                  <Button variant="danger" size="sm" onClick={() => upd("studentFields", s.studentFields.filter((_, j) => j !== i))} aria-label="Remove"><Trash2 className="size-4" /></Button>
+                </div>
+              ))}
+              <Button variant="secondary" size="sm" onClick={() => upd("studentFields", [...s.studentFields, { id: "f" + Date.now().toString(36), label: "", long: false }])}><Plus className="size-3.5" /> Add field</Button>
+            </div>
+          </div>
+          <div>
+            <div className="mb-1 text-sm font-medium text-slate-800">Built-in sections to show</div>
+            <div className="grid gap-x-6 gap-y-1 sm:grid-cols-3">
+              {(Object.keys(s.profileFields) as (keyof Settings["profileFields"])[]).map((k) => (
+                <label key={k} className="flex items-center gap-2 text-sm text-slate-800"><input type="checkbox" className="accent-[var(--color-brand-600)]" checked={s.profileFields[k]} onChange={(e) => upd("profileFields", { ...s.profileFields, [k]: e.target.checked })} />
+                  {{ pronunciation: "Name pronunciation", pronouns: "Pronouns", accommodations: "Accommodations", medical: "Health / medical", guardian: "Guardian contact", strengths: "Strengths & interests" }[k]}</label>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      <Card>
         <CardHeader title="Printing" />
         <Row label="Paper size"><Select value={s.print.paper} onChange={(e) => upd("print", { ...s.print, paper: e.target.value as "letter" | "a4" })}><option value="letter">Letter (8.5 × 11 in)</option><option value="a4">A4</option></Select></Row>
         <Row label="Header text" hint="Printed at the top of lesson plans, pacing guides and calendars"><Input value={s.print.headerText} onChange={(e) => upd("print", { ...s.print, headerText: e.target.value })} /></Row>

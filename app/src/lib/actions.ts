@@ -6,6 +6,7 @@ import { eq, max } from "drizzle-orm";
 import * as XLSX from "xlsx";
 import { MAX_POINTS_PER_PART } from "./limits";
 import { sqlite } from "./db";
+import { ensureProfiles, setPreferredIfEmpty } from "./profiles";
 import { db } from "./db";
 import { course, test, question, part, point, reason, section, student, unit, topic } from "./schema";
 
@@ -167,14 +168,14 @@ export async function importRoster(f: FormData) {
     const k = Object.keys(r).find((key) => re.test(key));
     return k ? String(r[k]).trim() : "";
   };
-  const bySection = new Map<string, { first: string; last: string }[]>();
+  const bySection = new Map<string, { first: string; last: string; preferred: string }[]>();
   for (const r of rows) {
     const first = pick(r, /first/i);
     const last = pick(r, /last/i);
     const period = pick(r, /period|section|class/i) || "Unassigned";
     if (!first && !last) continue;
     if (!bySection.has(period)) bySection.set(period, []);
-    bySection.get(period)!.push({ first, last });
+    bySection.get(period)!.push({ first, last, preferred: pick(r, /preferred|nick/i) });
   }
   const everyone = db.select().from(student).all();
   const sections = db.select().from(section).all();
@@ -187,14 +188,17 @@ export async function importRoster(f: FormData) {
       if (!match) {
         const row = db.insert(student).values({ sectionId: s.id, firstName: p.first, lastName: p.last }).returning().get();
         everyone.push(row);
+        if (p.preferred) { ensureProfiles(); setPreferredIfEmpty(row.id, p.preferred); }
         added++;
       } else if (match.sectionId !== s.id) {
         db.update(student).set({ sectionId: s.id }).where(eq(student.id, match.id)).run();
         match.sectionId = s.id;
         moved++;
       } else same++;
+      if (match && p.preferred) setPreferredIfEmpty(match.id, p.preferred);
     }
   }
+  ensureProfiles(); // every student gets a profile page
   revalidatePath("/rosters", "layout");
   redirect(`/rosters?added=${added}&moved=${moved}&same=${same}`);
 }
@@ -278,7 +282,7 @@ export async function addStudent(f: FormData) {
   const firstName = str(f, "firstName");
   const lastName = str(f, "lastName");
   const sectionId = Number(f.get("sectionId"));
-  if ((firstName || lastName) && sectionId) db.insert(student).values({ sectionId, firstName, lastName }).run();
+  if ((firstName || lastName) && sectionId) { db.insert(student).values({ sectionId, firstName, lastName }).run(); ensureProfiles(); }
   revalidatePath("/rosters", "layout");
 }
 

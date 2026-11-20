@@ -2,11 +2,14 @@
 // with a default. Saved values (from the Settings page or a page's "quick settings" pop-up) are merged over these.
 
 export type ModuleKey =
-  | "library" | "worksheets" | "seating" | "lessons" | "pacing" | "calendar" | "todo" | "tools" | "gradebook" | "share";
+  | "library" | "worksheets" | "profiles" | "subplans" | "questions" | "seating" | "lessons" | "pacing" | "calendar" | "todo" | "tools" | "gradebook" | "share";
 
 export const MODULES: { key: ModuleKey; label: string; hint: string }[] = [
   { key: "library", label: "Library", hint: "Browse, search, preview and print your class files" },
   { key: "worksheets", label: "Worksheet builder", hint: "Drag-and-snap chemistry worksheet maker" },
+  { key: "profiles", label: "Student profiles", hint: "Preferred names, notes and a printable substitute roster" },
+  { key: "subplans", label: "Sub plans & bell schedules", hint: "Build a day plan for a substitute from a bell schedule" },
+  { key: "questions", label: "Question bank & tests", hint: "Questions of any kind, and tests with versions A to D" },
   { key: "seating", label: "Seating charts", hint: "Room layouts with students, printable" },
   { key: "lessons", label: "Lesson plans", hint: "Customizable lesson plan templates" },
   { key: "pacing", label: "Pacing guides", hint: "Unit schedule for the year" },
@@ -21,6 +24,9 @@ export type Period = { name: string; start: string; end: string };
 export type EventType = { id: string; label: string; color: string };
 export type LessonSection = { id: string; label: string; enabled: boolean };
 export type Pin = { root: string; path: string; name: string };
+export type StudentTag = { id: string; label: string; color: string };
+export type StudentField = { id: string; label: string; long: boolean };
+export type ProfileFields = { pronunciation: boolean; pronouns: boolean; accommodations: boolean; medical: boolean; guardian: boolean; strengths: boolean };
 
 export type Settings = {
   appName: string;
@@ -41,6 +47,9 @@ export type Settings = {
   dashboard: { today: boolean; todos: boolean; upcoming: boolean; pinned: boolean; pacing: boolean; recent: boolean };
   print: { paper: "letter" | "a4"; headerText: string; footerText: string; showDate: boolean };
   pins: Pin[];
+  studentTags: StudentTag[];
+  studentFields: StudentField[];
+  profileFields: ProfileFields;
   /** Per-page quick settings, e.g. prefs.calendar.weekStart */
   prefs: Record<string, Record<string, string | number | boolean>>;
 };
@@ -56,7 +65,7 @@ export const DEFAULT_SETTINGS: Settings = {
   fontScale: "normal",
   density: "comfortable",
   modules: {
-    library: true, worksheets: true, seating: true, lessons: true, pacing: true,
+    library: true, worksheets: true, profiles: true, subplans: true, questions: true, seating: true, lessons: true, pacing: true,
     calendar: true, todo: true, tools: true, gradebook: true, share: true,
   },
   periods: [
@@ -90,10 +99,18 @@ export const DEFAULT_SETTINGS: Settings = {
   dashboard: { today: true, todos: true, upcoming: true, pinned: true, pacing: true, recent: true },
   print: { paper: "letter", headerText: "", footerText: "", showDate: true },
   pins: [],
+  studentTags: [
+    { id: "iep", label: "IEP", color: "#7c3aed" }, { id: "504", label: "504", color: "#2563eb" },
+    { id: "ell", label: "ELL", color: "#0d9488" }, { id: "medical", label: "Medical alert", color: "#dc2626" },
+    { id: "allergy", label: "Allergy", color: "#ea580c" }, { id: "seat", label: "Preferred seat", color: "#ca8a04" },
+    { id: "checkin", label: "Check in", color: "#db2777" }, { id: "leader", label: "Helper / leader", color: "#16a34a" },
+  ],
+  studentFields: [],
+  profileFields: { pronunciation: true, pronouns: true, accommodations: true, medical: true, guardian: true, strengths: true },
   prefs: {},
 };
 
-const OBJECT_KEYS = ["modules", "dashboard", "print", "prefs"] as const;
+const OBJECT_KEYS = ["modules", "dashboard", "print", "profileFields", "prefs"] as const;
 
 /** Merge saved settings over the defaults (one level deep for the grouped options). */
 export function mergeSettings(saved: Partial<Settings>): Settings {

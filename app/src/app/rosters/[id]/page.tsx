@@ -34,7 +34,8 @@ export default async function ClassRoster({ params }: { params: Promise<{ id: st
           </span>
         }
         subtitle="Edit names inline, change a student's period, or remove them. Changes save as soon as you click away."
-        actions={
+        actions={<>
+          <Link href={`/profiles?section=${cls.id}`} className={buttonClass("secondary")}>Student profiles</Link>
           <ConfirmDelete
             action={deleteSection}
             fields={{ sectionId: cls.id }}
@@ -45,7 +46,7 @@ export default async function ClassRoster({ params }: { params: Promise<{ id: st
           >
             <Trash2 className="size-3.5" /> Delete class
           </ConfirmDelete>
-        }
+        </>}
       />
 
       <Card>

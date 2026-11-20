@@ -10,3 +10,17 @@ export function Chem({ text, auto = true }: { text: string; auto?: boolean }) {
     </>
   );
 }
+
+/** Chemistry formatting plus **bold** and __italic__. Line breaks are kept by the parent (white-space: pre-wrap). */
+export function Rich({ text, auto = true }: { text: string; auto?: boolean }) {
+  const parts = String(text ?? "").split(/(\*\*[^*]+\*\*|__[^_]+__)/);
+  return (
+    <>
+      {parts.map((p, i) =>
+        p.startsWith("**") && p.endsWith("**") && p.length > 4 ? <b key={i}><Chem text={p.slice(2, -2)} auto={auto} /></b>
+          : p.startsWith("__") && p.endsWith("__") && p.length > 4 ? <i key={i}><Chem text={p.slice(2, -2)} auto={auto} /></i>
+          : <Chem key={i} text={p} auto={auto} />,
+      )}
+    </>
+  );
+}

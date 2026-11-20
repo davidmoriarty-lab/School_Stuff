@@ -13,6 +13,7 @@ import { Modal } from "@/components/Modal";
 import { Button, Input, Select } from "@/components/ui";
 import { saveItemAction } from "@/lib/storeActions";
 import { BLOCK_DEFS, BLOCK_ORDER, PAPER, newBlock, uid, type Block, type BlockType, type Props, type Sheet } from "@/lib/worksheet";
+import { imageToDataUrl, isImageFile } from "@/lib/imageUtil";
 import { BlockView } from "./BlockView";
 import { Inspector } from "./Inspector";
 
@@ -30,7 +31,7 @@ function snapAxis(start: number, size: number, targets: number[]) {
   return best;
 }
 
-export function Editor({ uid: itemUid, initialTitle, initial, courses }: { uid: string; initialTitle: string; initial: Sheet; courses: string[] }) {
+export function Editor({ uid: itemUid, initialTitle, initial, courses, unitSuggestions }: { uid: string; initialTitle: string; initial: Sheet; courses: string[]; unitSuggestions: string[] }) {
   const [title, setTitle] = useState(initialTitle);
   const [sheet, setSheet] = useState<Sheet>(initial);
   const [sel, setSel] = useState<string | null>(null);
@@ -39,7 +40,8 @@ export function Editor({ uid: itemUid, initialTitle, initial, courses }: { uid: 
   const [showKey, setShowKey] = useState(false);
   const [guideLines, setGuideLines] = useState<Guide[]>([]);
   const [marginGuides, setMarginGuides] = useState(true);
-  const [status, setStatus] = useState<"saved" | "saving" | "dirty">("saved");
+  const [status, setStatus] = useState<"saved" | "saving" | "dirty" | "error">("saved");
+  const [notice, setNotice] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const sheetRef = useRef(sheet); sheetRef.current = sheet;
@@ -208,6 +210,54 @@ export function Editor({ uid: itemUid, initialTitle, initial, courses }: { uid: 
     window.addEventListener("pointerup", onUp, { once: true });
   }
 
+  // ---- pictures: paste (Ctrl+V) or drop a file onto the page --------------------------------------------------------
+  async function addImage(file: File, at?: { page: number; x: number; y: number }) {
+    try {
+      setNotice("");
+      const { src, w, h } = await imageToDataUrl(file);
+      const cur = locate(sheetRef.current, sel);
+      // If an empty picture block is selected, fill it; otherwise make a new picture block.
+      if (!at && cur && cur.block.type === "image" && !cur.block.props.src) {
+        const k = Math.min(1, cur.block.w / w);
+        updateBlock(cur.block.id, (b) => ({ ...b, h: Math.round(h * k), props: { ...b.props, src } }));
+        return;
+      }
+      const maxW = Math.min(420, W - margin * 2), k = Math.min(1, maxW / w);
+      const bw = Math.round(w * k), bh = Math.round(h * k);
+      const page = at?.page ?? Math.min(curPage, sheetRef.current.pages.length - 1);
+      const b = newBlock("image", margin, margin);
+      b.w = bw; b.h = bh; b.fit = undefined; b.props = { ...b.props, src };
+      let pg = page;
+      mutate((s) => {
+        let pages = s.pages;
+        const g = s.snap ? s.grid : 1;
+        if (at) { b.x = Math.round(at.x / g) * g; b.y = Math.round(at.y / g) * g; }
+        else {
+          const blocks = pages[page].blocks;
+          const bottom = blocks.length ? Math.max(...blocks.map((x) => x.y + x.h)) + 14 : margin;
+          if (blocks.length && bottom + b.h > H - margin) { pages = [...pages, { blocks: [] }]; pg = pages.length - 1; b.y = margin; } else b.y = bottom;
+        }
+        b.x = Math.max(0, Math.min(b.x, W - margin - b.w));
+        Object.assign(b, clampPos(b));
+        return { ...s, pages: pages.map((p, i) => (i === pg ? { ...p, blocks: [...p.blocks, b] } : p)) };
+      });
+      setSel(b.id); setCurPage(pg);
+    } catch (e) { setNotice((e as Error).message); }
+  }
+
+  useEffect(() => {
+    const onPaste = (e: ClipboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable)) return;
+      const f = Array.from(e.clipboardData?.files ?? []).find(isImageFile);
+      if (!f) return;
+      e.preventDefault();
+      addImage(f);
+    };
+    window.addEventListener("paste", onPaste);
+    return () => window.removeEventListener("paste", onPaste);
+  });
+
   // ---- keyboard ------------------------------------------------------------------------------------------------------
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
@@ -254,8 +304,12 @@ export function Editor({ uid: itemUid, initialTitle, initial, courses }: { uid: 
   // ---- autosave ------------------------------------------------------------------------------------------------------
   const save = useCallback(async () => {
     setStatus("saving");
-    await saveItemAction({ uid: itemUid, kind: "worksheet", title: titleRef.current, data: sheetRef.current });
-    setStatus("saved");
+    try {
+      await saveItemAction({ uid: itemUid, kind: "worksheet", title: titleRef.current, data: sheetRef.current });
+      setStatus("saved");
+    } catch {
+      setStatus("error"); // for example a very large picture; the work is still on screen
+    }
   }, [itemUid]);
   const first = useRef(true);
   useEffect(() => {
@@ -279,7 +333,8 @@ export function Editor({ uid: itemUid, initialTitle, initial, courses }: { uid: 
       <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 bg-white px-3 py-2">
         <Link href="/worksheets" className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100" title="All worksheets"><ArrowLeft className="size-4" /></Link>
         <Input className="w-64 !py-1.5 font-semibold" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Worksheet name" />
-        <span className="text-xs text-slate-400">{status === "saving" ? "Saving…" : status === "dirty" ? "Unsaved…" : "Saved"}</span>
+        <span className="text-xs text-slate-400">{status === "saving" ? "Saving…" : status === "dirty" ? "Unsaved…" : status === "error" ? <span className="text-red-600">Could not save. Try a smaller picture.</span> : "Saved"}</span>
+        {notice && <span className="text-xs text-red-600">{notice}</span>}
         <div className="mx-1 h-5 w-px bg-slate-200" />
         <Button variant="ghost" size="sm" onClick={undo} title="Undo (Ctrl+Z)"><Undo2 className="size-4" /></Button>
         <Button variant="ghost" size="sm" onClick={redo} title="Redo (Ctrl+Y)"><Redo2 className="size-4" /></Button>
@@ -342,11 +397,14 @@ export function Editor({ uid: itemUid, initialTitle, initial, courses }: { uid: 
                   onPointerDown={(e) => { if (e.target === e.currentTarget) { setSel(null); setCurPage(pi); } }}
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => {
+                    const r = e.currentTarget.getBoundingClientRect();
+                    const at = { page: pi, x: (e.clientX - r.left) / zoom, y: (e.clientY - r.top) / zoom };
+                    const file = Array.from(e.dataTransfer.files ?? []).find(isImageFile);
+                    if (file) { e.preventDefault(); addImage(file, at); return; }
                     const t = e.dataTransfer.getData("text/ws-block") as BlockType;
                     if (!BLOCK_DEFS[t]) return;
                     e.preventDefault();
-                    const r = e.currentTarget.getBoundingClientRect();
-                    addBlock(t, { page: pi, x: (e.clientX - r.left) / zoom, y: (e.clientY - r.top) / zoom });
+                    addBlock(t, at);
                   }}
                 >
                   {marginGuides && <div style={{ position: "absolute", left: margin, top: margin, right: margin, bottom: margin, border: "1px dashed #cbd5e1", pointerEvents: "none" }} />}
@@ -390,6 +448,7 @@ export function Editor({ uid: itemUid, initialTitle, initial, courses }: { uid: 
                 <li>Arrow keys nudge by 1 pixel (hold Shift for one grid step).</li>
                 <li>Ctrl+D copies, Delete removes, Ctrl+Z undoes.</li>
                 <li>Type formulas normally: H2SO4 becomes H₂SO₄.</li>
+                <li>Copy a picture and press Ctrl+V to add it, or drag an image file onto the page.</li>
                 <li>Turn on <b>Answer key</b> to see and print the key.</li>
               </ul>
             </div>
@@ -407,6 +466,10 @@ export function Editor({ uid: itemUid, initialTitle, initial, courses }: { uid: 
             <Input className="mt-1" type="number" min={0} max={200} value={sheet.margin} onChange={(e) => mutate((s) => ({ ...s, margin: Number(e.target.value) }))} /></label>
           <label className="block"><span className="text-sm font-medium text-slate-800">Snap grid size</span>
             <Select className="mt-1" value={sheet.grid} onChange={(e) => mutate((s) => ({ ...s, grid: Number(e.target.value) }))}>{[4, 8, 12, 16, 24].map((g) => <option key={g} value={g}>{g} px</option>)}</Select></label>
+          <label className="block"><span className="text-sm font-medium text-slate-800">Unit</span>
+            <Input className="mt-1" list="ws-units" placeholder="Unit 5: The Mole" value={sheet.unit ?? ""} onChange={(e) => mutate((s) => ({ ...s, unit: e.target.value }))} />
+            <datalist id="ws-units">{unitSuggestions.map((u) => <option key={u} value={u} />)}</datalist>
+            <span className="text-xs text-slate-500">Used to organize worksheets and to share a whole unit. Suggestions come from your pacing guides.</span></label>
           <label className="block"><span className="text-sm font-medium text-slate-800">Course</span>
             <Select className="mt-1" value={sheet.course} onChange={(e) => mutate((s) => ({ ...s, course: e.target.value }))}><option value="">(none)</option>{courses.map((c) => <option key={c}>{c}</option>)}</Select></label>
         </div>

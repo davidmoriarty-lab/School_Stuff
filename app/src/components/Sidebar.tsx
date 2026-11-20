@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Sun, FileText, Users, Library, ScanLine, GraduationCap, BarChart3, ClipboardCheck, Printer, FlaskConical,
-  CalendarDays, ListChecks, BookOpen, Route, FolderOpen, PencilRuler, LayoutGrid, Wrench, Share2, Settings, Gauge,
+  CalendarDays, ListChecks, Contact, ClipboardList, AlarmClock, HelpCircle, FileCheck2, BookOpen, Route, FolderOpen, PencilRuler, LayoutGrid, Wrench, Share2, Settings, Gauge,
 } from "lucide-react";
 import type { ModuleKey } from "@/lib/settings";
 
@@ -18,6 +18,8 @@ const groups: { label: string; items: Item[] }[] = [
       { href: "/todos", label: "To-do list", icon: ListChecks, module: "todo" },
       { href: "/lessons", label: "Lesson plans", icon: BookOpen, module: "lessons" },
       { href: "/pacing", label: "Pacing guides", icon: Route, module: "pacing" },
+      { href: "/subplans", label: "Sub plans", icon: ClipboardList, module: "subplans" },
+      { href: "/bell-schedules", label: "Bell schedules", icon: AlarmClock, module: "subplans" },
     ],
   },
   {
@@ -25,11 +27,14 @@ const groups: { label: string; items: Item[] }[] = [
     items: [
       { href: "/library", label: "Library", icon: FolderOpen, module: "library" },
       { href: "/worksheets", label: "Worksheet builder", icon: PencilRuler, module: "worksheets" },
+      { href: "/questions", label: "Question bank", icon: HelpCircle, module: "questions" },
+      { href: "/testbuilder", label: "Test builder", icon: FileCheck2, module: "questions" },
     ],
   },
   {
     label: "Classroom",
     items: [
+      { href: "/profiles", label: "Student profiles", icon: Contact, module: "profiles" },
       { href: "/seating", label: "Seating charts", icon: LayoutGrid, module: "seating" },
       { href: "/tools", label: "Classroom tools", icon: Wrench, module: "tools" },
     ],

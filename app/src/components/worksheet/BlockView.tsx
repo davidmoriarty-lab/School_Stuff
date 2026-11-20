@@ -95,7 +95,14 @@ export function BlockView({ block, showKey, editing }: { block: Block; showKey: 
       </div>
     );
     case "molemap": return <MoleMap w={w} h={h} title={p.title} />;
-    case "periodic": return <Periodic p={p} w={w} h={h} />;
+    case "periodic": return p.style === "color"
+      // Worksheets made before the College Board table was added have no "style" and keep the colored table.
+      ? <Periodic p={p} w={w} h={h} />
+      : p.style === undefined ? <Periodic p={p} w={w} h={h} />
+      : (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src="/ap-periodic-table.svg" width={613} height={413} alt="Periodic table of the elements" style={{ display: "block", width: "100%", height: "auto" }} />
+      );
     case "reference": {
       const items = CONSTANTS.filter((c) => arr(p.items).includes(c.id));
       return (

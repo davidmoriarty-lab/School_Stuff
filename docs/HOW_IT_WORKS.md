@@ -61,6 +61,26 @@ drawing function in `components/worksheet/BlockView.tsx`.
   `@page` rules for paper size.
 * The editor saves itself a second after you stop changing things. Undo keeps the last 80 states.
 
+## Student profiles
+
+Every student on a roster gets a profile (created when a roster is imported or a student is added, and filled in later by you):
+preferred name, pronouns, name pronunciation, flags (IEP, 504, ELL, ... editable in Settings), accommodations, health notes, guardian
+contact, a note "for a substitute", private notes, a dated log, and any extra fields you define.
+
+* Stored in its own table, `student_profile` (see `lib/profiles.ts`), **not** as a shareable item, so profile data can never end
+  up in a Share Package. It is deleted automatically if the student is deleted.
+* The **preferred name** replaces the first name on seating charts, the random picker and group maker (`lib/roster.ts`).
+  A roster file with a "Preferred Name" column fills it in on import.
+* **Substitute roster** (`/profiles/print`): pick a class, table or card layout, which fields to include, and an optional seating
+  chart. Your **private notes are left off unless you tick them**. Every choice is stored in the web address, so the printout
+  always matches the screen.
+
+## Periodic table
+
+The worksheet "Periodic table" block uses the College Board AP Chemistry table (`app/public/ap-periodic-table.svg`, cropped from
+their 2020 PDF; (c) College Board). A vector file, so it stays sharp at any size. The block can also show a colored table that the
+app draws itself from `lib/chem.ts`.
+
 ## Share packages
 
 A `.classpack` file is plain JSON: `{ format, version, from, items: [...], files: [...] }`.

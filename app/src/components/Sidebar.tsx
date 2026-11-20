@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Sun, FileText, Users, Library, ScanLine, GraduationCap, BarChart3, ClipboardCheck, Printer, FlaskConical,
-  CalendarDays, ListChecks, BookOpen, Route, FolderOpen, PencilRuler, LayoutGrid, Wrench, Share2, Settings, Gauge,
+  CalendarDays, ListChecks, Contact, BookOpen, Route, FolderOpen, PencilRuler, LayoutGrid, Wrench, Share2, Settings, Gauge,
 } from "lucide-react";
 import type { ModuleKey } from "@/lib/settings";
 
@@ -30,6 +30,7 @@ const groups: { label: string; items: Item[] }[] = [
   {
     label: "Classroom",
     items: [
+      { href: "/profiles", label: "Student profiles", icon: Contact, module: "profiles" },
       { href: "/seating", label: "Seating charts", icon: LayoutGrid, module: "seating" },
       { href: "/tools", label: "Classroom tools", icon: Wrench, module: "tools" },
     ],

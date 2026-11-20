@@ -15,7 +15,8 @@ export default async function Rosters({ searchParams }: { searchParams: Promise<
 
   return (
     <>
-      <PageHeader title="Rosters" subtitle="Choose a class to view and edit its students." />
+      <PageHeader title="Rosters" subtitle="Choose a class to view and edit its students."
+        actions={classes.length > 0 ? <Link href="/profiles/print?sections=all" className={buttonClass("secondary")}>Print all rosters</Link> : undefined} />
 
       {sp.added !== undefined && (
         <div className="mb-4 flex items-center gap-2 rounded-lg bg-emerald-50 px-4 py-2.5 text-sm text-emerald-800">

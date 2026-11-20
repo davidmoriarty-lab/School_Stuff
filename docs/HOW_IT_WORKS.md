@@ -75,6 +75,18 @@ contact, a note "for a substitute", private notes, a dated log, and any extra fi
   chart. Your **private notes are left off unless you tick them**. Every choice is stored in the web address, so the printout
   always matches the screen.
 
+## Sub plans and bell schedules
+
+* A **bell schedule** (`/bell-schedules`) is a named list of time slots such as "Period 1, 8:00 to 8:50, Honors Chemistry". Make one per
+  kind of day (regular, early release, assembly) and star one as the default.
+* A **sub plan** (`/subplans`) has a date, a bell schedule and an ordered list of sections: teacher and room info, the **day schedule**
+  (one row per slot with what the class is doing, a worksheet from the builder, other materials and copies), plus ready-made
+  sections (attendance, behavior, emergency, passes, technology, early finishers, helpful students, contacts, checklist, space for the
+  sub to write). Drag a section's handle to reorder, use the eye to leave one off the printout, or copy an earlier sub plan.
+* Changing the bell schedule updates the times but **keeps your notes**: slots are matched by id and then by name ("Period 1").
+* Sub plans do not include a roster. Print rosters from Student profiles: one class, several, or all classes at once.
+* Sub plans appear on the calendar on their date. Both kinds can be shared in a package.
+
 ## Periodic table
 
 The worksheet "Periodic table" block uses the College Board AP Chemistry table (`app/public/ap-periodic-table.svg`, cropped from

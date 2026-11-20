@@ -29,7 +29,7 @@ export function ProfilesList({ rows, sections, tags, initialSection }: { rows: P
         <Select className="!w-52" value={section} onChange={(e) => setSection(e.target.value)}><option value="">All classes</option>{sections.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</Select>
         <Select className="!w-44" value={tag} onChange={(e) => setTag(e.target.value)}><option value="">Any flag</option>{tags.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}</Select>
         <label className="flex items-center gap-1.5 text-sm text-slate-600"><input type="checkbox" className="accent-[var(--color-brand-600)]" checked={onlyNotes} onChange={(e) => setOnlyNotes(e.target.checked)} /> Has notes</label>
-        <Link href={`/profiles/print${section ? `?section=${section}` : ""}`} className={buttonClass("primary") + " ml-auto"}><Printer className="size-4" /> Print substitute roster</Link>
+        <Link href={`/profiles/print?sections=${section || "all"}`} className={buttonClass("primary") + " ml-auto"}><Printer className="size-4" /> Print {section ? "this class" : "all classes"}</Link>
       </div>
       <Card>
         <ul className="divide-y divide-slate-100">

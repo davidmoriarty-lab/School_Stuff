@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS item (
 CREATE INDEX IF NOT EXISTS item_kind ON item(kind);
 `);
 
-export const ITEM_KINDS = ["worksheet", "seating", "lesson", "pacing", "event", "todo"] as const;
+export const ITEM_KINDS = ["worksheet", "seating", "lesson", "pacing", "event", "todo", "subplan", "bell"] as const;
 export type ItemKind = (typeof ITEM_KINDS)[number];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

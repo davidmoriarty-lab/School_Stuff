@@ -133,6 +133,7 @@ export function SharePanel({ items, files, teacher, courseOrder }: { items: It[]
             <Button disabled={!pick.size && !pickFiles.size} onClick={exportPack}><Download className="size-4" /> Create package</Button>
           </div>
           {msg && <p className="text-sm text-emerald-700">{msg}</p>}
+          <p className="text-xs text-slate-500">Sub plans can contain names you typed yourself (for example helpful students). Check them before sharing.</p>
           <p className="flex items-start gap-1.5 text-xs text-slate-500"><ShieldCheck className="mt-0.5 size-3.5 shrink-0" /> The package is signed &ldquo;from {teacher || "a colleague"}&rdquo;. Set your name under Settings.</p>
         </div>
       </Card>

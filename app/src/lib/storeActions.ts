@@ -10,6 +10,11 @@ export async function saveItemAction(input: { uid?: string; kind: ItemKind; titl
   return saveItem(input);
 }
 
+export async function getItemAction(uid: string) {
+  const it = getItem(uid);
+  return it ? { uid: it.uid, kind: it.kind, title: it.title, data: it.data } : null;
+}
+
 export async function deleteItemAction(uid: string) {
   deleteItem(uid);
 }

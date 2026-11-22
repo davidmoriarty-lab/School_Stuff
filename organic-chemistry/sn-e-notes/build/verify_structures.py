@@ -26,6 +26,7 @@ EXPAND = {  # drawn label -> list of (element, [(bond_to_previous_index_in_group
     "OCH3": [("O", None), ("C", (0, 1))],
     "C": [("C", None)], "H": [("H", None)], "O": [("O", None)], "HO": [("O", None)],
     "H₂O": [("O", None)], "OH₂": [("O", None)],
+    "SH": [("S", None)], "HS": [("S", None)], "SCH3": [("S", None), ("C", (0, 1))],
 }
 
 
@@ -136,6 +137,41 @@ def check_mechanisms():
     return bad
 
 
+def check_worksheets(captured_ws):
+    """Every scheme in the worksheets (questions and answers) against its expected structure."""
+    import ws_figs
+    bad = 0
+    n = 0
+    print("\nworksheet pictures:")
+    for name, exp in ws_figs.EXP.items():
+        mols = captured_ws.get(name, [])
+        if len(mols) != len(exp):
+            print("BAD %-10s drawn %d molecules, expected %d" % (name, len(mols), len(exp)))
+            bad += 1
+            continue
+        for k, (m, (smi, want)) in enumerate(zip(mols, exp)):
+            n += 1
+            try:
+                rd = to_rdkit(m)
+            except Exception as e:
+                print("BAD %-10s #%d invalid structure: %s" % (name, k + 1, str(e).splitlines()[0][:80]))
+                bad += 1
+                continue
+            got = Chem.MolToSmiles(Chem.RemoveHs(rd), isomericSmiles=False)
+            ref = Chem.MolToSmiles(Chem.MolFromSmiles(smi), isomericSmiles=False)
+            lab = [l[0] for l in labels(rd)]
+            ok = got == ref
+            if want is not None and want != ["?"]:
+                ok = ok and sorted(lab) == sorted(want)
+            if not ok:
+                print("BAD %-10s #%d  drawn %s (labels %s)  expected %s (labels %s)" % (name, k + 1, got, lab, ref, want))
+                bad += 1
+            elif lab:
+                print("ok  %-10s #%d  %-18s %s %s" % (name, k + 1, got, lab, ("" if want else "")))
+    print("worksheet structures checked: %d, problems: %d" % (n, bad))
+    return bad
+
+
 def selftest():
     """The mistake in the first version of the notes: a carbocation drawn with four bonds and a + charge.
     The checker must reject it."""
@@ -161,7 +197,16 @@ def main():
     # run only the structure-building part of build_all (mechanism pictures are not structures)
     F.sn2_mechanism = F.sn2_ts = F.e2_mechanism = F.sn1_mechanism = lambda *a, **k: None
     F.energy_one_step = F.energy_two_step = F.newman = lambda *a, **k: None
+    import ws_figs
+    captured_ws = {}
+
+    def recorder_ws(items, path, **kw):
+        name = os.path.splitext(os.path.basename(path))[0]
+        captured_ws[name] = [it for it in items if isinstance(it, skel.Mol)]
+        return (1, 1)
     F.build_all()
+    ws_figs.scheme = recorder_ws
+    ws_figs.build_all()
     try:
         import namer
     except Exception:
@@ -194,6 +239,7 @@ def main():
                 except Exception as e:
                     nm = "(namer: %s)" % e
             print("%s %-13s #%d  %-22s expected %-22s %s" % (flag, pic, k + 1, got, ref, nm))
+    bad += check_worksheets(captured_ws)
     bad += selftest()
     bad += check_mechanisms()
     # the two enantiomers in a_sn1_c must differ, and q_sn1_c is one of them

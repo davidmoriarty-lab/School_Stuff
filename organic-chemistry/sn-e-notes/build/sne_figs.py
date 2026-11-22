@@ -7,6 +7,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch, Circle
 from skel import Mol, chain, ring, draw_mol, scheme, INK, FONT
+import mech
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 IMG = os.path.join(HERE, "..", "img")
@@ -36,103 +37,6 @@ def T(ax, x, y, s, size=12, color=INK, ha="center", va="center", **kw):
 
 
 # ------------------------------------------------------------------ mechanisms
-def sn2_mechanism(path=None, stage=2):
-    """HO- + CH3-Br -> HO-CH3 + Br-  with curved arrows."""
-    fig, ax = canvas(9.0, 2.7, (0, 15), (-1.7, 2.1))
-    T(ax, 1.2, 0.2, "HO", 16); T(ax, 2.0, 0.65, "−", 13)
-    T(ax, 3.3, 0.2, "+", 17)
-    T(ax, 5.2, 0.2, "C", 16)
-    for (x, y, s) in ((5.2, 1.25, "H"), (4.25, -0.7, "H"), (6.15, -0.7, "H")):
-        T(ax, x, y, s, 13)
-        ax.plot([5.2, 5.2 + (x - 5.2) * 0.62], [0.2, 0.2 + (y - 0.2) * 0.62], color=INK, lw=1.6)
-    ax.plot([5.5, 6.9], [0.2, 0.2], color=INK, lw=1.6)
-    T(ax, 7.45, 0.2, "Br", 16)
-    T(ax, 1.4, -0.75, "nucleophile", 11, "#555"); T(ax, 7.5, -0.75, "leaving group", 11, "#555")
-    if stage >= 1:
-        curved(ax, (1.7, 0.85), (4.85, 0.55), rad=-0.32)
-        curved(ax, (6.3, 0.3), (7.35, 0.85), rad=-0.7)
-        T(ax, 5.2, -1.45, "attacks from the back side", 11, "#555")
-    if stage >= 2:
-        ax.annotate("", xy=(10.7, 0.2), xytext=(9.0, 0.2), arrowprops=dict(arrowstyle="-|>", color=INK, lw=1.5))
-        T(ax, 9.85, 0.65, "SN2", 12)
-        T(ax, 12.2, 0.2, "HO–CH3", 16)
-        T(ax, 13.9, 0.2, "+", 17); T(ax, 14.6, 0.2, "Br−", 16)
-    fig.savefig(path or P("sn2_mech"), dpi=200, facecolor="white"); plt.close(fig)
-
-
-def e2_mechanism(path=None, stage=2):
-    """HO- + (CH3)2CH-Br -> CH2=CH-CH3 + H2O + Br-"""
-    fig, ax = canvas(9.0, 3.3, (-4.2, 11.0), (-2.3, 2.7))
-    m = chain(3, subs={1: [("Br", "plain")]})
-    h = m.add(m.atoms[0][0] - 0.5, m.atoms[0][1] + 0.87, "H")
-    m.bond(0, h, "plain")
-    draw_mol(ax, m, ox=0, oy=0, size=14)
-    x0, y0 = m.atoms[0][0], m.atoms[0][1]
-    x1, y1 = m.atoms[1][0], m.atoms[1][1]
-    hx, hy = m.atoms[h][0], m.atoms[h][1]
-    brx, bry = [(a[0], a[1]) for a in m.atoms if a[2] == "Br"][0]
-    T(ax, -3.2, 1.9, "HO", 16); T(ax, -2.55, 2.3, "−", 13)
-    T(ax, -2.2, 0.6, "strong base", 11, "#555")
-    if stage >= 1:
-        curved(ax, (-2.75, 2.1), (hx - 0.12, hy + 0.12), rad=-0.3)
-        curved(ax, ((hx + x0) / 2 + 0.08, (hy + y0) / 2 - 0.08), ((x0 + x1) / 2 - 0.05, (y0 + y1) / 2 + 0.12), rad=-0.55)
-        curved(ax, (x1 + 0.12, (y1 + bry) / 2 + 0.05), (brx + 0.42, bry + 0.15), rad=0.55)
-        T(ax, 0.9, -1.85, "H and Br must be anti-periplanar", 11, "#555")
-    if stage >= 2:
-        ax.annotate("", xy=(5.9, 0.4), xytext=(3.9, 0.4), arrowprops=dict(arrowstyle="-|>", color=INK, lw=1.5))
-        T(ax, 4.9, 0.85, "E2", 12)
-        p = chain(3, double=[(0, 1)])
-        draw_mol(ax, p, ox=6.6, oy=0.0, size=14)
-        T(ax, 9.55, 0.35, "+  H2O  +  Br−", 13)
-    fig.savefig(path or P("e2_mech"), dpi=200, facecolor="white"); plt.close(fig)
-
-
-def sn1_mechanism(path=None):
-    """t-BuBr in ethanol: three steps with curved arrows."""
-    fig, ax = canvas(9.5, 8.0, (0, 19), (-16.2, 0.4))
-    arrow_kw = dict(arrowstyle="-|>", color=INK, lw=1.5)
-    # ---- step 1
-    T(ax, 0.2, -0.3, "Step 1  (slow): the leaving group leaves", 11, "#0c8599", ha="left", fontweight="bold")
-    m1 = chain(3, subs={1: [("Br", "plain"), ("", "plain")]})
-    ox, oy = 1.2, -2.6
-    draw_mol(ax, m1, ox=ox, oy=oy, size=14)
-    cx, cy = m1.atoms[1][0] + ox, m1.atoms[1][1] + oy
-    brx, bry = [(a[0] + ox, a[1] + oy) for a in m1.atoms if a[2] == "Br"][0]
-    curved(ax, ((cx + brx) / 2 + 0.12, (cy + bry) / 2 + 0.02), (brx + 0.6, bry + 0.25), rad=-0.7)
-    ax.annotate("", xy=(8.2, -2.4), xytext=(5.6, -2.4), arrowprops=arrow_kw)
-    c = chain(3, subs={1: [("", "plain"), ("", "plain")]})
-    draw_mol(ax, c, ox=9.6, oy=oy, size=14)
-    T(ax, c.atoms[1][0] + 9.6 + 0.3, c.atoms[1][1] + oy + 0.55, "+", 15)
-    T(ax, 12.6, -2.4, "+", 16); T(ax, 13.6, -2.4, "Br−", 15)
-    T(ax, 10.8, -4.1, "carbocation intermediate", 10.5, "#555")
-    # ---- step 2
-    T(ax, 0.2, -5.3, "Step 2: the solvent (a weak nucleophile) attacks the carbocation", 11, "#0c8599", ha="left", fontweight="bold")
-    c2 = chain(3, subs={1: [("", "plain"), ("", "plain")]})
-    ox2, oy2 = 1.2, -8.0
-    draw_mol(ax, c2, ox=ox2, oy=oy2, size=14)
-    cxp, cyp = c2.atoms[1][0] + ox2, c2.atoms[1][1] + oy2
-    T(ax, cxp + 0.3, cyp + 0.55, "+", 15)
-    T(ax, 4.6, -7.8, "+", 16)
-    T(ax, 7.1, -7.8, "H–O–CH2CH3", 15)
-    curved(ax, (6.1, -7.35), (cxp + 0.5, cyp + 0.3), rad=0.45)
-    T(ax, 7.1, -9.0, "ethanol (the solvent)", 10.5, "#555")
-    ax.annotate("", xy=(13.2, -7.8), xytext=(10.7, -7.8), arrowprops=arrow_kw)
-    ox3 = chain(3, subs={1: [("O⁺HEt", "plain"), ("", "plain")]})
-    draw_mol(ax, ox3, ox=14.6, oy=oy2, size=14)
-    T(ax, 17.6, -10.0, "oxonium ion", 10.5, "#555")
-    # ---- step 3
-    T(ax, 0.2, -10.7, "Step 3: a second solvent molecule removes a proton", 11, "#0c8599", ha="left", fontweight="bold")
-    e1 = chain(3, subs={1: [("OEt", "plain"), ("", "plain")]})
-    draw_mol(ax, e1, ox=2.2, oy=-13.6, size=14)
-    T(ax, 3.1, -15.3, "from O–H: ether (SN1)", 10.5, "#555")
-    T(ax, 6.2, -13.3, "+", 15); T(ax, 8.6, -13.3, "EtOH2⁺", 13)
-    T(ax, 11.3, -13.3, "or", 14)
-    al = chain(3, double=[(0, 1)], subs={1: [("", "plain")]})
-    draw_mol(ax, al, ox=13.0, oy=-13.6, size=14)
-    T(ax, 14.1, -15.3, "from a β C–H: alkene (E1)", 10.5, "#555")
-    fig.savefig(path or P("sn1_mech"), dpi=200, facecolor="white"); plt.close(fig)
-
-
 def sn2_ts(path=None):
     """Transition state of HS- + CH3-Cl (the textbook's skillbuilder 7.2 pattern)."""
     fig, ax = canvas(4.6, 2.8, (-3.2, 3.0), (-1.7, 1.7))
@@ -229,9 +133,8 @@ def cis_2_pentene():
 
 
 def build_all():
-    sn2_mechanism(); sn2_ts(); e2_mechanism(); sn1_mechanism()
-    for st in (0, 1):
-        sn2_mechanism(P("sn2_mech_s%d" % st), st); e2_mechanism(P("e2_mech_s%d" % st), st)
+    mech.build_all()
+    sn2_ts()
     from PIL import Image
     im = Image.open(P("sn1_mech"))
     w, h = im.size
@@ -270,12 +173,19 @@ def build_all():
     one = chain(5, double=[(0, 1)])
     scheme([br5, ("arrow", "NaOEt", "EtOH, heat"), "?"], P("q_e2_c"))
     scheme([br5, ("arrow", "NaOEt", "EtOH, heat"), trans2, "+", cis2, "+", one], P("a_e2_c"), scale=0.5)
+    ether5 = chain(4, subs={1: [("OEt", "plain"), ("", "plain")]})
     # ---- SN1 / E1: tert-butyl bromide in ethanol
     tb = chain(3, subs={1: [("Br", "plain"), ("", "plain")]})
     ether = chain(3, subs={1: [("OEt", "plain"), ("", "plain")]})
     iso = chain(3, double=[(0, 1)], subs={1: [("", "plain")]})
     scheme([tb, ("arrow", "EtOH", "heat"), "?"], P("q_sn1_a"))
-    scheme([tb, ("arrow", "EtOH", "heat"), ether, "+", iso], P("a_sn1_a"))
+    scheme([tb, ("arrow", "EtOH", "heat"), ether], P("a_sn1_a"))
+    # ---- E1: same substrate, weak base; and alcohol dehydration
+    scheme([t_br, ("arrow", "EtOH", "heat"), "?"], P("q_e1_a"))
+    scheme([t_br, ("arrow", "EtOH", "heat"), ether5, "+", zait, "+", hof], P("a_e1_a"), scale=0.5)
+    alc = chain(4, subs={1: [("OH", "plain"), ("", "plain")]})
+    scheme([alc, ("arrow", "conc. H2SO4", "heat"), "?"], P("q_e1_b"))
+    scheme([alc, ("arrow", "conc. H2SO4", "heat"), zait, "+", hof], P("a_e1_b"))
     # ---- rearrangement
     sec = chain(4, subs={1: [("Br", "plain")], 2: [("", "plain"), ("", "plain")]})
     eth2 = chain(4, subs={1: [("OEt", "plain"), ("", "plain")], 2: [("", "plain")]})

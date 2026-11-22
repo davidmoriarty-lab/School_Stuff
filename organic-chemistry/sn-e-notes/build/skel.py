@@ -23,9 +23,12 @@ class Mol:
         self.atoms = []         # (x, y, label)
         self.bonds = []         # (i, j, style)  style: plain, double, wedge, dash, triple
         self.caption = ""
+        self.charge = {}        # atom index -> formal charge (drawn as a circled + or -)
 
-    def add(self, x, y, label=""):
+    def add(self, x, y, label="", charge=0):
         self.atoms.append((x, y, label))
+        if charge:
+            self.charge[len(self.atoms) - 1] = charge
         return len(self.atoms) - 1
 
     def bond(self, i, j, style="plain"):
@@ -131,6 +134,35 @@ def draw_mol(ax, m, ox=0.0, oy=0.0, size=11, lw=1.6):
     for i, (x, y, lab) in enumerate(m.atoms):
         if lab:
             ax.text(x + ox, y + oy, lab, ha="center", va="center", fontsize=size, color=INK, family=FONT, zorder=3)
+    for i, q in getattr(m, "charge", {}).items():
+        x, y, lab = m.atoms[i]
+        # put the charge on the side away from the bonds
+        vx = vy = 0.0
+        for a, b, _ in m.bonds:
+            if a == i or b == i:
+                o = m.atoms[b if a == i else a]
+                d = math.hypot(o[0] - x, o[1] - y) or 1.0
+                vx += (o[0] - x) / d
+                vy += (o[1] - y) / d
+        n = math.hypot(vx, vy)
+        if n > 0.3:
+            ux, uy = -vx / n, -vy / n
+        else:                                   # balanced bonds: use the middle of the largest angular gap
+            angs = sorted(math.degrees(math.atan2(m.atoms[b if a == i else a][1] - y, m.atoms[b if a == i else a][0] - x)) % 360
+                          for a, b, _ in m.bonds if a == i or b == i)
+            if not angs:
+                ux, uy = 0.0, 1.0
+            else:
+                gaps = [((angs[(k + 1) % len(angs)] - angs[k]) % 360 or 360, angs[k]) for k in range(len(angs))]
+                g, start = max(gaps)
+                mid = math.radians(start + g / 2)
+                ux, uy = math.cos(mid), math.sin(mid)
+        r = 0.42 if lab else 0.34
+        cx, cy = x + ox + ux * r, y + oy + uy * r
+        if lab and len(lab) > 1:
+            cx += 0.12 * (1 if ux >= 0 else -1) * min(len(lab), 3) / 2
+        ax.add_patch(plt.Circle((cx, cy), 0.13, fc="white", ec=INK, lw=1.0, zorder=4))
+        ax.text(cx, cy - 0.005, "+" if q > 0 else "–", ha="center", va="center", fontsize=size - 3, color=INK, family=FONT, zorder=5)
 
 
 def scheme(items, path, height=None, gap=0.55, size=11, dpi=200, scale=0.55):

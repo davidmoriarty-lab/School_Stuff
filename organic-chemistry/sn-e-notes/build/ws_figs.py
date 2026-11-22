@@ -41,23 +41,42 @@ def render(name, items, **kw):
     EXP[name] = exp
 
 
-def ARR(above="", below=""):
-    return ("arrow", above, below)
+def ARR(above="", below="", w=None):
+    return ("arrow", above, below) if w is None else ("arrow", above, below, w)
 
 
-def qa(key, sm, rg, prods, ask="products", **kw):
-    """Writes q_<key> (the question) and a_<key> (the answer).
-    ask='products': the question shows the starting material and the reagents; ask='reagent': it shows start and product."""
+COUNT = {}                  # worksheet prefix ('w1' ...) -> number of numbered problems drawn so far
+SCALE = 0.34                # drawing scale of the worksheet pictures (smaller than the notes)
+
+
+def nextnum(key):
+    ws = key[:2]
+    COUNT[ws] = COUNT.get(ws, 0) + 1
+    return COUNT[ws]
+
+
+def LBL(n):
+    return ("lbl", "%d." % n)
+
+
+def qa(key, sm, rg, prods, ask="products", scale=None, pad=None):
+    """Writes q_<key> (the question) and a_<key> (the answer), both starting with the problem number.
+    ask='products': the question is the start and the reagents, with blank room to the right of the arrow for the products.
+    ask='reagent': the question is the start and the product, with a long empty arrow for the reagents."""
+    scale = scale or SCALE
+    lab = [LBL(nextnum(key))]
+    npr = sum(isinstance(p, MI) for p in prods)
     if ask == "products":
-        render("q_" + key, list(sm) + [ARR(*rg), "?"], **kw)
+        padw = pad or (6.5 if npr <= 1 else 12.5)
+        render("q_" + key, lab + list(sm) + [ARR(*rg), ("gap", padw)], scale=scale)
     else:
-        render("q_" + key, list(sm) + [ARR("?", "")] + list(prods), **kw)
-    render("a_" + key, list(sm) + [ARR(*rg)] + list(prods), **kw)
+        render("q_" + key, lab + list(sm) + [ARR("", "", 5.5)] + list(prods), scale=scale)
+    render("a_" + key, lab + list(sm) + [ARR(*rg)] + list(prods), scale=scale)
 
 
-def prompt(key, sm, rg, prods, **kw):
+def prompt(key, sm, rg, prods, scale=None):
     """The reaction a mechanism question is about (start, reagents, product): the student draws the mechanism."""
-    render("p_" + key, list(sm) + [ARR(*rg)] + list(prods), **kw)
+    render("p_" + key, [LBL(nextnum(key))] + list(sm) + [ARR(*rg)] + list(prods), scale=scale or SCALE)
 
 
 # ------------------------------------------------------------------ small constructors
@@ -435,6 +454,7 @@ def newman_ws(path, back=None, front=None):
 
 # ================================================================== the worksheets' content
 def build_all():
+    COUNT.clear()
     # ---------------------------------------------------------------- common structures
     t_br = lambda: chain(4, subs={1: [("Br", "plain"), ("", "plain")]})              # 2-bromo-2-methylbutane
     zait = lambda: chain(4, double=[(1, 2)], subs={1: [M()]})                        # 2-methylbut-2-ene
@@ -462,7 +482,7 @@ def build_all():
     prompt("w1m2", [MI(chain(3, subs={1: [("Br", "plain")]}), "CC(C)Br")], ("NaSH", "ethanol"),
            [MI(chain(3, subs={1: [("SH", "plain")]}), "CC(C)S")])
     mech_sn2("w1m2", sub2, 1, find(sub2, "Br"), "HS", -1, chain(3, subs={1: [("SH", "plain")]}), "Br")
-    render("w1d", [MI(neopentyl_bromide(), "CC(C)(C)CBr")])
+    render("w1d", [MI(neopentyl_bromide(), "CC(C)(C)CBr")], scale=0.36)
 
     # ================= worksheet 2: E2
     c_ = lambda: chain(4, subs={1: [("Br", "plain")], 2: [M()]})                      # 2-bromo-3-methylbutane
@@ -499,20 +519,20 @@ def build_all():
     newman_ws(P("newman_blank"))
     newman_ws(P("newman_trans"), back={90: "H", 210: "CH3", 330: "H"}, front={270: "Br", 30: "CH3", 150: "H"})
     newman_ws(P("newman_cis"), back={90: "H", 210: "H", 330: "CH3"}, front={270: "Br", 30: "CH3", 150: "H"})
-    render("w2d", [MI(neopentyl_bromide(), "CC(C)(C)CBr")])
+    render("w2d", [MI(neopentyl_bromide(), "CC(C)(C)CBr")], scale=0.36)
 
     # ================= worksheet 3: SN1 and E1
     qa("w3a1", [MI(pbr(), "CC(C)(Br)CCC")], ("CH3OH", "heat"),
-       [MI(chain(5, subs={1: [("OCH3", "plain"), M()]}), "COC(C)(C)CCC"), "+", MI(pz(), "CC(C)=CCC"), "+", MI(ph(), "C=C(C)CCC")], scale=0.5)
+       [MI(chain(5, subs={1: [("OCH3", "plain"), M()]}), "COC(C)(C)CCC"), "+", MI(pz(), "CC(C)=CCC"), "+", MI(ph(), "C=C(C)CCC")])
     qa("w3a2", [MI(cm(), "CC1(Br)CCCCC1")], ("EtOH", "heat"),
-       [MI(ring(6, subs={0: [("OEt", "plain"), M()]}), "CCOC1(C)CCCCC1"), "+", MI(cz(), "CC1=CCCCC1"), "+", MI(ch(), "C=C1CCCCC1")], scale=0.5)
+       [MI(ring(6, subs={0: [("OEt", "plain"), M()]}), "CCOC1(C)CCCCC1"), "+", MI(cz(), "CC1=CCCCC1"), "+", MI(ch(), "C=C1CCCCC1")])
     sec_br = lambda: chain(4, subs={1: [("Br", "plain")], 2: [M()]})
     qa("w3a3", [MI(sec_br(), "CC(Br)C(C)C")], ("EtOH", "heat"),
-       [MI(chain(4, subs={1: [("OEt", "plain"), M()]}), "CCOC(C)(C)CC"), "+", MI(zait(), ZAIT), "+", MI(hof(), HOF)], scale=0.5)
+       [MI(chain(4, subs={1: [("OEt", "plain"), M()]}), "CCOC(C)(C)CC"), "+", MI(zait(), ZAIT), "+", MI(hof(), HOF)])
     r_br = lambda: chain(7, subs={2: [("Br", "wedge"), M()]})
     qa("w3a4", [MI(r_br(), "CCC(C)(Br)CCCC", ["?"])], ("CH3OH", ""),
        [MI(chain(7, subs={2: [("OCH3", "wedge"), M()]}), "CCC(C)(OC)CCCC", ["?"]), "+",
-        MI(chain(7, subs={2: [("OCH3", "dash"), M()]}), "CCC(C)(OC)CCCC", ["?"])], scale=0.5)
+        MI(chain(7, subs={2: [("OCH3", "dash"), M()]}), "CCC(C)(OC)CCCC", ["?"])])
     qa("w3b1", [MI(tbu_oh("Cl"), "CC(C)(C)Cl")], ("CH3OH", "heat"), [MI(chain(3, subs={1: [("OCH3", "plain"), M()]}), "COC(C)(C)C")], ask="reagent")
     qa("w3b2", [MI(chain(4, subs={1: [("OH", "plain"), M()]}), "CCC(C)(C)O")], ("conc. H2SO4", "heat"),
        [MI(zait(), ZAIT)], ask="reagent")
@@ -547,10 +567,11 @@ def build_all():
        [MI(chain(4, double=[(1, 2)], subs={1: [M()], 2: [M()]}), "CC(C)=C(C)C"), "+",
         MI(chain(4, double=[(0, 1)], subs={1: [M()], 2: [M()]}), "C=C(C)C(C)C")])
     qa("w5a4", [MI(t_br(), T_BR)], ("H2O", "heat"),
-       [MI(chain(4, subs={1: [("OH", "plain"), M()]}), "CCC(C)(C)O"), "+", MI(zait(), ZAIT), "+", MI(hof(), HOF)], scale=0.5)
+       [MI(chain(4, subs={1: [("OH", "plain"), M()]}), "CCC(C)(C)O"), "+", MI(zait(), ZAIT), "+", MI(hof(), HOF)])
     qa("w5a5", [MI(ring(6, subs={0: [("Br", "plain")]}), "BrC1CCCCC1")], ("NaOEt", "EtOH, heat"), [MI(ring(6, double=[(0, 1)]), "C1=CCCCC1")])
-    render("q_w5a6", [MI(chain(4, subs={1: [("Br", "plain")]}), "CCC(C)Br"), ARR("H2O", "heat"), "?"])
-    render("a_w5a6", [MI(chain(4, subs={1: [("Br", "plain")]}), "CCC(C)Br"), ARR("H2O", "heat"), "no reaction"])
+    n6 = LBL(nextnum("w5a6"))
+    render("q_w5a6", [n6, MI(chain(4, subs={1: [("Br", "plain")]}), "CCC(C)Br"), ARR("H2O", "heat"), ("gap", 6.5)], scale=SCALE)
+    render("a_w5a6", [n6, MI(chain(4, subs={1: [("Br", "plain")]}), "CCC(C)Br"), ARR("H2O", "heat"), "no reaction"], scale=SCALE)
     qa("w5a7", [MI(halide(3, "Br"), "CCCBr")], ("t-BuOK", "t-BuOH"), [MI(chain(3, double=[(0, 1)]), "C=CC")])
     sub = chain(4, subs={1: [("Br", "plain"), ("", "plain")], 2: [("", "plain")]})
     hh = add_h(sub, 2, 150)
@@ -562,7 +583,7 @@ def build_all():
     mech_sn2("w5m2", sub, 3, 4, "HS", -1, halide(4, "SH"), "I", flip=True)
     qa("w5c1", [MI(halide(3, "OH"), "CCCO")], ("?", ""), [MI(halide(3, "OEt"), "CCCOCC")], ask="reagent")
     qa("w5c2", [MI(chain(4, subs={1: [("OH", "plain"), M()]}), "CCC(C)(C)O")], ("?", ""), [MI(hof(), HOF)], ask="reagent")
-    render("w5c3", [MI(chain(3, subs={1: [("OCH3", "plain")]}), "CC(C)OC")])
+    render("w5c3", [MI(chain(3, subs={1: [("OCH3", "plain")]}), "CC(C)OC")], scale=0.36)
 
 
 if __name__ == "__main__":

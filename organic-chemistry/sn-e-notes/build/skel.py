@@ -183,21 +183,23 @@ def scheme(items, path, height=None, gap=0.55, size=11, dpi=200, scale=0.55):
             above, below = it[1], it[2] if len(it) > 2 else ""
             longest = max([len(s) for s in (above + "\n" + below).split("\n")] + [3])
             w = max(1.6, 0.17 * longest)
+            if len(it) > 3:
+                w = it[3]
             plan.append(("arrow", it, x, w))
             x += w + gap
         elif isinstance(it, tuple) and it[0] == "gap":
             x += it[1]
         elif isinstance(it, tuple) and it[0] == "lbl":
-            plan.append(("lbl", it[1], x, 0.55))
-            x += 0.55 + gap * 0.5
+            plan.append(("lbl", it[1], x, 0.7))
+            x += 0.7 + gap * 0.3
         else:
             w = 0.5 if len(str(it)) <= 1 else 0.34 * len(str(it))
             plan.append(("txt", it, x, w))
             x += w + gap * 0.6
     total = x - gap
     # vertical range: allow arrow reagent text
-    ymin = min(ymin, -0.9)
-    ymax = max(ymax, 1.3)
+    ymin = min(ymin, -0.6)
+    ymax = max(ymax, 1.0)
     fig_w, fig_h = total * scale, (ymax - ymin) * scale
     fig = plt.figure(figsize=(fig_w, fig_h))
     ax = fig.add_axes([0, 0, 1, 1])
@@ -220,7 +222,7 @@ def scheme(items, path, height=None, gap=0.55, size=11, dpi=200, scale=0.55):
             for k, line in enumerate(below.split("\n") if below else []):
                 ax.text(x0 + w / 2, mid - 0.14 - 0.32 * k, line, ha="center", va="top", fontsize=size - 1, color=INK, family=FONT)
         elif kind == "lbl":
-            ax.text(x0 + w / 2, mid, it, ha="center", va="center", fontsize=size, color=INK, family=FONT)
+            ax.text(x0, mid, it, ha="left", va="center", fontsize=size + 1, color=INK, family=FONT, fontweight="bold")
         else:
             big = it == "?"
             ax.text(x0 + w / 2, mid if not big else mid, it, ha="center", va="center",

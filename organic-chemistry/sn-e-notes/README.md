@@ -5,7 +5,7 @@ Organized by the chapter's own sections (7.1 to 7.12), with the textbook's Skill
 
 | File | What it is |
 |---|---|
-| `Substitution and Elimination - STUDENT NOTES.docx` | 16-page fill-in packet, one reaction at a time: set-up, Part 1 (SN2, E2), Part 2 (SN1, E1), Part 3 (choosing the mechanism, solvents, alcohols and synthesis). Short paragraphs and fill-in sentences, no summary tables; original practice problems with drawn structures; 20 ACS-style multiple-choice questions at the back |
+| `Substitution and Elimination - STUDENT NOTES.docx` | 16-page fill-in packet, one reaction at a time: set-up, Part 1 (SN2, E2), Part 2 (SN1, E1), Part 3 (choosing the mechanism, solvents, alcohols and synthesis). No tables and no fill-in-the-blank sentences: a blank box to draw every mechanism and energy diagram, and open note boxes with a topic heading only (the teacher edition shows the drawn mechanism and a key-points list in gray); original practice problems with drawn structures; 20 ACS-style multiple-choice questions at the back |
 | `Substitution and Elimination - TEACHER EDITION.docx` | Same pages with answers (gray) and teacher notes (19 pages) |
 | `Substitution and Elimination - SLIDES.pptx` | (older version, not updated with the new notes: its SN1 picture still shows the original drawing error) 45 slides, 133 click steps: mechanisms drawn in stages with curved arrows, the 3 x 4 reagent/substrate grid, then the 20 warm-ups (vote, then reveal) |
 | `build/` | Generators: `skel.py` (skeletal structures, matplotlib only), `mech.py` (mechanism pictures built from real molecules), `sne_figs.py` (energy diagrams, practice schemes), `questions.py` (the 20 questions), `make_notes.py` (the two Word files) |

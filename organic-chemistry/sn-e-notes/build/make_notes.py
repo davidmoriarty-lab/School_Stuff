@@ -74,15 +74,18 @@ class OrgPacket(Packet):
                 if ppr.find(W_NS + "keepNext") is None:
                     ppr.insert(0, parse_xml('<w:keepNext %s/>' % NS))
 
-    def blanks(self, items, start=1):
-        """Numbered fill-in sentences.  items: (sentence with ______ blanks, answer).  The answer shows only in the teacher edition."""
-        for k, (text, ans) in enumerate(items, start):
-            FLOW.add(txt_h(text, 10.5, 6.6) + 0.12 + (txt_h(ans, 9.5, 6.6) + 0.1 if self.T else 0))
-            self.emit(('<w:p><w:pPr>%s<w:spacing w:before="70" w:after="40" w:line="288" w:lineRule="auto"/>'
-                       '<w:ind w:left="461" w:hanging="461"/></w:pPr>%s%s</w:p>') % (
-                "<w:keepNext/>" if self.T else "", runs("%d.  " % k, 21, DARK, b=True), runs(text, 21, INK)))
-            if self.T:
-                self.emit(self.ans_para(ans, 19))
+    def drawbox(self, label, h, img=None, w_in=5.5, caption=None):
+        """Blank room for students to draw; the teacher edition shows the drawn answer (a picture) in gray."""
+        if self.T and img:
+            self.ansimg(img, w_in, label)
+            if caption:
+                self.ansbox(0.3, ans=[caption])
+        else:
+            self.ansbox(h, label)
+
+    def notebox(self, label, h, points):
+        """Open note-taking space with a heading only; the teacher edition lists the key points in gray."""
+        self.ansbox(h, label, ans=points)
 
     def img(self, name, w_in, jc="left", after=40):
         p, h = self.pic_par(os.path.join(IMG, name + ".png"), w_in, jc, after)
@@ -155,7 +158,7 @@ def build(T):
         P.box("HOW TO USE THIS PACKET", [
             "These notes follow Klein, **Organic Chemistry**, Chapter 7. We take the reactions one at a time: first the two "
             "**bimolecular** reactions (SN2 and E2), then the two **unimolecular** reactions (SN1 and E1), and last how to choose "
-            "between them. Fill in the blanks as we go. Draw every structure and curved arrow yourself. After each reaction the "
+            "between them. Every mechanism and energy diagram has a blank box: draw it yourself with the class, curved arrows included. After each reaction the "
             "**FROM YOUR TEXTBOOK** box lists the chapter problems to do next. Twenty ACS-style multiple-choice questions are at the back."])
     else:
         P.box("TEACHER EDITION", [
@@ -164,7 +167,7 @@ def build(T):
         P.box("TEACHER OVERVIEW", [
             "**Organization.** Each reaction type has its own section: SN2, E2, SN1, E1. Part 1 pairs the bimolecular reactions, "
             "Part 2 pairs the unimolecular reactions, and Part 3 puts them together (the textbook’s Section 7.9 method, solvents, "
-            "alcohols and synthesis). There are no summary tables; the content is in short paragraphs and fill-in sentences.",
+            "alcohols and synthesis). There are no tables and no fill-in-the-blank sentences. Students draw every mechanism and energy diagram in blank boxes, and take notes in open note boxes that have a topic heading only; the gray text in those boxes is a key-points list for you.",
             "**The practice problems are original.** They mirror the book’s SkillBuilders and ACS-style problems, which are cited "
             "by number after each section, so you can assign the book’s own problems as homework. Tell me if you want specific book "
             "problems redrawn and keyed here.",
@@ -200,17 +203,12 @@ def build(T):
         "In an alkyl halide the C–X bond is polar, so the **α carbon is δ+ (electrophilic)** and the halide can leave. "
         "A **nucleophile** can attack that carbon (**substitution**), or a **base** can remove a proton from a β carbon "
         "(**elimination**, which makes a C=C). The reagent’s job, nucleophile or base, tells you which."])
-    P.blanks([
-        ("A ______________ is an electron-rich species that attacks an electrophilic carbon. A ______________ removes a proton (H⁺).",
-         "nucleophile; base"),
-        ("The carbon bonded to the halogen is the ______ carbon. The carbons attached to it are the ______ carbons.", "α (alpha); β (beta)"),
-        ("A primary (1°) alkyl halide has ______ carbon bonded to the α carbon, a secondary (2°) has ______ and a tertiary (3°) has ______.",
-         "one; two; three"),
-        ("A good leaving group is a ______ base: it is the conjugate base of a ______ acid. In order from best to worst: "
-         "I⁻, ______, ______, F⁻.", "weak; strong; I⁻ > Br⁻ > Cl⁻ > F⁻ (HI, HBr and HCl are strong acids; HF is much weaker)"),
-        ("Hydroxide (HO⁻) is a very ______ leaving group, because its conjugate acid, water (pKa ≈ 16), is so weak. "
-         "To use an alcohol as a substrate we first turn the OH into a better leaving group (see Section 8).",
-         "poor (a strong base, so it does not leave)")])
+    P.notebox("Notes:  nucleophile and base  •  α and β carbons  •  1°, 2°, 3°  •  leaving groups and the pKa of the conjugate acid", 2.3, [
+        "Nucleophile: electron-rich, attacks an electrophilic carbon. Base: removes a proton (H⁺).",
+        "α carbon: bonded to the halogen. β carbons: attached to the α carbon.",
+        "1° / 2° / 3°: one / two / three carbons on the α carbon.",
+        "Good leaving group = weak base = conjugate base of a strong acid. Best to worst: I⁻ > Br⁻ > Cl⁻ > F⁻ (HI, HBr, HCl strong; HF much weaker). "
+        "HO⁻ (conjugate acid H₂O, pKa about 16) is a poor leaving group, so an alcohol must be activated first (Section 8)."])
     P.q("P1", "Classify each substrate as 1°, 2° or 3°, and say how many β carbons it has:   (a) CH₃CH₂CH₂Br   (b) (CH₃)₂CHBr   (c) (CH₃)₃CBr")
     P.ansbox(0.7, ans=["(a) 1°; one β carbon (CH₂).   (b) 2°; two β carbons (both CH₃).   (c) 3°; three β carbons (three CH₃)."])
     textbook(P, ["Name and classify alkyl halides: Problem 7.1. Judging leaving groups with the pKa of the conjugate acid: Section 7.1."])
@@ -224,29 +222,17 @@ def build(T):
         "**SN2 = substitution, nucleophilic, bimolecular.** The nucleophile attacks the carbon from the **back side** while the "
         "leaving group leaves, all in one step. A stereocenter is turned inside out, like an umbrella in the wind: "
         "**inversion of configuration**."])
-    P.img("sn2_mech", 6.4, "center")
-    P.blanks([
-        ("rate = ______________________. Doubling the alkyl halide ______________; doubling both makes the reaction ______ times faster.",
-         "k[RX][Nu⁻]; doubles the rate; four"),
-        ("There is no ______________ in SN2. Bond making and bond breaking happen at the same time, through one ______________ state.",
-         "intermediate; transition"),
-        ("The nucleophile must attack from the ______________ of the carbon, opposite the leaving group, so a stereocenter shows "
-         "______________ of configuration.", "back side; inversion"),
-        ("Alkyl groups on the α carbon block the back side (steric hindrance). The order of SN2 reactivity is  ______ > ______ > ______ >> ______ "
-         "(methyl, 1°, 2°, 3°). A ______ halide does not react by SN2.", "methyl > 1° > 2° >> 3°; tertiary"),
-        ("Neopentyl bromide, (CH₃)₃CCH₂Br, is a primary halide but is very slow in SN2, because the ______ methyl groups on the "
-         "β carbon block the path of the nucleophile.", "three")])
-    P.sub("Nucleophile strength (Section 7.4)")
-    P.blanks([
-        ("A negatively charged nucleophile is ______________ than a neutral one of the same atom: HO⁻ reacts over a million times "
-         "faster than H₂O with CH₃I.", "stronger"),
-        ("Going down a column, nucleophilicity ______________ because larger atoms are more polarizable: HS⁻ is stronger than ______, and in a "
-         "protic solvent I⁻ is stronger than ______ .", "increases; HO⁻; Cl⁻ (or Br⁻)"),
-        ("Strong nucleophiles to know: ____________________________.  Weak nucleophiles: ______________.",
-         "HS⁻, RS⁻, I⁻, Br⁻, Cl⁻, HO⁻, RO⁻ (CN⁻ is good too);  H₂O and ROH (neutral molecules)")])
-    P.img("energy_one", 3.1, "center")
-    P.q("P1", "(Energy diagram) Why does a 2° substrate react more slowly than a methyl substrate in SN2? Use the words "
-           "“transition state” and “Ea”.")
+    P.drawbox("Mechanism: hydroxide with bromomethane. Draw the curved arrows and the products.", 2.3, "sn2_mech", 6.3)
+    P.notebox("Notes:  rate law  •  backside attack and inversion  •  substrate effects  •  nucleophile strength", 2.8, [
+        "rate = k[RX][Nu⁻]: bimolecular. Doubling one reactant doubles the rate; doubling both makes it four times faster.",
+        "One step, no intermediate: bond making and bond breaking at the same time through one transition state.",
+        "The nucleophile attacks from the back side, so a stereocenter is inverted.",
+        "Steric hindrance on the α carbon: methyl > 1° > 2° >> 3°. Tertiary halides do not react by SN2. Neopentyl bromide (1°) is very slow "
+        "because three methyl groups on the β carbon block the back side.",
+        "Nucleophile strength: an anion is stronger than its neutral relative (HO⁻ is over a million times faster than H₂O with CH₃I). "
+        "Larger atoms are more polarizable (HS⁻ > HO⁻; in a protic solvent I⁻ > Br⁻ > Cl⁻). Strong: HS⁻, RS⁻, I⁻, Br⁻, Cl⁻, HO⁻, RO⁻ (CN⁻ good). Weak: H₂O, ROH."])
+    P.drawbox("Energy diagram for an SN2 reaction (label Ea and the transition state):", 2.0, "energy_one", 3.1)
+    P.q("P1", "Why does a 2° substrate react more slowly than a methyl substrate in SN2? Use the words “transition state” and “Ea”.")
     P.ansbox(0.65, ans=["Three groups crowd the carbon in the 2° transition state, raising its energy and increasing Ea, so the rate is lower."])
     P.q("P2", "(Skill 7.1) Draw the product, showing the stereochemistry. Name it. ((S)-2-bromobutane is drawn.)")
     P.img("q_sn2_stereo", 4.6)
@@ -256,7 +242,7 @@ def build(T):
         P.ansbox(0.3, ans=["(R)-2-methylbutanenitrile: inversion at the stereocenter. The wedge Br becomes a dashed CN. "
                            "(Checked with RDKit: Br and CN both rank first, so inversion changes S to R.)"])
     P.q("P3", "(Skill 7.2) Draw the transition state of the reaction of NaSH with chloromethane (CH₃Cl). Show the partial "
-           "bonds, the δ– symbols and the ‡ symbol.")
+              "bonds, the δ– symbols and the ‡ symbol.")
     P.ansbox(1.2, "Transition state:")
     P.ansimg("sn2_ts", 3.0)
     P.q("P4", "Rank by SN2 rate with NaCN in DMSO (fastest first):  CH₃CH₂Br,  (CH₃)₃CBr,  CH₃Br,  (CH₃)₂CHBr")
@@ -270,34 +256,24 @@ def build(T):
     P.box("BIG IDEA", [
         "**E2 = elimination, bimolecular.** A strong base removes a β hydrogen while the leaving group leaves from the α carbon, "
         "all in one step, and a **C=C** forms. The H and the leaving group must be **anti-periplanar** (180° apart)."])
-    P.img("e2_mech", 6.3, "center")
-    P.blanks([
-        ("rate = ______________________. E2 needs a ______________ base, and it is a ______ step reaction.",
-         "k[RX][base]; strong; one"),
-        ("In the arrow-pushing, the base removes a β ______________, the C–H electrons become the ______ bond, and the ______ bond to the "
-         "leaving group breaks.", "hydrogen (proton); π; C–X (C–Br)"),
-        ("The more substituted (more stable) alkene is the ______________ product. A small base such as NaOEt gives mostly the ______________ product.",
-         "Zaitsev; Zaitsev"),
-        ("A bulky base such as t-BuOK removes the more accessible hydrogen and gives mostly the less substituted alkene, called the ______________ product.",
-         "Hofmann"),
-        ("Alkene stability: tetrasubstituted > ______________ > ______________ > monosubstituted. A trans alkene is ______ stable than the cis isomer "
-         "because it has less steric strain.", "trisubstituted > disubstituted; more")])
-    P.sub("Anti-periplanar geometry and stereochemistry")
-    P.img("newman", 1.9, "center")
-    P.note("In this Newman projection (looking down the C2–C3 bond of 2-bromobutane) the H at the top of the back carbon is directly "
-           "opposite the Br on the front carbon. Only a hydrogen in this position can be removed in E2.", 20)
-    P.blanks([
-        ("If the β carbon has **two** hydrogens, both the cis and trans alkenes can form and the trans alkene is favored. This E2 is "
-         "______________.  If the β carbon has only **one** hydrogen, only the ______ H can leave, so the product geometry is fixed by the "
-         "substrate. This E2 is ______________.", "stereoselective; anti; stereospecific"),
-        ("In a cyclohexane chair, E2 needs the leaving group and the β hydrogen to be both ______________ (180° apart).", "axial")])
+    P.drawbox("Mechanism: hydroxide with 2-bromopropane. Draw the curved arrows and the products.", 2.4, "e2_mech", 6.3)
+    P.notebox("Notes:  rate law  •  Zaitsev and Hofmann  •  alkene stability  •  stereoselective and stereospecific  •  cyclohexanes", 2.8, [
+        "rate = k[RX][base]: bimolecular, one step. A strong base is required.",
+        "The base removes a β hydrogen; the C–H electrons become the π bond; the C–X bond breaks.",
+        "Zaitsev product: the more substituted (more stable) alkene, major with a small base such as NaOEt. "
+        "Hofmann product: the less substituted alkene, major with a bulky base such as t-BuOK.",
+        "Alkene stability: tetra > tri > di > mono; trans is more stable than cis (less steric strain).",
+        "Two β hydrogens: cis and trans can both form, trans favored (stereoselective). One β hydrogen: only the anti H can leave, so the geometry "
+        "is fixed by the substrate (stereospecific).",
+        "In a cyclohexane chair the leaving group and the β hydrogen must both be axial (180° apart)."])
+    P.drawbox("Newman projection (down the C2–C3 bond of 2-bromobutane) showing an anti-periplanar H and Br:", 2.2, "newman", 1.9)
     P.q("P1", "(Skill 7.3) Draw the Zaitsev and the Hofmann product of the reaction. Which is major with (a) NaOEt, (b) t-BuOK?")
     P.img("q_e2_a", 4.0)
     P.ansbox(0.9, "Products and major/minor:")
     P.ansimg("a_e2_a", 5.5, "(a) NaOEt, EtOH: Zaitsev major")
     P.ansimg("a_e2_b", 5.5, "(b) t-BuOK, t-BuOH: Hofmann major")
     P.q("P2", "(Skill 7.5) Draw all the E2 products from 2-bromopentane with NaOEt and label the major product. Why do the two "
-           "2-pentene stereoisomers form in different amounts?")
+              "2-pentene stereoisomers form in different amounts?")
     P.img("q_e2_c", 4.0)
     P.ansbox(0.9, "Products:")
     P.ansimg("a_e2_c", 6.4, "trans-2-pentene (major), cis-2-pentene, 1-pentene (minor)")
@@ -305,7 +281,7 @@ def build(T):
         P.ansbox(0.3, ans=["C3 has two hydrogens, so both stereoisomers can form; the trans alkene is more stable (less crowded) "
                            "and is favored (stereoselective). 1-Pentene is the Hofmann product, minor with a small base."])
     P.q("P3", "A cyclohexyl chloride reacts by E2 only when the Cl and a β hydrogen are both axial. Explain, using the anti-periplanar "
-           "requirement, why one chair conformer can react much faster than the other.")
+              "requirement, why one chair conformer can react much faster than the other.")
     P.ansbox(0.7, ans=["Axial–axial positions on adjacent carbons are 180° apart (anti-periplanar). A conformer with Cl axial can "
                        "eliminate quickly; a conformer with Cl equatorial has no anti H and reacts very slowly. A large t-butyl group locks the "
                        "ring, so an isomer that must put Cl equatorial barely reacts (textbook Problem 7.74)."])
@@ -323,28 +299,16 @@ def build(T):
         "**SN1 = substitution, nucleophilic, unimolecular.** In the slow step the alkyl halide ionizes: the leaving group takes both "
         "bonding electrons and leaves, which leaves a **carbocation** with only three bonds. Then a weak nucleophile (usually the "
         "solvent) attacks the carbocation. When the solvent is the nucleophile the reaction is called **solvolysis**."])
-    P.img("sn1_mech", 5.9, "center")
-    P.blanks([
-        ("rate = ______________. The nucleophile is not in the rate law, because the ______________ step is the slow one.", "k[RX]; first (ionization)"),
-        ("A carbocation has ______ bonds, an empty p orbital and a ______ charge. It is ______ (flat) around the carbon.",
-         "three; positive; planar (trigonal planar)"),
-        ("Carbocation stability: ______ > ______ > ______ > methyl. Allylic and benzylic carbocations are also stable because of ______________.",
-         "3° > 2° > 1°; resonance"),
-        ("Because SN1 needs a stable carbocation, it works for ______ (and allylic and benzylic) halides, in a ______________ solvent "
-         "(for example water or ethanol).", "tertiary; polar protic")])
-    P.img("energy_two", 3.5, "center")
-    P.sub("Stereochemistry")
-    P.blanks([
-        ("The nucleophile can attack either face of the planar carbocation, so an SN1 reaction at a stereocenter gives a nearly ______________ "
-         "mixture. (In practice there is a slight excess of inversion, because of ion pairs.)", "racemic")])
-    P.sub("Rearrangements")
-    P.note("A carbocation can become more stable by moving a neighboring hydrogen (a **hydride shift**) or methyl group "
-           "(**methyl shift**) with its electron pair. The new carbocation is more substituted.", 21)
-    P.img("hydride_shift", 5.4, "center")
-    P.blanks([
-        ("A rearrangement is expected when ionization gives a ______________ carbocation next to a carbon that can donate an H or CH₃ and "
-         "make a ______________ carbocation. Rearrangements happen in SN1 and E1 but never in SN2 or E2, because ______________.",
-         "secondary; tertiary; those reactions have no carbocation intermediate")])
+    P.drawbox("Mechanism: tert-butyl bromide in ethanol. Draw all three steps with the curved arrows.", 4.2, "sn1_mech", 5.9)
+    P.notebox("Notes:  rate law  •  the carbocation  •  stereochemistry  •  rearrangements", 2.6, [
+        "rate = k[RX]: unimolecular. The slow step is ionization, so the nucleophile is not in the rate law.",
+        "A carbocation has three bonds, an empty p orbital and a + charge, and is planar. Stability: 3° > 2° > 1° > methyl; allylic and benzylic are "
+        "also stable (resonance). So SN1 works for tertiary (allylic, benzylic) halides in polar protic solvents.",
+        "The nucleophile can attack either face of the planar carbocation, so a stereocenter gives a nearly racemic mixture (slight excess of inversion from ion pairs).",
+        "A hydride shift or methyl shift moves a neighboring H or CH₃ with its electron pair to give a more stable carbocation (secondary → tertiary). "
+        "No rearrangement occurs in SN2 or E2 because there is no carbocation."])
+    P.drawbox("Energy diagram for an SN1 reaction (label the intermediate and the slow step):", 2.0, "energy_two", 3.5)
+    P.drawbox("A rearrangement: draw a 1,2-hydride shift in a secondary carbocation (curved arrow):", 1.6, "hydride_shift", 5.4)
     P.q("P1", "(Skill 7.6, solvolysis) Draw the SN1 product when tert-butyl bromide is heated in ethanol, and the carbocation intermediate.")
     P.img("q_sn1_a", 3.6)
     P.ansbox(0.8, "Carbocation and product:")
@@ -354,7 +318,7 @@ def build(T):
     P.ansbox(0.7, "Product(s) and explanation:")
     P.ansimg("a_sn1_c", 4.8, "a nearly racemic mixture of the two alcohols (3-methylhexan-3-ol)")
     P.q("P3", "(Rearrangement) This secondary bromide ionizes in ethanol. Draw the carbocation it first forms, show with a curved arrow how it "
-           "rearranges, and draw the new carbocation.")
+              "rearranges, and draw the new carbocation.")
     P.img("q_sn1_b", 3.8)
     P.ansbox(1.1, "Carbocation, curved arrow, new carbocation:")
     P.ansimg("methyl_shift", 5.4, "1,2-methyl shift: secondary → tertiary carbocation")
@@ -367,14 +331,12 @@ def build(T):
         "**E1 = elimination, unimolecular.** E1 starts exactly like SN1: the leaving group leaves and a carbocation forms (slow step). "
         "Then a **weak base** (usually the solvent) removes a β proton, and the C–H electrons become the C=C π bond. "
         "SN1 and E1 almost always happen together."])
-    P.img("e1_mech", 6.2, "center")
-    P.blanks([
-        ("rate = ______________. The first step is the same as in ______, so SN1 and E1 products form from the ______ carbocation.",
-         "k[RX]; SN1; same"),
-        ("The base is weak (for example ______ or ______), unlike E2, which needs a ______________ base.", "H₂O or EtOH (a solvent); strong"),
-        ("The alkene formed is usually the more substituted one, the ______________ product, because it is more stable.", "Zaitsev"),
-        ("When a tertiary alcohol is heated with conc. H₂SO₄ it loses water by an ______ process. The OH is first ______________, "
-         "water leaves to give a carbocation, and a β proton is removed.", "E1; protonated")])
+    P.drawbox("Mechanism: 2-bromo-2-methylbutane in ethanol. Draw both steps with the curved arrows.", 3.4, "e1_mech", 6.2)
+    P.notebox("Notes:  rate law  •  how E1 relates to SN1  •  regiochemistry  •  dehydration of alcohols", 2.2, [
+        "rate = k[RX]: unimolecular. The first step is the same as in SN1, so SN1 and E1 products form from the same carbocation.",
+        "The base is weak (the solvent: H₂O or EtOH), unlike E2, which needs a strong base.",
+        "The alkene is usually the more substituted one, the Zaitsev product.",
+        "A tertiary alcohol heated with conc. H₂SO₄ loses water by E1: the OH is protonated, water leaves to give a carbocation, and a β proton is removed."])
     P.q("P1", "Draw all the products when 2-bromo-2-methylbutane is heated in ethanol. Label each SN1 or E1 and circle the major product.")
     P.img("q_e1_a", 4.0)
     P.ansbox(1.0, "Products:")
@@ -384,7 +346,7 @@ def build(T):
     P.ansbox(0.8, "Major product:")
     P.ansimg("a_e1_b", 5.2, "2-methyl-2-butene (Zaitsev, major) and 2-methyl-1-butene (minor)")
     P.q("P3", "Draw all the products formed when the carbocation from the rearrangement problem in Section 4 is trapped by ethanol (SN1) "
-           "or loses a β proton (E1). Which is major?")
+              "or loses a β proton (E1). Which is major?")
     P.img("q_sn1_b", 3.8)
     P.ansbox(1.1, "Products:")
     P.ansimg("a_sn1_b", 6.5, "2-ethoxy-2,3-dimethylbutane (SN1), 2,3-dimethyl-2-butene (E1, major, tetrasubstituted) and 2,3-dimethyl-1-butene (E1, minor)")
@@ -403,24 +365,15 @@ def build(T):
         "1.  **What does the reagent do?** Is it a strong or weak base, a strong or weak nucleophile?",
         "2.  **What is the substrate?** 1°, 2° or 3°? Which mechanism(s) can operate?",
         "3.  **Details:** Zaitsev or Hofmann? Inversion or racemization? Anti-periplanar?"])
-    P.sub("Step 1: the reagent")
-    P.blanks([
-        ("DBU, DBN and t-BuOK are strong ______ but poor ______________, so they give ______________.", "bases; nucleophiles; elimination (E2)"),
-        ("HO⁻, MeO⁻ and EtO⁻ are strong bases **and** strong nucleophiles, so ______ and ______ compete.", "SN2; E2"),
-        ("I⁻, Br⁻, Cl⁻, HS⁻ and RS⁻ are strong nucleophiles but ______ bases, so they give ______________ (not elimination).", "weak; substitution"),
-        ("H₂O, MeOH and EtOH are weak bases and weak nucleophiles. They react only by the ______________ reactions, so the substrate "
-         "must be ______________.", "unimolecular (SN1 and E1); tertiary"),
-        ("If NaOEt is dissolved in EtOH, the reagent is ______ and the EtOH is only the ______________.", "NaOEt; solvent")])
-    P.sub("Step 2: the substrate")
-    P.blanks([
-        ("With a strong base and a ______ or ______ substrate, E2 is the main reaction. A hindered base (t-BuOK) gives E2 even with a ______ substrate.",
-         "2° or 3°; 1°"),
-        ("A ______ substrate never reacts by SN2. With a strong nucleophile that is a weak base, a 3° substrate reacts by ______.", "tertiary; SN1"),
-        ("A 1° or 2° substrate with a weak base and weak nucleophile (for example EtOH) gives ______________, because the carbocation is "
-         "too unstable.", "no reaction"),
-        ("A 1° substrate with a strong, unhindered nucleophile gives mostly ______; a 2° substrate with the same reagent gives mostly ______ "
-         "if the reagent is a strong base (and SN2 if it is a weak base).", "SN2; E2")])
-    P.sub("Step 3: apply it. Name the mechanism(s) and the major product.")
+    P.notebox("Notes:  the four reagent types (strong or weak base, strong or weak nucleophile)  •  what each substrate type does", 3.0, [
+        "Strong base, weak nucleophile (DBU, DBN, t-BuOK): E2.",
+        "Strong base, strong nucleophile (HO⁻, MeO⁻, EtO⁻): SN2 and E2 compete. Weak base, strong nucleophile (I⁻, Br⁻, Cl⁻, HS⁻, RS⁻, RSH): substitution only. "
+        "Weak base, weak nucleophile (H₂O, MeOH, EtOH): unimolecular reactions only (SN1 and E1), so the substrate must be tertiary.",
+        "If NaOEt is dissolved in EtOH, NaOEt is the reagent and EtOH is only the solvent.",
+        "1°: SN2 with an unhindered nucleophile; E2 with a bulky base. 2°: E2 with a strong base, SN2 with a weak base and strong nucleophile. "
+        "3°: never SN2; E2 with a strong base; SN1 with a weak base and strong nucleophile; SN1 and E1 with a weak base and weak nucleophile.",
+        "1° or 2° with a weak base and weak nucleophile: no reaction (the carbocation is too unstable)."])
+    P.sub("Apply it: name the mechanism(s) and the major product.")
     rx = [
         ("1-bromobutane + NaCN, DMSO", "SN2 → pentanenitrile"),
         ("2-bromobutane + NaOEt, EtOH", "E2 (SN2 minor) → trans-2-butene major; 1-butene and cis-2-butene minor"),
@@ -438,13 +391,11 @@ def build(T):
 
     # ================================================================ 7  solvents
     P.topic("7", "Solvent Effects", "Textbook 7.12  •  protic and polar aprotic solvents")
-    P.blanks([
-        ("A ______ solvent has an H bonded to O or N (H₂O, MeOH, EtOH, CH₃COOH). A polar ______ solvent has no O–H or N–H bond "
-         "(DMSO, DMF, acetone, acetonitrile).", "protic; aprotic"),
-        ("A protic solvent hydrogen-bonds to anions and ______ them, which makes a nucleophile ______ reactive. It also stabilizes "
-         "carbocations and leaving groups, so it favors ______ and ______.", "cages (solvates); less; SN1; E1"),
-        ("A polar aprotic solvent solvates the ______ but leaves the anion “naked” and much more reactive, so it ______ the rate of SN2 "
-         "by many orders of magnitude.", "cation; speeds up (increases)")])
+    P.notebox("Notes:  protic and polar aprotic solvents (definitions and examples)  •  effect on nucleophiles  •  which mechanisms each favors", 2.3, [
+        "Protic: an H bonded to O or N (H₂O, MeOH, EtOH, CH₃COOH). Polar aprotic: no O–H or N–H (DMSO, DMF, acetone, acetonitrile).",
+        "A protic solvent hydrogen-bonds to anions and cages them, making a nucleophile less reactive; it stabilizes carbocations and leaving groups, "
+        "so it favors SN1 and E1.",
+        "A polar aprotic solvent solvates the cation but leaves the anion “naked” and much more reactive, so it speeds up SN2 by many orders of magnitude."])
     P.sub("Data from Table 7.5: SN2 of CH₃I with a halide ion (relative rates, Br⁻ in MeOH = 1)")
     P.note("I⁻:  43 in MeOH, 6,500 in DMF   (×150)          Br⁻:  1 in MeOH, 21,000 in DMF   (×21,000)\n"
            "Cl⁻:  0.04 in MeOH, 41,000 in DMF   (×1,030,000)          F⁻:  0.0006 in MeOH, 49,000 in DMF   (×82,000,000)", 20)
@@ -455,13 +406,13 @@ def build(T):
     textbook(P, ["Section 7.12 conceptual checkpoints: Problems 7.42–7.46."])
 
     # ================================================================ 8  alcohols and synthesis
+    P.emit(PB)
+    FLOW.hard_break()
     P.topic("8", "Alcohols and Synthesis", "Textbook 7.10–7.11  •  make OH leave, then plan a synthesis")
-    P.blanks([
-        ("HBr converts an alcohol into an alkyl bromide. It first ______________ the OH to give H₂O⁺, a good leaving group. A 1° or 2° alcohol then "
-         "reacts by ______ (inversion); a 3° alcohol reacts by ______.", "protonates; SN2; SN1"),
-        ("TsCl and pyridine turn OH into an ______________ (OTs), an excellent leaving group. The C–O bond is not broken, so the "
-         "configuration at carbon is ______________.", "alkyl tosylate; retained"),
-        ("Conc. H₂SO₄ and heat dehydrate an alcohol: a 3° alcohol reacts by ______ (see Section 5); a 1° alcohol by ______.", "E1; E2")])
+    P.notebox("Notes:  HBr  •  TsCl and pyridine  •  conc. H₂SO₄ and heat", 1.8, [
+        "HBr: protonates the OH to give H₂O⁺, a good leaving group. 1° and 2° alcohols then react by SN2 (inversion); 3° alcohols by SN1.",
+        "TsCl, pyridine: converts OH into an alkyl tosylate (OTs), an excellent leaving group. The C–O bond is not broken, so the configuration at carbon is retained.",
+        "Conc. H₂SO₄, heat: dehydration. 3° alcohols by E1 (Section 5); 1° alcohols by E2."])
     P.box("RETROSYNTHESIS", [
         "A **retrosynthesis** starts at the target molecule and works backward: **disconnect** a bond that a known reaction can "
         "form, then choose the nucleophile and electrophile. Check the forward reaction with the mechanism rules: SN2 needs "

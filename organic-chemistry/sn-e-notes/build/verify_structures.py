@@ -15,6 +15,7 @@ from rdkit import Chem
 from rdkit.Chem import rdCIPLabeler, rdMolDescriptors
 import sne_figs as F
 import skel
+from skel import chain
 
 EXPAND = {  # drawn label -> list of (element, [(bond_to_previous_index_in_group, order)])
     "": [("C", None)],
@@ -23,6 +24,8 @@ EXPAND = {  # drawn label -> list of (element, [(bond_to_previous_index_in_group
     "CN": [("C", None), ("N", (0, 3))],
     "OEt": [("O", None), ("C", (0, 1)), ("C", (1, 1))],
     "OCH3": [("O", None), ("C", (0, 1))],
+    "C": [("C", None)], "H": [("H", None)], "O": [("O", None)], "HO": [("O", None)],
+    "H₂O": [("O", None)], "OH₂": [("O", None)],
 }
 
 
@@ -47,6 +50,10 @@ def to_rdkit(m):
         lines.append("%10.4f%10.4f%10.4f %-3s 0  0  0  0  0  0  0  0  0  0  0  0" % (x, y, 0.0, el))
     for a, b, o, s in bonds:
         lines.append("%3d%3d%3d%3d" % (a + 1, b + 1, o, s))
+    chg = [(first[i] + 1, q) for i, q in getattr(m, "charge", {}).items()]
+    for k in range(0, len(chg), 8):
+        part = chg[k:k + 8]
+        lines.append("M  CHG%3d" % len(part) + "".join(" %3d %3d" % (a, q) for a, q in part))
     lines.append("M  END")
     mol = Chem.MolFromMolBlock("\n".join(lines))
     assert mol is not None
@@ -75,14 +82,72 @@ EXPECT = {
     "a_e2_b": [("CCC(C)(C)Br", []), ("C=C(C)CC", []), ("CC=C(C)C", [])],
     "q_e2_c": [("CCCC(C)Br", None)],
     "a_e2_c": [("CCCC(C)Br", None), ("C/C=C/CC", ["E"]), ("C/C=C\\CC", ["Z"]), ("C=CCCC", [])],
+    "q_e1_a": [("CCC(C)(C)Br", [])],
+    "a_e1_a": [("CCC(C)(C)Br", []), ("CCOC(C)(C)CC", []), ("CC=C(C)C", []), ("C=C(C)CC", [])],
+    "q_e1_b": [("CCC(C)(C)O", [])],
+    "a_e1_b": [("CCC(C)(C)O", []), ("CC=C(C)C", []), ("C=C(C)CC", [])],
     "q_sn1_a": [("CC(C)(C)Br", [])],
-    "a_sn1_a": [("CC(C)(C)Br", []), ("CCOC(C)(C)C", []), ("C=C(C)C", [])],
+    "a_sn1_a": [("CC(C)(C)Br", []), ("CCOC(C)(C)C", [])],
     "q_sn1_b": [("CC(Br)C(C)(C)C", None)],
     "a_sn1_b": [("CCOC(C)(C)C(C)C", []), ("CC(C)=C(C)C", []), ("C=C(C)C(C)C", [])],
     "q_sn1_c": [("CCC(C)(Br)CCC", ["?"])],
     "a_sn1_c": [("CCC(C)(O)CCC", ["?"]), ("CCC(C)(O)CCC", ["?"])],
     "t_mtbe": [("CC(C)(C)OC", [])],
 }
+
+
+def formula_counts(rd):
+    """Atom counts including hydrogens, and the total formal charge."""
+    from collections import Counter
+    h = Chem.AddHs(rd)
+    c = Counter(a.GetSymbol() for a in h.GetAtoms())
+    return c, sum(a.GetFormalCharge() for a in h.GetAtoms())
+
+
+def check_mechanisms():
+    """Every species drawn in a mechanism must be a valid molecule, and each arrow must balance atoms and charge."""
+    import mech
+    from collections import Counter
+    bad = 0
+    print("\nmechanism steps (drawn species -> RDKit; atoms and charge must balance across every arrow):")
+    for name, steps in mech.STEPS.items():
+        for k, (rs, ps) in enumerate(steps, 1):
+            try:
+                R = [to_rdkit(m) for m in rs]
+                Pm = [to_rdkit(m) for m in ps]
+            except Exception as e:          # RDKit refuses impossible valences (e.g. a carbon with four bonds and a + charge)
+                print("BAD %-14s step %d  invalid structure: %s" % (name, k, str(e).splitlines()[0][:90]))
+                bad += 1
+                continue
+            cr, qr, cp, qp = Counter(), 0, Counter(), 0
+            for m in R:
+                c, q = formula_counts(m); cr.update(c); qr += q
+            for m in Pm:
+                c, q = formula_counts(m); cp.update(c); qp += q
+            ok = cr == cp and qr == qp
+            # a carbocation drawn with a + on a carbon must have exactly three neighbors (counting hydrogens)
+            for m in R + Pm:
+                for a in Chem.AddHs(m).GetAtoms():
+                    if a.GetSymbol() == "C" and a.GetFormalCharge() == 1 and a.GetDegree() != 3:
+                        ok = False
+            bad += 0 if ok else 1
+            show = lambda ms: " + ".join(Chem.MolToSmiles(m) for m in ms)
+            print("%s %-14s step %d  %s  ->  %s   (charge %+d -> %+d)" % ("ok " if ok else "BAD", name, k, show(R), show(Pm), qr, qp))
+    return bad
+
+
+def selftest():
+    """The mistake in the first version of the notes: a carbocation drawn with four bonds and a + charge.
+    The checker must reject it."""
+    bad = chain(3, subs={1: [("", "plain"), ("", "plain")]})
+    bad.charge[1] = 1
+    try:
+        to_rdkit(bad)
+    except Exception:
+        print("self-test ok: a carbon with four bonds and a + charge is rejected")
+        return 0
+    print("SELF-TEST FAILED: the checker accepted a four-bond carbocation")
+    return 1
 
 
 def main():
@@ -129,6 +194,8 @@ def main():
                 except Exception as e:
                     nm = "(namer: %s)" % e
             print("%s %-13s #%d  %-22s expected %-22s %s" % (flag, pic, k + 1, got, ref, nm))
+    bad += selftest()
+    bad += check_mechanisms()
     # the two enantiomers in a_sn1_c must differ, and q_sn1_c is one of them
     a = [seen_labels[("a_sn1_c", 0)], seen_labels[("a_sn1_c", 1)]]
     print("enantiomer pair in a_sn1_c:", a, "->", "ok" if a[0] != a[1] and len(a[0]) == 1 else "BAD")

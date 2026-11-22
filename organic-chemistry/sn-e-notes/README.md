@@ -10,6 +10,7 @@ Organized by the chapter's own sections (7.1 to 7.12), with the textbook's Skill
 | `Substitution and Elimination - SLIDES.pptx` | 45 slides, 133 click steps: mechanisms drawn in stages with curved arrows, the 3 x 4 reagent/substrate grid, then the 20 warm-ups (vote, then reveal) |
 | `build/` | Generators: `skel.py` (skeletal structures, matplotlib only), `sne_figs.py` (mechanisms, energy diagrams, practice schemes), `questions.py` (the 20 questions), `make_notes.py` (the two Word files) |
 | `slides/` | `deck.py` plus the animation engine (`anim.py`, `kit.py`) |
+| `build/verify_structures.py` | Checks every drawn structure with RDKit (connectivity, R/S, E/Z, names). Run it after changing any drawing. |
 | `img/` | The generated pictures |
 
 Rebuild: `cd build && python3 make_notes.py` then `cd ../slides && python3 deck.py` (needs python-docx, python-pptx, matplotlib, Pillow, lxml).

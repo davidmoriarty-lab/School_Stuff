@@ -149,9 +149,8 @@ def build(T):
             "Where the figure shows two mechanisms (for example a 1° substrate with a strong base and strong nucleophile) the key "
             "lists the major one first. Idealized textbook conditions are used; real reactions can give mixtures. Leaving-group "
             "pKa values in 7.1 are typical textbook values, not taken from the chapter.",
-            "**Drawing.** Structures were drawn with matplotlib (no cheminformatics library), from coordinates. Stereochemistry is "
-            "shown with wedges and dashes only; I checked the three R/S assignments used in the key by hand (see the notes on the "
-            "stereochemistry questions).",
+            "**Drawing.** Structures were drawn with matplotlib from coordinates, with wedges and dashes for stereochemistry. Every drawn "
+            "structure was checked with RDKit (build/verify_structures.py): connectivity, R/S and E/Z labels, and names all match the key.",
             "**Timing idea.** Day 1: 7.1–7.2. Day 2: 7.3 and the E2 stereochemistry. Day 3: 7.4. Day 4: 7.5–7.6 with the grid and "
             "the eight-reaction table. Day 5: synthesis and the multiple-choice set."], kind="teacher")
 
@@ -434,7 +433,7 @@ def build(T):
         P.mcq(k + 1, stem, opts, pos, why)
     if T:
         P.box("TEACHER NOTE", [
-            "Stereochemistry checks (done by hand): in #14 and #20 the substituent (CN, Br, OTs, OH) outranks the ethyl group in "
+            "Stereochemistry checks (confirmed with RDKit): in #14 and #20 the substituent (CN, Br, OTs, OH) outranks the ethyl group in "
             "both reactant and product, so a spatial inversion changes the descriptor (S↔R). In #15 no descriptor of the product "
             "is required. Items 1, 2, 5, 9 and 19 echo the style of ACS-style problems 7.79, 7.82, 7.83, 7.87 and 7.89–7.90."],
             kind="teacher")
